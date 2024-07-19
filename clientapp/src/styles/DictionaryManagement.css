@@ -1,0 +1,160 @@
+/* Base styles for the dashboard */
+body {
+    background-color: #0e1a2b;
+    font-family: 'Roboto', sans-serif;
+    color: #b0c5e2;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    color: #1db2f5;
+    text-shadow: 0 0 8px #1db2f5;
+    margin-top: 20px;
+    font-size: 2em;
+}
+
+.main-table {
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    background: rgba(20, 37, 61, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.table-container {
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+    background: rgba(20, 37, 61, 0.8);
+    border: 1px solid #1db2f5;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.styled-table thead {
+    background: linear-gradient(90deg, #1db2f5, #2575fc);
+    color: white;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px;
+    border-bottom: 1px solid #1db2f5;
+}
+
+.styled-table tbody tr:hover {
+    background-color: rgba(29, 178, 245, 0.2);
+}
+
+.styled-table .no-hover:hover {
+    background-color: inherit;
+}
+
+.styled-table .current-dictionary {
+    background-color: rgba(29, 178, 245, 0.1);
+    font-weight: bold;
+    text-align: center;
+}
+
+.add-button {
+    margin: 10px 0;
+    padding: 10px 20px;
+    background-color: #1db2f5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #1db2f5;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.add-button:hover {
+    background-color: #2575fc;
+    box-shadow: 0 0 20px #2575fc;
+}
+
+.add-row {
+    text-align: left;
+    padding: 12px;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    color: #1db2f5;
+}
+
+.back-button {
+    padding: 8px 16px;
+    background-color: #1db2f5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 16px;
+    box-shadow: 0 0 10px #1db2f5;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.back-button:hover {
+    background-color: #2575fc;
+    box-shadow: 0 0 20px #2575fc;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #14253d;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(29, 178, 245, 0.5);
+    color: #b0c5e2;
+    width: 80%;
+    max-width: 400px;
+}
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    background-color: #1db2f5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #1db2f5;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.modal-actions button:hover {
+    background-color: #2575fc;
+    box-shadow: 0 0 20px #2575fc;
+}

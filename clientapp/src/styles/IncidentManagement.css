@@ -1,0 +1,266 @@
+.main-table {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    background: linear-gradient(180deg, #f5f7fa, #c3cfe2);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.table-container {
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+    background: linear-gradient(180deg, #f5f7fa, #c3cfe2);
+    border: 1px solid #ddd;
+}
+
+.styled-table thead {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.styled-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.styled-table .no-hover:hover {
+    background-color: inherit;
+}
+
+.breadcrumb {
+    margin-bottom: 20px;
+    font-size: 18px;
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.breadcrumb span {
+    padding: 8px 16px;
+    background-color: #6a11cb;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.breadcrumb span::after {
+    content: '>';
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    margin-left: 5px;
+}
+
+.breadcrumb span:last-child::after {
+    content: '';
+}
+
+.breadcrumb span:hover {
+    background-color: #2575fc;
+}
+
+.action-button {
+    position: relative;
+    display: inline-block;
+}
+
+.action-button button {
+    padding: 8px 16px;
+    background-color: #6a11cb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.action-button .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.action-button .dropdown-content button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+}
+
+.action-button .dropdown-content button:hover {
+    background-color: #ddd;
+}
+
+.action-button:hover .dropdown-content {
+    display: block;
+}
+
+.add-button {
+    margin: 10px 0;
+    padding: 10px 20px;
+    background-color: #6a11cb;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background-color: #2575fc;
+}
+
+.add-row {
+    text-align: left;
+    padding: 12px;
+}
+
+.field-types,
+.modal-field-types {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.drop-zone,
+.modal-drop-zone {
+    min-height: 100px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: white;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.drop-zone .field,
+.modal-drop-zone .field {
+    padding: 10px;
+    margin-bottom: 5px;
+    background: #f5f5f5;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    position: relative;
+}
+
+.drop-zone .field.highlight,
+.modal-drop-zone .field.highlight {
+    border-color: red;
+    background-color: #ffcccc;
+}
+
+.drop-zone .field input,
+.modal-drop-zone .field input {
+    border: none;
+    width: calc(100% - 20px);
+    background: none;
+    padding: 5px;
+}
+
+.drop-zone .field input:focus,
+.modal-drop-zone .field input:focus {
+    outline: none;
+}
+
+.field-types .field-type,
+.modal-field-types .field-type {
+    cursor: grab;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #f5f5f5;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background 0.2s;
+}
+
+.field-types .field-type:hover,
+.modal-field-types .field-type:hover {
+    background: #e0e0e0;
+}
+
+.dictionary-selection {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dictionary-selection label {
+    margin-bottom: 5px;
+}
+
+.dictionary-selection select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.modal-content {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    background: linear-gradient(180deg, #f5f7fa, #c3cfe2);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-overlay {
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+.modal-styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+    background: linear-gradient(180deg, #f5f7fa, #c3cfe2);
+    border: 1px solid #ddd;
+}
+
+.modal-styled-table thead {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: white;
+}
+
+.modal-styled-table th,
+.modal-styled-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-styled-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.modal-styled-table .no-hover:hover {
+    background-color: inherit;
+}

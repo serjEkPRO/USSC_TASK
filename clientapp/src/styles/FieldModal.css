@@ -1,0 +1,129 @@
+.modal-content {
+    background: linear-gradient(180deg, #f5f7fa, #c3cfe2);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 50%;
+}
+
+.drop-zone {
+    min-height: 100px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.drop-zone .field {
+    padding: 10px;
+    margin-bottom: 5px;
+    background: #f5f5f5;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    position: relative;
+}
+
+.drop-zone .field.highlight {
+    border-color: red;
+    background-color: #ffcccc;
+}
+
+.drop-zone .field.highlight::after {
+    content: 'Введите название';
+    color: red;
+    font-size: 12px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 2px 5px;
+    background: white;
+    border-radius: 0 0 0 5px;
+}
+
+.drop-zone .field input {
+    border: none;
+    width: calc(100% - 20px);
+    background: none;
+    padding: 5px;
+}
+
+.drop-zone .field input:focus {
+    outline: none;
+}
+
+.field-types .field-type {
+    cursor: grab;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #f5f5f5;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background 0.2s;
+}
+
+.field-types .field-type:hover {
+    background: #e0e0e0;
+}
+
+.dictionary-selection {
+    margin-top: 10px;
+}
+
+.dictionary-selection label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.dictionary-selection select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+
+.drop-zone .field.highlight {
+    border-color: red;
+    background-color: #ffcccc;
+}
+
+.drop-zone .field input {
+    border: none;
+    width: calc(100% - 20px);
+    background: none;
+    padding: 5px;
+}
+
+.drop-zone .field input:focus {
+    outline: none;
+}
+
+.field-types .field-type {
+    cursor: grab;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #f5f5f5;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background 0.2s;
+}
+
+.field-types .field-type:hover {
+    background: #e0e0e0;
+}
+
+.dictionary-selection {
+    margin-top: 10px;
+}
+
+.dictionary-selection label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.dictionary-selection select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
