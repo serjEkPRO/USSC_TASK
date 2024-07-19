@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# Настройка подключения к базе данных
+#1 Настройка подключения к базе данных
 db_config = {
     "host": "10.41.55.60",
     "database": "soar_struct",
