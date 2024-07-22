@@ -118,9 +118,9 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
           </tr>
         </thead>
         <tbody>
-          {incidents.map((incident, index) => (
+          {incidents.map((incident) => (
             <tr
-              key={index}
+              key={incident.id}
               onClick={() => onIncidentClick(incident.id)}
               style={{
                 cursor: 'pointer',

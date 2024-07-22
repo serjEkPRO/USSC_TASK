@@ -460,10 +460,13 @@ def create_incident():
         create_table_for_incident_type(type_id, fields)
 
         field_names = ', '.join([f'"{f[0]}"' for f in fields if f[0] in custom_fields])
-        placeholders = ', '.join(['%s'] * len(fields))
+        placeholders = ', '.join(['%s'] * len(custom_fields))
+        base_fields = ["organization_id", "category_id", "type_id", "creator", "responsible", "evidence_link", "evidence_name"]
+        base_placeholders = ", ".join(['%s'] * len(base_fields))
+
         insert_query = f"""
             INSERT INTO incident_type_{type_id} (organization_id, category_id, type_id, creator, responsible, evidence_link, evidence_name, {field_names})
-            VALUES (%s, %s, %s, %s, %s, %s, %s, {placeholders})
+            VALUES ({base_placeholders}, {placeholders})
             RETURNING id, created_at, updated_at
         """
         values = [organization_id, category_id, type_id, creator, responsible, evidence_link, evidence_name] + [custom_fields[f[0]] for f in fields if f[0] in custom_fields]
@@ -572,7 +575,7 @@ def get_all_fields():
 
 @app.route('/api/incidents/<int:incident_id>', methods=['GET'])
 def get_incident(incident_id):
-    time.sleep(5)
+
     try:
         incident_data = None
         with get_db_connection() as conn:

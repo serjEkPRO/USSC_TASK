@@ -1,4 +1,3 @@
-// BackgroundAnimation.js
 import React, { useEffect } from 'react';
 import '../styles/BackgroundAnimation.css';
 
@@ -57,7 +56,9 @@ const BackgroundAnimation = () => {
             const oldLine = lines.shift();
             oldLine.classList.remove('visible');
             setTimeout(() => {
-              linesGroup.removeChild(oldLine);
+              if (linesGroup.contains(oldLine)) {
+                linesGroup.removeChild(oldLine);
+              }
             }, 2000);
           }
         }, index * 100);
@@ -76,13 +77,7 @@ const BackgroundAnimation = () => {
       updateLines(mouseX, mouseY);
     };
 
-    for (let i = 0; i < numStars; i++) {
-      const x = Math.random() * window.innerWidth;
-      const y = Math.random() * window.innerHeight;
-      stars.push(createStar(x, y));
-    }
-
-    window.addEventListener('resize', () => {
+    const resizeHandler = () => {
       starsGroup.innerHTML = '';
       linesGroup.innerHTML = '';
       stars.length = 0;
@@ -92,12 +87,30 @@ const BackgroundAnimation = () => {
         const y = Math.random() * window.innerHeight;
         stars.push(createStar(x, y));
       }
-    });
+    };
 
+    for (let i = 0; i < numStars; i++) {
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * window.innerHeight;
+      stars.push(createStar(x, y));
+    }
+
+    window.addEventListener('resize', resizeHandler);
     window.addEventListener('mousemove', onMouseMove);
 
     return () => {
+      window.removeEventListener('resize', resizeHandler);
       window.removeEventListener('mousemove', onMouseMove);
+      stars.forEach(star => {
+        if (starsGroup.contains(star.element)) {
+          starsGroup.removeChild(star.element);
+        }
+      });
+      lines.forEach(line => {
+        if (linesGroup.contains(line)) {
+          linesGroup.removeChild(line);
+        }
+      });
     };
   }, []);
 
