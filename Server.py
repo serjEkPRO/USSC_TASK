@@ -1,3 +1,5 @@
+import time
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pg8000
@@ -109,6 +111,21 @@ def add_fields():
         logging.error(f"Error adding fields: {str(e)}")
         return jsonify({"error": str(e), "details": e.args}), 500
 
+@app.route('/api/organizations/<int:organization_id>', methods=['GET'])
+def get_organization(organization_id):
+    try:
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT id, name FROM organization WHERE id = %s", (organization_id,))
+            organization = cur.fetchone()
+        if organization:
+            return jsonify({"id": organization[0], "name": organization[1]})
+        else:
+            return jsonify({"error": "Organization not found"}), 404
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error fetching organization: {str(e)}")
+        return jsonify({"error": str(e), "details": e.args}), 500
+
 @app.route('/api/organizations', methods=['GET'])
 def get_organizations():
     try:
@@ -132,6 +149,8 @@ def get_categories(organization_id):
     except pg8000.dbapi.DatabaseError as e:
         logging.error(f"Error fetching categories: {str(e)}")
         return jsonify({"error": str(e), "details": e.args}), 500
+
+
 
 @app.route('/api/types/<int:category_id>', methods=['GET'])
 def get_types(category_id):
@@ -550,5 +569,32 @@ def get_all_fields():
     except pg8000.dbapi.DatabaseError as e:
         logging.error(f"Error fetching fields: {str(e)}")
         return jsonify({"error": str(e), "details": e.args}), 500
+
+@app.route('/api/incidents/<int:incident_id>', methods=['GET'])
+def get_incident(incident_id):
+    time.sleep(5)
+    try:
+        incident_data = None
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT id FROM incident_type")
+            types = cur.fetchall()
+            for type_id, in types:
+                table_name = f"incident_type_{type_id}"
+                if table_exists(cur, table_name):
+                    cur.execute(f"SELECT * FROM {table_name} WHERE id = %s", (incident_id,))
+                    row = cur.fetchone()
+                    if row:
+                        columns = [desc[0] for desc in cur.description]
+                        incident_data = {columns[i]: row[i] for i in range(len(columns))}
+                        break
+        if incident_data:
+            return jsonify(incident_data)
+        else:
+            return jsonify({"error": "Incident not found"}), 404
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error fetching incident: {str(e)}")
+        return jsonify({"error": str(e), "details": e.args}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)

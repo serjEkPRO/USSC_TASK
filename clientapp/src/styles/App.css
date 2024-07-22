@@ -6,8 +6,8 @@
   flex-grow: 1;
   padding: 2px;
   margin-left: 250px; /* Отступ для основного контента, чтобы не перекрывало меню */
-  background: linear-gradient(180deg, #3b3d3f, #c3cfe2);
-
+  background: linear-gradient(180deg, #3b3d3f00, #c3cfe200);
+  width: calc(100% - 20px);
   transition: margin-left 0.3s; /* Плавный переход при изменении отступа */
 }
 
@@ -18,8 +18,8 @@
 .table-container {
   width: 100%; /* занимает всю ширину main-content */
   overflow-x: auto;
-  background: linear-gradient(180deg, #00071d, #c3cfe2);
-
+  background: linear-gradient(180deg, #00071d, #c3cfe200);
+  width: calc(100% - 20px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 1px;
 }
@@ -28,6 +28,7 @@
   display: flex;
   justify-content: flex-start;
   margin-bottom: 10px;
+  width: calc(100% - 20px);
 }
 
 .table-controls .search-input {

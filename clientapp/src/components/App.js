@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import CreateIncidentModal from '../components/CreateIncidentModal'; 
-import IncidentDetailModal from '../components/IncidentDetailModal';
 import IncidentsTable from '../components/IncidentsTable'; 
 import BackgroundAnimation from '../components/BackgroundAnimation'; 
 import IncidentManagement from '../components/IncidentManagement';
 import DictionaryManagement from '../components/DictionaryManagement';
+import IncidentDetailModal from '../components/IncidentDetailModal';
+import CreateIncidentModal from '../components/CreateIncidentModal';
 
 import '../styles/App.css';
 import '../styles/UsersTable.css';
@@ -13,10 +13,19 @@ import '../styles/BackgroundAnimation.css';
 
 function App() {
   const [activeTab, setActiveTab] = useState('incidents');
+  const [selectedIncidentId, setSelectedIncidentId] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedIncident, setSelectedIncident] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  const openDetail = (incidentId) => {
+    if (incidentId) {
+      setSelectedIncidentId(incidentId);
+    }
+  };
+
+  const closeDetail = () => {
+    setSelectedIncidentId(null);
+  };
 
   const openCreateModal = () => {
     setIsCreateModalOpen(true);
@@ -24,18 +33,6 @@ function App() {
 
   const closeCreateModal = () => {
     setIsCreateModalOpen(false);
-  };
-
-  const openDetailModal = (incident) => {
-    if (incident) {
-      setSelectedIncident(incident);
-      setIsDetailModalOpen(true);
-    }
-  };
-
-  const closeDetailModal = () => {
-    setIsDetailModalOpen(false);
-    setSelectedIncident(null);
   };
 
   const handleCreateIncident = async (incident) => {
@@ -48,7 +45,7 @@ function App() {
     });
 
     if (response.ok) {
-      // вызовите функцию обновления списка инцидентов12345123
+      // call a function to update the incidents list
     }
   };
 
@@ -58,16 +55,22 @@ function App() {
 
   return (
     <div className={`App ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <Sidebar setActiveTab={setActiveTab} toggleSidebar={toggleSidebar} /> {/* Передаем функцию для установки активной вкладки */}
+      <Sidebar setActiveTab={setActiveTab} toggleSidebar={toggleSidebar} />
       <BackgroundAnimation /> 
       <div className={`main-content ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         {activeTab === 'incidents' && (
           <>
             <IncidentsTable 
-              onIncidentClick={openDetailModal}
+              onIncidentClick={openDetail}
               onCreateIncidentClick={openCreateModal}
               isSidebarCollapsed={isSidebarCollapsed}
-            /> 
+            />
+            {selectedIncidentId && (
+              <IncidentDetailModal 
+                incidentId={selectedIncidentId} 
+                onClose={closeDetail} 
+              />
+            )}
           </>
         )}
 
@@ -84,13 +87,6 @@ function App() {
           onClose={closeCreateModal} 
           onCreate={handleCreateIncident} 
         />
-        {selectedIncident && (
-          <IncidentDetailModal 
-            isOpen={isDetailModalOpen} 
-            onClose={closeDetailModal} 
-            incident={selectedIncident} 
-          />
-        )}
       </div>
     </div>
   );

@@ -1,9 +1,6 @@
-/* UsersTable.css */
-
 .table-container {
-  width: 100%;
+  width: calc(100% - 40px); /* Adjusted to ensure the same margin on both sides */
   margin: 0 auto;
-  max-width: 100%; /* Таблица будет занимать всю ширину родительского контейнера */
   padding: 10px;
   background: #1a1d29; /* Dark background color */
   color: #e5e5e5;

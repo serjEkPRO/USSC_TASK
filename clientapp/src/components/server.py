@@ -259,6 +259,22 @@ def delete_organization(organization_id):
     except pg8000.dbapi.DatabaseError as e:
         logging.error(f"Error deleting organization: {str(e)}")
         return jsonify({"error": str(e), "details": e.args}), 500
+    
+@app.route('/api/organizations/<int:organization_id>', methods=['GET'])
+def get_organization(organization_id):
+    try:
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT id, name FROM organization WHERE id = %s", (organization_id,))
+            organization = cur.fetchone()
+        if organization:
+            return jsonify({"id": organization[0], "name": organization[1]})
+        else:
+            return jsonify({"error": "Organization not found"}), 404
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error fetching organization: {str(e)}")
+        return jsonify({"error": str(e), "details": e.args}), 500
+
 
 @app.route('/api/categories/<int:category_id>', methods=['DELETE'])
 def delete_category(category_id):
@@ -385,7 +401,7 @@ def create_table_for_incident_type(type_id, fields):
                 evidence_name VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                status VARCHAR(255) DEFAULT 'New'
+                
             )
         """)
         for field in fields:
@@ -420,7 +436,7 @@ def create_incident():
         responsible = data['responsible']
         evidence_link = data['evidence_link']
         evidence_name = data['evidence_name']
-        status = data.get('status', 'New')
+        
         custom_fields = data['custom_fields']
 
         with get_db_connection() as conn:

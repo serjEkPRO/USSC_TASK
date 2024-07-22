@@ -35,7 +35,6 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
       const response = await fetch(url);
       const data = await response.json();
       setIncidents(data.incidents);
-      onIncidentClick(null);
     } catch (error) {
       console.error('Ошибка при получении данных:', error);
     }
@@ -122,7 +121,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
           {incidents.map((incident, index) => (
             <tr
               key={index}
-              onClick={() => onIncidentClick(incident)}
+              onClick={() => onIncidentClick(incident.id)}
               style={{
                 cursor: 'pointer',
                 backgroundColor: incident.isSelected ? '#333333' : 'transparent'
