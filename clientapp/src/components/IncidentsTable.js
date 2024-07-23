@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/UsersTable.css';
+import '../styles/SearchButton.css'; // Добавляем новые стили для поиска
 
 const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarCollapsed }) => {
   const [incidents, setIncidents] = useState([]);
@@ -72,16 +73,18 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
   return (
     <div className={`table-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <div className="action-bar">
-        <form className="search-form" onSubmit={handleSearchSubmit}>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Поиск..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-          <button type="submit" className="search-button">Поиск</button>
-        </form>
+        <div className="search-container">
+          <form className="search-form" onSubmit={handleSearchSubmit}>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Поиск..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+            <div className="search-button" onClick={handleSearchSubmit}></div>
+          </form>
+        </div>
         <button className="action-button" onClick={toggleDropdown}>
           Настроить поля
         </button>
