@@ -1,174 +1,172 @@
 .incident-detail-container {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
-  opacity: 0;
-  width: 100%; /* Adjust width to match the table width */
-  margin: 0 auto;
-  position: relative;
-  padding: 10px;
-  z-index: 100;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  
+  max-height: 0; /* Максимальная высота контейнера (0 при скрытии) */
+  overflow: hidden; /* Скрытие содержимого при переполнении */
+  transition: max-height 0.5s ease-out, opacity 0.5s ease-out; /* Плавный переход высоты и непрозрачности */
+  opacity: 0; /* Начальная непрозрачность (контейнер невидим) */
+  width: 100%; /* Ширина контейнера на 100% */
+  margin: 0 auto; /* Автоматические отступы для центрирования */
+  position: relative; /* Относительное позиционирование контейнера */
+  padding: 2px; /* Внутренние отступы контейнера */
+  z-index: 100; /* Уровень наложения контейнера */
+  display: flex; /* Использование флексбоксов для выравнивания содержимого */
+  justify-content: center; /* Выравнивание содержимого по центру по горизонтали */
+  align-items: flex-start; /* Выравнивание содержимого по началу по вертикали */
 }
 .incident-detail-container.visible {
-  max-height: 50vh; /* 50% of viewport height */
-  opacity: 1;
+  max-height: 50vh; /* Максимальная высота контейнера (50% высоты экрана) */
+  opacity: 1; /* Полная непрозрачность (контейнер видим) */
 }
 
 .incident-detail {
-  background-color: #0E1A2B; /* Dark background color */
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  width: 100%; /* Ensure it takes the full width of the container */
-  height: 50vh; /* Fixed height */
-  overflow: auto; /* Enable scrolling */
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  margin-top: 5px; /* Add margin to separate from the table */
-  color: #ffffff; /* White text color */
-  font-family: 'Courier New', Courier, monospace; /* Font style */
-  border-left: 2px solid #5c9dcf44; /* Light blue left border */
-  border-top: 2px solid #5c9dcf44; /* Light blue top border */
-  border-bottom: 2px solid #5c9dcf44; /* Light blue bottom border */
+  background-color: #0E1A2B; /* Тёмный цвет фона */
+  padding: 20px; /* Внутренние отступы */
+  border-radius: 8px; /* Радиус скругления углов */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Тень вокруг контейнера */
+  width: 100%; /* Ширина на 100% контейнера */
+  height: 50vh; /* Фиксированная высота */
+  overflow: auto; /* Включение прокрутки при переполнении */
+  position: relative; /* Относительное позиционирование */
+  z-index: 1; /* Уровень наложения */
+  display: flex; /* Использование флексбоксов */
+  flex-direction: column; /* Вертикальное выравнивание содержимого */
+  margin-top: 5px; /* Отступ сверху */
+  color: #ffffff; /* Белый цвет текста */
+  font-family: 'Courier New', Courier, monospace; /* Стиль шрифта */
+  border-left: 2px solid #5c9dcf44; /* Левый бордюр светло-голубого цвета */
+  border-top: 2px solid #5c9dcf44; /* Верхний бордюр светло-голубого цвета */
+  border-bottom: 2px solid #5c9dcf44; /* Нижний бордюр светло-голубого цвета */
 }
 
-
 .incident-detail::-webkit-scrollbar {
-  width: 12px;
+  width: 12px; /* Ширина полосы прокрутки */
 }
 
 .incident-detail::-webkit-scrollbar-track {
-  background: #1b2735; /* Dark background */
+  background: #1b2735; /* Фон полосы прокрутки */
 }
 
 .incident-detail::-webkit-scrollbar-thumb {
-  background-color: #5c9dcf; /* Light blue scroll thumb */
-  border-radius: 6px;
-  border: 3px solid #1b2735; /* Dark background around thumb */
+  background-color: #5c9dcf; /* Цвет ползунка */
+  border-radius: 6px; /* Радиус скругления ползунка */
+  border: 3px solid #1b2735; /* Цвет фона вокруг ползунка */
 }
 
 .incident-content {
-  flex-grow: 1;
-  position: relative;
-  z-index: 1;
-  transition: opacity 0.5s ease-out;
+  flex-grow: 1; /* Разрастание содержимого для заполнения пространства */
+  position: relative; /* Относительное позиционирование */
+  z-index: 1; /* Уровень наложения */
+  transition: opacity 0.5s ease-out; /* Плавный переход непрозрачности */
 }
 
 #preloader {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2; /* Higher than the backdrop */
+  position: absolute; /* Абсолютное позиционирование */
+  top: 0; /* Привязка к верху */
+  left: 0; /* Привязка к левому краю */
+  width: 100%; /* Ширина на 100% */
+  height: 100%; /* Высота на 100% */
+  background: rgba(0, 0, 0, 0.6); /* Полупрозрачный чёрный фон */
+  backdrop-filter: blur(5px); /* Размытие фона */
+  display: flex; /* Использование флексбоксов */
+  justify-content: center; /* Центрирование по горизонтали */
+  align-items: center; /* Центрирование по вертикали */
+  z-index: 2; /* Уровень наложения (выше, чем у фона) */
 }
 
 .cube {
-  position: relative;
-  width: 50px;
-  height: 50px;
-  transform-style: preserve-3d;
-  animation: rotate 2s infinite linear;
+  position: relative; /* Относительное позиционирование */
+  width: 50px; /* Ширина куба */
+  height: 50px; /* Высота куба */
+  transform-style: preserve-3d; /* Сохранение трёхмерного стиля */
+  animation: rotate 2s infinite linear; /* Анимация вращения */
 }
 
 .face {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  background: rgba(52, 152, 219, 0.8);
-  border: 1px solid #2980b9;
-  box-shadow: 0 0 15px rgba(52, 152, 219, 0.8);
+  position: absolute; /* Абсолютное позиционирование */
+  width: 50px; /* Ширина грани */
+  height: 50px; /* Высота грани */
+  background: rgba(52, 152, 219, 0.8); /* Цвет фона грани */
+  border: 1px solid #2980b9; /* Граница грани */
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.8); /* Тень вокруг грани */
 }
 
-.front  { transform: translateZ(25px); }
-.back   { transform: rotateY(180deg) translateZ(25px); }
-.left   { transform: rotateY(-90deg) translateZ(25px); }
-.right  { transform: rotateY(90deg) translateZ(25px); }
-.top    { transform: rotateX(90deg) translateZ(25px); }
-.bottom { transform: rotateX(-90deg) translateZ(25px); }
+.front  { transform: translateZ(25px); } /* Передняя грань */
+.back   { transform: rotateY(180deg) translateZ(25px); } /* Задняя грань */
+.left   { transform: rotateY(-90deg) translateZ(25px); } /* Левая грань */
+.right  { transform: rotateY(90deg) translateZ(25px); } /* Правая грань */
+.top    { transform: rotateX(90deg) translateZ(25px); } /* Верхняя грань */
+.bottom { transform: rotateX(-90deg) translateZ(25px); } /* Нижняя грань */
 
 @keyframes rotate {
-  0% { transform: rotateX(0) rotateY(0); }
-  100% { transform: rotateX(360deg) rotateY(360deg); }
+  0% { transform: rotateX(0) rotateY(0); } /* Начальное состояние */
+  100% { transform: rotateX(360deg) rotateY(360deg); } /* Конечное состояние */
 }
 
 .close-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-  z-index: 3;
-  color: #ffffff; /* White text color */
+  background: none; /* Отсутствие фона */
+  border: none; /* Отсутствие границы */
+  font-size: 24px; /* Размер шрифта */
+  position: absolute; /* Абсолютное позиционирование */
+  top: 10px; /* Расположение сверху */
+  right: 10px; /* Расположение справа */
+  cursor: pointer; /* Курсор в виде руки */
+  z-index: 3; /* Уровень наложения */
+  color: #ffffff; /* Белый цвет текста */
 }
 
 .incident-detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex; /* Использование флексбоксов */
+  justify-content: space-between; /* Распределение пространства между элементами */
+  align-items: center; /* Выравнивание по центру по вертикали */
 }
 
 .incident-dates {
-  text-align: right;
+  text-align: right; /* Выравнивание текста по правому краю */
 }
 
 .incident-detail h2 {
-  margin-top: 0;
+  margin-top: 0; /* Отсутствие отступа сверху */
 }
 
 .incident-detail form {
-  display: flex;
-  flex-direction: column;
+  display: flex; /* Использование флексбоксов */
+  flex-direction: column; /* Вертикальное расположение элементов */
 }
 
 .incident-detail form div {
-  margin-bottom: 10px;
+  margin-bottom: 10px; /* Отступ снизу */
 }
 
 .incident-detail form label {
-  display: block;
-  margin-bottom: 5px;
+  display: block; /* Отображение блока */
+  margin-bottom: 5px; /* Отступ снизу */
 }
 
 .incident-detail form input {
-  padding: 8px;
-  border: 1px solid #46566c;
-  border-radius: 5px;
-  background: #0E1A2B; /* Dark input background */
-  color: #ffffff; /* White text color */
-  width: calc(100% - 16px);
+  padding: 8px; /* Внутренние отступы */
+  border: 1px solid #46566c; /* Граница ввода */
+  border-radius: 5px; /* Радиус скругления границ */
+  background: #0E1A2B; /* Тёмный фон ввода */
+  color: #ffffff; /* Белый цвет текста */
+  width: calc(100% - 16px); /* Ширина ввода с учётом отступов */
 }
 
-/* Add media queries for responsive design */
+/* Медиазапросы для адаптивного дизайна */
 @media (max-width: 1024px) {
   .incident-detail {
-    padding: 10px;
+    padding: 10px; /* Уменьшение отступов */
   }
 
   .incident-content {
-    padding: 10px;
+    padding: 10px; /* Уменьшение отступов */
   }
 }
 
 @media (max-width: 768px) {
   .incident-detail {
-    padding: 5px;
+    padding: 5px; /* Ещё меньше отступов */
   }
 
   .incident-content {
-    padding: 5px;
+    padding: 5px; /* Ещё меньше отступов */
   }
 }

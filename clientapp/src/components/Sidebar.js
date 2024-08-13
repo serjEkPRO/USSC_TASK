@@ -66,6 +66,26 @@ const Sidebar = ({ setActiveTab, toggleSidebar }) => {
               <span className="sidebar-listItemText">Справочники</span>
             </a>
           </li>
+          <li className="sidebar-listItem" onClick={() => setActiveTab('flow-editor')}>
+            <a>
+              <img
+                src={CustomIcon}
+                alt="Flow Editor Icon"
+                className="sidebar-listIcon"
+              />
+              <span className="sidebar-listItemText">Редактор блок-схем</span>
+            </a>
+          </li>
+          <li className="sidebar-listItem" onClick={() => setActiveTab('workflow')}>
+            <a>
+              <img
+                src={CustomIcon}
+                alt="Work Flow Icon"
+                className="sidebar-listIcon"
+              />
+              <span className="sidebar-listItemText">Рабочий поток</span>
+            </a>
+          </li>
           <li className="sidebar-listItem">
             <a>
               <span className="sidebar-listItemText">Activity</span>

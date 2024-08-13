@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import IncidentsTable from '../components/IncidentsTable'; 
-import BackgroundAnimation from '../components/BackgroundAnimation'; 
+import IncidentsTable from '../components/IncidentsTable';
+import BackgroundAnimation from '../components/BackgroundAnimation';
 import IncidentManagement from '../components/IncidentManagement';
 import DictionaryManagement from '../components/DictionaryManagement';
 import IncidentDetailModal from '../components/IncidentDetailModal';
 import CreateIncidentModal from '../components/CreateIncidentModal';
+import WorkFlow from '../components/WorkFlow'; // Импортируем новый компонент
 
 import '../styles/App.css';
 import '../styles/UsersTable.css';
-import '../styles/BackgroundAnimation.css'; 
+import '../styles/BackgroundAnimation.css';
 
 function App() {
   const [activeTab, setActiveTab] = useState('incidents');
@@ -56,19 +57,19 @@ function App() {
   return (
     <div className={`App ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <Sidebar setActiveTab={setActiveTab} toggleSidebar={toggleSidebar} />
-      <BackgroundAnimation /> 
-      <div className={`main-content ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <BackgroundAnimation />
+      <div className={`main-content ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ height: '100vh', overflow: 'hidden' }}>
         {activeTab === 'incidents' && (
           <>
-            <IncidentsTable 
+            <IncidentsTable
               onIncidentClick={openDetail}
               onCreateIncidentClick={openCreateModal}
               isSidebarCollapsed={isSidebarCollapsed}
             />
             {selectedIncidentId && (
-              <IncidentDetailModal 
-                incidentId={selectedIncidentId} 
-                onClose={closeDetail} 
+              <IncidentDetailModal
+                incidentId={selectedIncidentId}
+                onClose={closeDetail}
               />
             )}
           </>
@@ -79,13 +80,17 @@ function App() {
         )}
 
         {activeTab === 'dictionaries' && (
-          <DictionaryManagement /> 
+          <DictionaryManagement />
         )}
 
-        <CreateIncidentModal 
-          isOpen={isCreateModalOpen} 
-          onClose={closeCreateModal} 
-          onCreate={handleCreateIncident} 
+        {activeTab === 'workflow' && (
+          <WorkFlow />
+        )}
+
+        <CreateIncidentModal
+          isOpen={isCreateModalOpen}
+          onClose={closeCreateModal}
+          onCreate={handleCreateIncident}
         />
       </div>
     </div>

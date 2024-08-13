@@ -1,0 +1,82 @@
+.wrapper {
+  flex-grow: 1;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.playbook-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.playbook-button:hover {
+  background-color: #0056b3;
+}
+
+.react-flow__edge-path {
+  stroke-width: 2px;
+  stroke: #000;
+  fill: none;
+  stroke-dasharray: 5, 5;
+  z-index: 1000; /* Убедитесь, что ребра отображаются поверх всего */
+}
+
+.custom-edge-path {
+  stroke-width: 2px;
+  stroke: red;
+  fill: none;
+  stroke-dasharray: 5, 5;
+  z-index: 1000; /* Убедитесь, что кастомные ребра отображаются поверх всего */
+}
+
+.react-flow__node {
+  height: 40px;
+  width: 150px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-width: 2px;
+  font-weight: 700;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  z-index: 2; /* Убедитесь, что узлы отображаются поверх фона */
+}
+
+.react-flow__node.highlight {
+  background-color: lightgreen !important; /* Зеленая подсветка активного узла */
+}
+
+.react-flow__handle {
+  width: 30px;
+  height: 14px;
+  border-radius: 3px;
+  background-color: #784be8;
+}
+
+.react-flow__handle-top {
+  top: -10px;
+}
+
+.react-flow__handle-bottom {
+  bottom: -10px;
+}
+
+.animated-path {
+  stroke-dasharray: 5, 5;
+  animation: dash-animation 1s linear infinite;
+}
+
+@keyframes dash-animation {
+  to {
+    stroke-dashoffset: -20;
+  }
+}

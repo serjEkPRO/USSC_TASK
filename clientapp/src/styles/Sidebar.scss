@@ -29,7 +29,6 @@ body {
 .sidebar-container {
   background-color: var(--main-container-bg);
   box-shadow: var(--container-shadow);
-  //border-radius: 10px;
   padding: 16px;
   transition: width .3s ease-in-out;
   position: fixed;
@@ -92,37 +91,33 @@ body {
   transition: background .2s ease-in;
   padding: 8px 0;
   position: relative;
+}
 
-  &.active a {
-    background-color: var(--item-hover);
-  }
+.sidebar-listItem a {
+  width: 100%;
+  padding: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-color);
+}
 
-  a:hover {
-    background-color: var(--item-hover);
-  }
+.sidebar-listItem a:hover {
+  background-color: var(--item-hover);
+}
 
-  a {
-    width: 100%;
-    padding: 20px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    text-decoration: none;
-    color: var(--text-color);
-  }
+.sidebar-listItem .sidebar-listIcon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
 
-  .sidebar-listIcon {
-    width: 20px;
-    height: 20px;
-    display: inline-block;
-    margin-right: 8px;
-    flex-shrink: 0;
-  }
-
-  .shrink & .sidebar-listIcon {
-    margin-right: 0;
-  }
+.shrink .sidebar-listIcon {
+  margin-right: 0;
 }
 
 .shrink .sidebar-listItemText {
@@ -169,17 +164,4 @@ body {
 
 .shrink .sidebar-profileSection {
   border-radius: 50%;
-}
-
-@for $i from 0 through 5 {
-  .sidebar-listItem:nth-child(n + #{$i}) {
-    animation-delay: $i * .2s;
-  }
-}
-
-@keyframes fadeInItem {
-  100% {
-    transform: translateX(0px);
-    opacity: 1;
-  }
 }

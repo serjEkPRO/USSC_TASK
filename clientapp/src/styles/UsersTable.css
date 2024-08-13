@@ -1,244 +1,301 @@
+/* Основные стили */
 .table-container {
-  width: calc(100% - 40px);
-  margin: 0 auto;
-  padding: 10px;
-  background: linear-gradient(135deg, #1e1e1e, #2b2f3a); /* Gradient background */
-  color: #ffffff; /* White text color */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  display: block;
-  border-radius: 8px;
+  width: calc(100% - 40px); /* Ширина контейнера таблицы с учётом отступов */
+  margin: 0 auto; /* Центрирование контейнера */
+  padding: 10px; /* Внутренние отступы */
+  color: #ffffff; /* Белый цвет текста */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Тень вокруг контейнера */
+  display: block; /* Блочное отображение */
+  border-radius: 8px; /* Скругление углов */
 }
 
 .table-wrapper {
-  overflow-x: auto; /* Add horizontal scrolling */
+  overflow-x: auto; /* Горизонтальная прокрутка при переполнении */
 }
 
 .UserTableClass {
-  width: 100%;
-  border-collapse: collapse;
-  background: transparent; /* Transparent background */
-  color: #ffffff; /* White text color */
+  width: 100%; /* Ширина таблицы на 100% контейнера */
+  border-collapse: collapse; /* Схлопывание границ ячеек */
+  background: transparent; /* Прозрачный фон */
+  color: #ffffff; /* Белый цвет текста */
 }
 
 .UserTableClass th, .UserTableClass td {
-  padding: 8px 12px; /* Padding inside cells */
-  border-bottom: 1px solid #46566c; /* Darker border color */
+  padding: 8px;
+  border-bottom: 1px solid #46566c;
   text-align: left;
-  font-family: 'Courier New', Courier, monospace; /* Font style */
-}
-
-.UserTableClass thead {
-  background: #3e4b6693; /* Slightly darker header background */
-  color: #ffffff; /* White text color */
-  border-bottom: 2px solid #5c9dcf; /* Light blue border */
-}
-
-.UserTableClass tbody tr:hover {
-  background-color: #3e4b6693; /* Darker background on hover */
+  font-family: 'Courier New', Courier, monospace;
+  white-space: nowrap;
+  overflow: hidden; /* Скрывает переполнение текста */
+  text-overflow: ellipsis; /* Добавляет многоточие в конце текста */
+  position: relative;
+  min-width: 50px;
 }
 
 .UserTableClass th {
-  border-left: 1px solid #5c9dcf3b; /* Light blue vertical borders */
+  position: relative;
+  background-color: transparent;
+  border-left: 1px solid #5c9dcf3b; /* Светло-голубая вертикальная граница слева */
+}
+
+.UserTableClass th:hover {
+  background-color: rgba(0, 123, 255, 0.1); /* Подсветка при наведении */
 }
 
 .UserTableClass td {
-  border-left: 1px solid #5c9dcf1e; /* Light blue vertical borders */
+  border-left: 1px solid #0076fd1e; /* Светло-голубая вертикальная граница слева */
+  width: auto; /* Убедитесь, что ширина по умолчанию установлена как auto */
 }
 
+.resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  cursor: col-resize;
+  z-index: 1;
+  background-image: url('/src/assets/image.png'); /* Обновите путь до вашего изображения */
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Остальные стили */
+
 .search-form {
-  display: flex;
-  margin-bottom: 10px;
+  display: flex; /* Использование флексбоксов для выравнивания элементов */
+  margin-bottom: 10px; /* Отступ снизу */
 }
 
 .search-input {
-  padding: 8px 12px;
-  border: 1px solid #46566c;
-  border-radius: 5px;
-  background: #1b2735; /* Dark input background */
-  color: #ffffff; /* White text color */
-  width: 200px;
+  padding: 8px 12px; /* Внутренние отступы */
+  border: 1px solid #46566c; /* Граница ввода */
+  border-radius: 5px; /* Скругление углов */
+  background: #1b2735; /* Темный фон ввода */
+  color: #ffffff; /* Белый цвет текста */
+  width: 200px; /* Ширина ввода */
 }
 
 .search-button {
-  padding: 8px 16px;
-  background-color: #5a6b8c;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 10px;
+  padding: 8px 16px; /* Внутренние отступы */
+  background-color: #5a6b8c; /* Фон кнопки */
+  color: white; /* Белый цвет текста */
+  border: none; /* Отсутствие границы */
+  border-radius: 5px; /* Скругление углов */
+  cursor: pointer; /* Курсор в виде руки */
+  margin-left: 10px; /* Отступ слева */
 }
 
 .search-button:hover {
-  background-color: #3a4a7c;
+  background-color: #3a4a7c; /* Фон кнопки при наведении */
 }
 
 .action-button {
-  padding: 8px 16px;
-  background-color: #5a6b8c;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 0 5px;
+  padding: 8px 16px; /* Внутренние отступы */
+  background-color: #5a6b8c; /* Фон кнопки */
+  color: white; /* Белый цвет текста */
+  border: none; /* Отсутствие границы */
+  border-radius: 5px; /* Скругление углов */
+  cursor: pointer; /* Курсор в виде руки */
+  margin: 0 5px; /* Отступы по горизонтали */
 }
 
 .action-button:hover {
-  background-color: #3a4a7c;
+  background-color: #3a4a7c; /* Фон кнопки при наведении */
 }
 
 .field-visibility-controls {
-  margin-bottom: 1rem;
+  margin-bottom: 1rem; /* Отступ снизу */
 }
 
 .field-visibility-controls label {
-  margin-right: 1rem;
+  margin-right: 1rem; /* Отступ справа */
 }
 
 .dropdown {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 0;
+  position: relative; /* Относительное позиционирование */
+  display: inline-block; /* Встроенно-блочное отображение */
+  margin-bottom: 0; /* Отсутствие отступа снизу */
 }
 
 .dropdown-toggle {
-  background-color: #5a6b8c;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
+  background-color: #5a6b8c; /* Фон кнопки */
+  color: white; /* Белый цвет текста */
+  padding: 10px; /* Внутренние отступы */
+  border: none; /* Отсутствие границы */
+  cursor: pointer; /* Курсор в виде руки */
+  border-radius: 4px; /* Скругление углов */
 }
 
 .dropdown-menu {
-  display: block;
-  position: absolute;
-  background-color: #2e3a59; /* Dark dropdown background */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  padding: 10px;
-  z-index: 1;
-  max-height: 300px;
-  overflow-y: auto;
-  width: 200px;
-  border-radius: 4px;
+  display: block; /* Блочное отображение */
+  position: absolute; /* Абсолютное позиционирование */
+  background-color: #2e3a59; /* Темный фон выпадающего меню */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Тень вокруг меню */
+  padding: 10px; /* Внутренние отступы */
+  z-index: 1; /* Уровень наложения */
+  max-height: 300px; /* Максимальная высота меню */
+  overflow-y: auto; /* Вертикальная прокрутка при переполнении */
+  width: 200px; /* Ширина меню */
+  border-radius: 4px; /* Скругление углов */
 }
 
 .dropdown-menu input[type="text"] {
-  width: 100%;
-  padding: 5px;
-  margin-bottom: 10px;
-  box-sizing: border-box;
-  background: #1b2735; /* Dark input background */
-  color: #ffffff; /* White text color */
-  border: 1px solid #46566c;
+  width: 100%; /* Ширина на 100% */
+  padding: 5px; /* Внутренние отступы */
+  margin-bottom: 10px; /* Отступ снизу */
+  box-sizing: border-box; /* Учет границ и отступов в ширине */
+  background: #1b2735; /* Темный фон ввода */
+  color: #ffffff; /* Белый цвет текста */
+  border: 1px solid #46566c; /* Граница ввода */
 }
 
 .dropdown-menu label {
-  display: block;
-  margin-bottom: 5px;
+  display: block; /* Блочное отображение */
+  margin-bottom: 5px; /* Отступ снизу */
 }
 
 .action-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0;
+  display: flex; /* Использование флексбоксов */
+  justify-content: space-between; /* Распределение пространства между элементами */
+  align-items: center; /* Выравнивание по центру по вертикали */
+  margin-bottom: 0; /* Отсутствие отступа снизу */
 }
 
 .action-bar .search-form, .action-bar .action-button, .action-bar .dropdown {
-  margin-bottom: 10px;
+  margin-bottom: 10px; /* Отступ снизу */
 }
 
 .status-registered {
-  background-color: #858585;
-  color: #000000;
-  padding: 5px;
-  border-radius: 3px;
+  background-color: #858585; /* Фон статуса */
+  color: #000000; /* Черный цвет текста */
+  padding: 5px; /* Внутренние отступы */
+  border-radius: 3px; /* Скругление углов */
 }
 
 .status-created {
-  background-color: #ffcc00;
-  color: #000000;
-  padding: 5px;
-  border-radius: 3px;
+  background-color: #ffcc00; /* Фон статуса */
+  color: #000000; /* Черный цвет текста */
+  padding: 5px; /* Внутренние отступы */
+  border-radius: 3px; /* Скругление углов */
 }
 
 .status-insignificant {
-  background-color: #c0c0c0;
-  color: #000000;
-  padding: 5px;
-  border-radius: 3px;
+  background-color: #c0c0c0; /* Фон статуса */
+  color: #000000; /* Черный цвет текста */
+  padding: 5px; /* Внутренние отступы */
+  border-radius: 3px; /* Скругление углов */
 }
 
 .status-high {
-  background-color: #ff9900;
-  color: #000000;
-  padding: 5px;
-  border-radius: 3px;
+  background-color: #ff9900; /* Фон статуса */
+  color: #000000; /* Черный цвет текста */
+  padding: 5px; /* Внутренние отступы */
+  border-radius: 3px; /* Скругление углов */
 }
 
 .status-critical {
-  background-color: #ff3300;
-  color: #ffffff;
-  padding: 5px;
-  border-radius: 3px;
+  background-color: #ff3300; /* Фон статуса */
+  color: #ffffff; /* Белый цвет текста */
+  padding: 5px; /* Внутренние отступы */
+  border-radius: 3px; /* Скругление углов */
 }
 
 .status-empty {
-  background-color: #4d4d4d;
-  color: #ffffff;
-  padding: 5px;
-  border-radius: 3px;
+  background-color: #4d4d4d; /* Фон статуса */
+  color: #ffffff; /* Белый цвет текста */
+  padding: 5px; /* Внутренние отступы */
+  border-radius: 3px; /* Скругление углов */
 }
 
-/* Scrollbar styles */
+/* Стили для полос прокрутки */
 .table-wrapper::-webkit-scrollbar {
-  width: 12px;
+  width: 12px; /* Ширина полосы прокрутки */
 }
 
 .table-wrapper::-webkit-scrollbar-track {
-  background: #1b2735; /* Dark background */
+  background: #1b2735; /* Темный фон полосы прокрутки */
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
-  background-color: #5c9dcf; /* Light blue scroll thumb */
-  border-radius: 6px;
-  border: 3px solid #1b2735; /* Dark background around thumb */
+  background-color: #5c9dcf; /* Светло-голубой ползунок */
+  border-radius: 6px; /* Радиус скругления ползунка */
+  border: 3px solid #1b2735; /* Темный фон вокруг ползунка */
 }
 
 @media (max-width: 1024px) {
-  .search-input {
-    width: 150px;
+  .table-container {
+    width: calc(100% - 90px); /* Измененное значение для отступа справа */
   }
 
   .search-button, .action-button {
-    padding: 6px 12px;
+    padding: 6px 12px; /* Уменьшенные отступы */
   }
 }
 
 @media (max-width: 768px) {
   .search-form {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column; /* Вертикальное выравнивание элементов */
+    align-items: flex-start; /* Выравнивание по началу по вертикали */
+  }
+
+  .table-container {
+    width: calc(100% - 90px); /* Измененное значение для отступа справа */
   }
 
   .search-input {
-    width: 100%;
-    margin-bottom: 10px;
+    width: 100%; /* Ширина на 100% */
+    margin-bottom: 10px; /* Отступ снизу */
   }
 
   .action-button, .search-button {
-    width: 100%;
-    margin-left: 0;
+    width: 100%; /* Ширина на 100% */
+    margin-left: 0; /* Отсутствие отступа слева */
   }
 
   .action-bar {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column; /* Вертикальное выравнивание элементов */
+    align-items: flex-start; /* Выравнивание по началу по вертикали */
   }
 
   .action-bar .search-form, .action-bar .action-button, .action-bar .dropdown {
-    width: 100%;
-    margin-bottom: 10px;
+    width: 100%; /* Ширина на 100% */
+    margin-bottom: 10px; /* Отступ снизу */
   }
+}
+
+.resize-enabled .UserTableClass th {
+  cursor: col-resize;
+}
+
+.resize-enabled .UserTableClass th:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.resize-enabled .UserTableClass th .resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.resize-enabled .UserTableClass th .resize-handle:hover {
+  background-color: rgba(0, 123, 255, 0.5);
+}
+
+.resize-handle {
+  position: absolute;
+  right: -5px;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.resize-handle:hover {
+  background-color: rgba(0, 123, 255, 0.5);
 }

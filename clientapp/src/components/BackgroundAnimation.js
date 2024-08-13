@@ -115,7 +115,7 @@ const BackgroundAnimation = () => {
   }, []);
 
   return (
-    <svg id="background">
+    <svg id="background" className="background-svg">
       <defs>
         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />

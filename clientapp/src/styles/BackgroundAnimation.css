@@ -1,48 +1,73 @@
-/* BackgroundAnimation.css */
 body {
-    margin: 0;
-    overflow: hidden;
-    background-color: #00294d; /* Светлее темно-синий фон */
-    position: relative;
-  }
+  margin: 0;
+  overflow: hidden;
+  background-color: #00294d; /* Светлее темно-синий фон */
+  position: relative;
+}
 
-  svg {
-    position: fixed; /* Изменено с absolute на fixed */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; /* Добавлено для отправки SVG на задний план */
-  }
-  .star {
-    transition: fill 0.3s, r 0.3s;
-    fill: #739ff1; /* Темные звезды */
-  }
-  .glow {
+.background-svg {
+  position: fixed; /* Изменено с absolute на fixed */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Добавлено для отправки SVG на задний план */
+}
 
-    fill: #ffffff; /* Светлее свечение */
-    filter: url(#glow);
+.background-svg .star {
+  transition: fill 0.3s, r 0.3s;
+  fill: #739ff1; /* Темные звезды */
+}
+
+.background-svg .glow {
+  fill: #ffffff; /* Светлее свечение */
+  filter: url(#glow);
+}
+
+.background-svg .pulsate {
+  animation: pulsate 5s infinite alternate; /* Плавная пульсация */
+}
+
+@keyframes pulsate {
+  0% {
+    r: 0.5;
   }
-  .pulsate {
-    animation: pulsate 5s infinite alternate; /* Плавная пульсация */
+  100% {
+    r: 1;
   }
-  @keyframes pulsate {
-    0% {
-      r: 0.5;
-    }
-    100% {
-      r: 1;
-    }
-  }
-  .line-glow {
-    stroke: rgba(255, 255, 255, 0.123); /* Менее яркая линия */
-    stroke-width: 0.5; /* Более тонкая линия */
-    stroke-linecap: round; /* Заостренные концы */
-    opacity: 0;
-    transition: opacity 1s; /* Плавное появление */
-  }
-  .line-glow.visible {
-    opacity: 1;
-    transition: opacity 5s; /* Медленное исчезновение */
-  }
-  
+}
+
+.background-svg .line-glow {
+  stroke: rgba(255, 255, 255, 0.123); /* Менее яркая линия */
+  stroke-width: 0.5; /* Более тонкая линия */
+  stroke-linecap: round; /* Заостренные концы */
+  opacity: 0;
+  transition: opacity 1s; /* Плавное появление */
+}
+
+.background-svg .line-glow.visible {
+  opacity: 1;
+  transition: opacity 5s; /* Медленное исчезновение */
+}
+
+.App {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 2px;
+  margin-left: 250px; /* Отступ для основного контента, чтобы не перекрывало меню */
+  margin-right: 10px; /* Добавляем отступ справа */
+  background: linear-gradient(180deg, #3b3d3f00, #c3cfe200);
+  width: calc(100% - 270px); /* Уменьшаем ширину, учитывая новый отступ справа */
+  transition: margin-left 0.3s, width 0.3s; /* Плавный переход при изменении отступа */
+  overflow: hidden;
+}
+
+.sidebar-collapsed .main-content {
+  margin-left: 100px; /* Отступ для основного контента, когда меню свернуто */
+  width: calc(100% - 120px); /* Уменьшаем ширину, учитывая новый отступ справа */
+}

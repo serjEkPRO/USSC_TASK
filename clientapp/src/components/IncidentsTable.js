@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { ResizableBox } from 'react-resizable';
+import 'react-resizable/css/styles.css'; // Важно для корректного отображения
 import '../styles/UsersTable.css';
 import '../styles/SearchButton.css'; // Добавляем новые стили для поиска
 
@@ -9,6 +11,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
   const [visibleFields, setVisibleFields] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [fieldSearchQuery, setFieldSearchQuery] = useState('');
+  const [columnWidths, setColumnWidths] = useState({});
 
   useEffect(() => {
     fetchFields();
@@ -70,6 +73,13 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
     field.toLowerCase().includes(fieldSearchQuery.toLowerCase())
   );
 
+  const handleResize = (index, event, { size }) => {
+    setColumnWidths((prevWidths) => ({
+      ...prevWidths,
+      [index]: size.width
+    }));
+  };
+
   return (
     <div className={`table-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <div className="action-bar">
@@ -82,7 +92,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
               value={searchQuery}
               onChange={handleSearchChange}
             />
-            <div className="search-button" onClick={handleSearchSubmit}></div>
+            <button className="search-button" type="submit"></button>
           </form>
         </div>
         <button className="action-button" onClick={toggleDropdown}>
@@ -112,31 +122,52 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
           ))}
         </div>
       )}
-      <table className="UserTableClass">
-        <thead>
-          <tr>
-            {visibleFields.map((field) => (
-              <th key={field}>{field}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {incidents.map((incident) => (
-            <tr
-              key={incident.id}
-              onClick={() => onIncidentClick(incident.id)}
-              style={{
-                cursor: 'pointer',
-                backgroundColor: incident.isSelected ? '#333333' : 'transparent'
-              }}
-            >
-              {visibleFields.map((field) => (
-                <td key={field} className={`status-${incident[field]}`}>{incident[field]}</td>
+      <div className="table-wrapper">
+        <table className="UserTableClass">
+          <thead>
+            <tr>
+              {visibleFields.map((field, index) => (
+                <th key={field}>
+                  <ResizableBox
+                    width={columnWidths[index] || 100}
+                    height={20}
+                    axis="x"
+                    handle={<span className="resize-handle" />}
+                    onResizeStop={(event, data) => handleResize(index, event, data)}
+                    minConstraints={[50, 20]}
+                    maxConstraints={[500, 20]}
+                    className="resizable-box"
+                  >
+                    <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', paddingRight: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {field}
+                    </div>
+                  </ResizableBox>
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {incidents.map((incident) => (
+              <tr
+                key={incident.id}
+                onClick={() => onIncidentClick(incident.id)}
+                style={{
+                  cursor: 'pointer',
+                  backgroundColor: incident.isSelected ? '#333333' : 'transparent'
+                }}
+              >
+                {visibleFields.map((field) => (
+                  <td key={field} className={`status-${incident[field]}`}>
+                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: columnWidths[visibleFields.indexOf(field)] || 100 }}>
+                      {incident[field]}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
