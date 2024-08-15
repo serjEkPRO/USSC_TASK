@@ -1,15 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
 import {
   ReactFlow,
+  ReactFlowProvider,
   addEdge,
   useNodesState,
   useEdgesState,
+  Controls,
+  useReactFlow,
 } from '@xyflow/react';
 import CustomEdge from './CustomEdge';
 import Background from './Background';
+import NodeSidebar from './NodeSidebar';
 
 import '@xyflow/react/dist/style.css';
-import '../styles/workflow.scss'; // Импортируйте файл стилей
+import '../styles/workflow.scss';
 
 const initialNodes = [
   { id: 'a', position: { x: 0, y: 0 }, data: { label: 'Node A' }, style: { zIndex: 2 } },
@@ -26,9 +30,14 @@ const edgeTypes = {
   'custom-edge': CustomEdge,
 };
 
+let id = 0;
+const getId = () => `dndnode_${id++}`;
+
 function WorkFlow({ data }) {
+  const reactFlowWrapper = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const { screenToFlowPosition } = useReactFlow();
   const [activeNode, setActiveNode] = useState(null);
   const [animated, setAnimated] = useState(false);
 
@@ -60,62 +69,61 @@ function WorkFlow({ data }) {
     [setEdges],
   );
 
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
 
-  const runPlaybook = async () => {
-    setAnimated(true);
+  const onDrop = useCallback(
+    (event) => {
+      event.preventDefault();
 
-    const visitNode = async (nodeId) => {
-      const node = nodes.find(n => n.id === nodeId);
-      if (!node) return;
+      const type = event.dataTransfer.getData('application/reactflow');
 
-      setActiveNode(node.id);
-      console.log(`Playbook passed through: ${node.data.label}`);
-      const isSuccess = Math.random() > 0.5; // Случайная успешность выполнения шага
-      await delay(1000); // 1-second delay between each step
-      setNodes((nds) => nds.map((n) =>
-        n.id === node.id
-          ? {
-              ...n,
-              style: {
-                ...n.style,
-                backgroundColor: isSuccess ? 'lightgreen' : 'lightcoral',
-              },
-            }
-          : n
-      ));
-      setActiveNode(null);
-      console.log(isSuccess ? 'Step succeeded.' : 'Step failed.');
-
-      // Посетить соседние узлы
-      const connectedEdges = edges.filter(e => e.source === nodeId);
-      for (const edge of connectedEdges) {
-        await visitNode(edge.target);
+      if (typeof type === 'undefined' || !type) {
+        return;
       }
-    };
 
-    // Начать обход с корневого узла (например, 'a')
-    await visitNode('a');
-    
-    setAnimated(false);
-    console.log('Playbook finished.');
-  };
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      const newNode = {
+        id: getId(),
+        type,
+        position,
+        data: { label: `${type} node` },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [screenToFlowPosition, setNodes],
+  );
 
   return (
-    <div className="wrapper">
-      <Background />
-      <button onClick={runPlaybook} className="playbook-button">Run Playbook</button>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges.map(edge => ({ ...edge, animated }))}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        edgeTypes={edgeTypes}
-        fitView
-      />
+    <div className="dndflow">
+      <NodeSidebar />
+      <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges.map(edge => ({ ...edge, animated }))}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          edgeTypes={edgeTypes}
+          fitView
+        >
+          <Controls />
+        </ReactFlow>
+      </div>
     </div>
   );
 }
 
-export default WorkFlow;
+export default () => (
+  <ReactFlowProvider>
+    <WorkFlow />
+  </ReactFlowProvider>
+);
