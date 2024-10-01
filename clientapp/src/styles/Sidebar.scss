@@ -1,5 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
 
+@font-face {
+  font-family: 'MasterFont';
+  src: url('/fonts/master.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 * {
   box-sizing: border-box;
 }
@@ -40,17 +45,15 @@ body {
   z-index: 1000;
 }
 
-.shrink {
-  width: 92px;
-}
+
 
 .custom-sidebar-viewButton {
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: none;
-  right: -20px;
+  right: -10px;
   top: 32px;
   display: flex;
   align-items: center;
@@ -68,9 +71,7 @@ body {
   opacity: 0.8;
 }
 
-.shrink .custom-sidebar-viewButton {
-  transform: rotate(180deg);
-}
+
 
 .sidebar-wrapper {
   display: flex;
@@ -81,27 +82,35 @@ body {
 .sidebar-list {
   list-style: none;
   padding: 0;
-  margin: 12px 0 0;
+  margin: 0px 0 0;
+  margin-left: 0px;
 }
 
 .sidebar-listItem {
   color: var(--text-color);
   display: flex;
-  align-items: center;
+  align-items: дуае;
   transition: background .2s ease-in;
-  padding: 8px 0;
+  padding: 2px 0;
   position: relative;
+  font-family: 'MasterFont', sans-serif;
+  font-size: 11px; /* Уменьшаем размер шрифта */
+  padding: 0; /* Убираем внутренние отступы */
+  margin: 0; /* Убираем внешние отступы */
+
+
 }
 
 .sidebar-listItem a {
   width: 100%;
   padding: 20px;
-  border-radius: 4px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   cursor: pointer;
   text-decoration: none;
   color: var(--text-color);
+  padding: 10px 0; /* Корректируем внутренние отступы: убираем с боков */
 }
 
 .sidebar-listItem a:hover {
@@ -109,19 +118,49 @@ body {
 }
 
 .sidebar-listItem .sidebar-listIcon {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   display: inline-block;
-  margin-right: 8px;
+  margin-right: 5px;
+  margin-left: 0px;
   flex-shrink: 0;
 }
 
-.shrink .sidebar-listIcon {
-  margin-right: 0;
+.shrink {
+  width: 92px;
+}
+
+.shrink .custom-sidebar-viewButton {
+  transform: rotate(180deg);
 }
 
 .shrink .sidebar-listItemText {
+  opacity: 0;
   visibility: hidden;
+  transform: translateX(-2px);
+  transition: opacity 0.3s ease-in-out 0.1s, visibility 0.3s ease-in-out 0.1s, transform 0.3s ease-in-out 0.1s;
+}
+
+.shrink .sidebar-listItem a {
+
+
+  padding: 10px 0; /* Изменяем внутренние отступы */
+}
+
+.shrink .sidebar-listIcon {
+  margin-left: 15px;
+  width: 20px; /* Оставляем иконку того же размера */
+  height: 20px;
+}
+
+.sidebar-listItemText {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition: opacity 0.3s ease-in-out 0.1s, visibility 0.3s ease-in-out 0.1s, transform 0.3s ease-in-out 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-profileSection {
@@ -138,8 +177,10 @@ body {
   cursor: pointer;
 }
 
+
 .sidebar-profileSection:hover {
   background-color: var(--item-hover);
+  justify-content: center; /* Остаемся в центре при наведении */
 }
 
 .sidebar-profileSection img {

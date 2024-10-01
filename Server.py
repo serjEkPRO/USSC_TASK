@@ -12,7 +12,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 #1 Настройка подключения к базе данных
 db_config = {
-    "host": "10.41.55.60",
+    "host": "127.0.0.1",
     "database": "soar_struct",
     "user": "postgres",
     "password": "852456"

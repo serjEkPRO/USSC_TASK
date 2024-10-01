@@ -1,0 +1,59 @@
+/* Секция для карточек */
+.flow-cards-section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #1a1a1a;
+  z-index: 10;
+  padding: 1rem 0;
+}
+
+.flow-cards-list {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.flow-card-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scroll-snap-align: center;
+}
+
+.flow-card {
+  display: flex;
+  flex-direction: column;
+  width: clamp(350px, 40vw, 450px);
+  padding: 2rem;
+  background: radial-gradient(circle, #2a2a2a, #000);
+  border-radius: 14px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  cursor: grab;
+  touch-action: none;
+}
+
+.flow-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flow-card-divider {
+  margin: 1rem 0;
+  mask: linear-gradient(90deg, transparent, white 15% 85%, transparent);
+  width: 100%;
+}
+
+/* Glow эффекты */
+[data-glow] {
+  background-image: radial-gradient(
+    calc(450px * 1.2) calc(450px * 1.2) at var(--x) var(--y),
+    hsl(210, 100%, 70%, 0.15), transparent
+  );
+  border-radius: 14px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+}
