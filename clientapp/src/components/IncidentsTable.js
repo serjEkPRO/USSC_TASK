@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ResizableBox } from 'react-resizable';
-import 'react-resizable/css/styles.css'; // Важно для корректного отображения
 import '../styles/UsersTable.css';
-import '../styles/SearchButton.css'; // Добавляем новые стили для поиска
+import '../styles/SearchButton.css';
 
 const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarCollapsed }) => {
   const [incidents, setIncidents] = useState([]);
@@ -73,12 +71,42 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
     field.toLowerCase().includes(fieldSearchQuery.toLowerCase())
   );
 
-  const handleResize = (index, event, { size }) => {
-    setColumnWidths((prevWidths) => ({
-      ...prevWidths,
-      [index]: size.width
-    }));
+  const handleResizeStart = (index, e) => {
+    e.preventDefault(); // Отключаем стандартное поведение браузера
+    const startX = e.clientX;
+    const startWidth = columnWidths[index] || 100; // Текущая ширина столбца
+  
+    // Добавляем класс для блокировки выделения текста
+    document.body.classList.add('no-select');
+  
+    const onMouseMove = (moveEvent) => {
+      const deltaX = moveEvent.clientX - startX; // Вычисляем смещение мыши
+      let newWidth = startWidth + deltaX;
+  
+      // Применяем минимальную ширину (например, 50px) и не позволяем уменьшать меньше этого значения
+      if (newWidth < 50) {
+        newWidth = 50;
+      }
+  
+      // Устанавливаем новую ширину столбца в реальном времени
+      setColumnWidths((prevWidths) => ({
+        ...prevWidths,
+        [index]: newWidth, // Обновляем ширину для данного столбца
+      }));
+    };
+  
+    const onMouseUp = () => {
+      // Убираем обработчики и класс после завершения перетаскивания
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.body.classList.remove('no-select');
+    };
+  
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
+  
+
 
   return (
     <div className={`table-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
@@ -124,28 +152,28 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
       )}
       <div className="table-wrapper">
         <table className="UserTableClass">
-          <thead>
-            <tr>
-              {visibleFields.map((field, index) => (
-                <th key={field}>
-                  <ResizableBox
-                    width={columnWidths[index] || 100}
-                    height={20}
-                    axis="x"
-                    handle={<span className="resize-handle" />}
-                    onResizeStop={(event, data) => handleResize(index, event, data)}
-                    minConstraints={[50, 20]}
-                    maxConstraints={[500, 20]}
-                    className="resizable-box"
-                  >
-                    <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', paddingRight: '10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {field}
-                    </div>
-                  </ResizableBox>
-                </th>
-              ))}
-            </tr>
-          </thead>
+        <thead>
+  <tr>
+    {visibleFields.map((field, index) => (
+      <th key={field} style={{ width: columnWidths[index] || 100, position: 'relative' }}>
+        <div className="th-content">{field}</div> {/* Контейнер для текста */}
+        <div
+          className="resize-handle"
+          onMouseDown={(e) => handleResizeStart(index, e)}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            width: '5px',
+            height: '100%',
+            cursor: 'col-resize',
+            zIndex: 100,
+          }}
+        />
+      </th>
+    ))}
+  </tr>
+</thead>
           <tbody>
             {incidents.map((incident) => (
               <tr
@@ -153,12 +181,19 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
                 onClick={() => onIncidentClick(incident.id)}
                 style={{
                   cursor: 'pointer',
-                  backgroundColor: incident.isSelected ? '#333333' : 'transparent'
+                  backgroundColor: incident.isSelected ? '#333333' : 'transparent',
                 }}
               >
-                {visibleFields.map((field) => (
+                {visibleFields.map((field, index) => (
                   <td key={field} className={`status-${incident[field]}`}>
-                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: columnWidths[visibleFields.indexOf(field)] || 100 }}>
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        width: columnWidths[index] || 100,
+                      }}
+                    >
                       {incident[field]}
                     </div>
                   </td>

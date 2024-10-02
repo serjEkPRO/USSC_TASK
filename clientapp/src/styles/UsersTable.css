@@ -17,7 +17,7 @@
 .UserTableClass {
   width: 100%; /* Ширина таблицы на 100% контейнера */
   border-collapse: collapse; /* Схлопывание границ ячеек */
-  
+  table-layout: fixed; /* Фиксированная ширина столбцов */
   background: rgba(27, 39, 53, 0.8); /* Прозрачный темный фон с 80% непрозрачностью */
 
   color: #ffffff; /* Белый цвет текста */
@@ -32,7 +32,7 @@
   overflow: hidden; /* Скрывает переполнение текста */
   text-overflow: ellipsis; /* Добавляет многоточие в конце текста */
   position: relative;
-  min-width: 50px;
+
 }
 
 .UserTableClass tr:hover td {
@@ -42,9 +42,24 @@
 .UserTableClass th {
   position: relative;
   background-color: transparent;
-  border-top: 1px solid #46566c; /* Добавляем верхнюю границу */
-  border-left: 1px solid #5c9dcf3b; /* Светло-голубая вертикальная граница слева */
-  border-right: 1px solid #46566c; /* Добавляем верхнюю границу */
+  border-top: 1px solid #46566c;
+  border-left: 1px solid #5c9dcf3b;
+  border-right: 1px solid #46566c;
+  padding: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  min-width: 5px; /* Минимальная ширина заголовка */
+  max-width: 500px; /* Максимальная ширина */
+}
+
+.th-content {
+  display: inline-block; /* Важно: сохраняем поведение inline-блока */
+  width: 100%; /* Ограничиваем ширину контейнера */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .UserTableClass th:hover {
@@ -53,7 +68,7 @@
 
 .UserTableClass td {
   border-left: 1px solid #0076fd1e; /* Светло-голубая вертикальная граница слева */
-  width: auto; /* Убедитесь, что ширина по умолчанию установлена как auto */
+  /*width: auto; /* Убедитесь, что ширина по умолчанию установлена как auto */
   border-right: 1px solid #0076fd1e;
 }
 
