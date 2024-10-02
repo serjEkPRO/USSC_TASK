@@ -284,3 +284,21 @@
 .resize-handle:hover {
   background-color: rgba(0, 123, 255, 0.5);
 }
+
+.draggable-header {
+  position: relative;
+}
+
+.target-column {
+  border: 2px dashed #00f; /* Подсветка целевого столбца при перетаскивании */
+}
+
+.resize-handle {
+  cursor: col-resize;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  background-color: transparent;
+}
