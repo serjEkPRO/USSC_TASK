@@ -4,9 +4,10 @@
   margin: 0 auto; /* Центрирование контейнера */
   padding: 10px; /* Внутренние отступы */
   color: #ffffff; /* Белый цвет текста */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Тень вокруг контейнера */
+  box-shadow: 0 0 10px #5c9dcf44; /* Тень вокруг контейнера */
   display: block; /* Блочное отображение */
   border-radius: 8px; /* Скругление углов */
+  background: rgba(27, 39, 53, 0.8); /* Прозрачный темный фон с 80% непрозрачностью */
 }
 
 .table-wrapper {
@@ -16,7 +17,9 @@
 .UserTableClass {
   width: 100%; /* Ширина таблицы на 100% контейнера */
   border-collapse: collapse; /* Схлопывание границ ячеек */
-  background: transparent; /* Прозрачный фон */
+  
+  background: rgba(27, 39, 53, 0.8); /* Прозрачный темный фон с 80% непрозрачностью */
+
   color: #ffffff; /* Белый цвет текста */
 }
 
@@ -32,10 +35,16 @@
   min-width: 50px;
 }
 
+.UserTableClass tr:hover td {
+  background-color: rgba(240, 248, 250, 0.021); /* Светло-голубое свечение при наведении */
+}
+
 .UserTableClass th {
   position: relative;
   background-color: transparent;
+  border-top: 1px solid #46566c; /* Добавляем верхнюю границу */
   border-left: 1px solid #5c9dcf3b; /* Светло-голубая вертикальная граница слева */
+  border-right: 1px solid #46566c; /* Добавляем верхнюю границу */
 }
 
 .UserTableClass th:hover {
@@ -45,6 +54,7 @@
 .UserTableClass td {
   border-left: 1px solid #0076fd1e; /* Светло-голубая вертикальная граница слева */
   width: auto; /* Убедитесь, что ширина по умолчанию установлена как auto */
+  border-right: 1px solid #0076fd1e;
 }
 
 .resize-handle {
@@ -166,47 +176,7 @@
   margin-bottom: 10px; /* Отступ снизу */
 }
 
-.status-registered {
-  background-color: #858585; /* Фон статуса */
-  color: #000000; /* Черный цвет текста */
-  padding: 5px; /* Внутренние отступы */
-  border-radius: 3px; /* Скругление углов */
-}
 
-.status-created {
-  background-color: #ffcc00; /* Фон статуса */
-  color: #000000; /* Черный цвет текста */
-  padding: 5px; /* Внутренние отступы */
-  border-radius: 3px; /* Скругление углов */
-}
-
-.status-insignificant {
-  background-color: #c0c0c0; /* Фон статуса */
-  color: #000000; /* Черный цвет текста */
-  padding: 5px; /* Внутренние отступы */
-  border-radius: 3px; /* Скругление углов */
-}
-
-.status-high {
-  background-color: #ff9900; /* Фон статуса */
-  color: #000000; /* Черный цвет текста */
-  padding: 5px; /* Внутренние отступы */
-  border-radius: 3px; /* Скругление углов */
-}
-
-.status-critical {
-  background-color: #ff3300; /* Фон статуса */
-  color: #ffffff; /* Белый цвет текста */
-  padding: 5px; /* Внутренние отступы */
-  border-radius: 3px; /* Скругление углов */
-}
-
-.status-empty {
-  background-color: #4d4d4d; /* Фон статуса */
-  color: #ffffff; /* Белый цвет текста */
-  padding: 5px; /* Внутренние отступы */
-  border-radius: 3px; /* Скругление углов */
-}
 
 /* Стили для полос прокрутки */
 .table-wrapper::-webkit-scrollbar {
@@ -288,12 +258,12 @@
 
 .resize-handle {
   position: absolute;
-  right: -5px;
+  right: -10px;
   top: 0;
   width: 10px;
   height: 100%;
   cursor: col-resize;
-  z-index: 1;
+
 }
 
 .resize-handle:hover {
