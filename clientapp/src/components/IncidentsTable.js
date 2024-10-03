@@ -19,24 +19,27 @@ const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnW
     accept: 'column',
     hover(item, monitor) {
       if (!ref.current) return;
-
+  
       const dragIndex = item.index;
       const hoverIndex = index;
-
+  
       if (dragIndex === hoverIndex) return;
-
+  
       const hoverBoundingRect = ref.current.getBoundingClientRect();
-      const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
+      const columnWidth = hoverBoundingRect.right - hoverBoundingRect.left; // Ширина столбца
+      const hoverTriggerArea = columnWidth * 0.1; // Порог срабатывания переноса (30% от ширины столбца)
       const mousePosition = monitor.getClientOffset();
       const hoverClientX = mousePosition.x - hoverBoundingRect.left;
-
-      if (dragIndex < hoverIndex && hoverClientX < hoverMiddleX) return;
-      if (dragIndex > hoverIndex && hoverClientX > hoverMiddleX) return;
-
+  
+      // Перенос срабатывает при прохождении 30% ширины столбца
+      if (dragIndex < hoverIndex && hoverClientX < hoverTriggerArea) return;
+      if (dragIndex > hoverIndex && hoverClientX > columnWidth - hoverTriggerArea) return;
+  
       moveColumn(dragIndex, hoverIndex);
       item.index = hoverIndex;
     },
   });
+  
 
   // Ограничение перетаскивания только для кнопки
   const handleDrag = (e) => {
