@@ -19,29 +19,26 @@ const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnW
     accept: 'column',
     hover(item, monitor) {
       if (!ref.current) return;
-  
+
       const dragIndex = item.index;
       const hoverIndex = index;
-  
+
       if (dragIndex === hoverIndex) return;
-  
+
       const hoverBoundingRect = ref.current.getBoundingClientRect();
-      const columnWidth = hoverBoundingRect.right - hoverBoundingRect.left; // Ширина столбца
-      const hoverTriggerArea = columnWidth * 0.1; // Порог срабатывания переноса (30% от ширины столбца)
+      const columnWidth = hoverBoundingRect.right - hoverBoundingRect.left;
+      const hoverTriggerArea = columnWidth * 0.1;
       const mousePosition = monitor.getClientOffset();
       const hoverClientX = mousePosition.x - hoverBoundingRect.left;
-  
-      // Перенос срабатывает при прохождении 30% ширины столбца
+
       if (dragIndex < hoverIndex && hoverClientX < hoverTriggerArea) return;
       if (dragIndex > hoverIndex && hoverClientX > columnWidth - hoverTriggerArea) return;
-  
+
       moveColumn(dragIndex, hoverIndex);
       item.index = hoverIndex;
     },
   });
-  
 
-  // Ограничение перетаскивания только для кнопки
   const handleDrag = (e) => {
     e.stopPropagation();
   };
@@ -63,7 +60,7 @@ const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnW
       <div className="header-wrapper" style={{ display: 'flex', position: 'relative', alignItems: 'center' }}>
         <div
           ref={drag}
-          onClick={handleDrag} // Применяем drag только к кнопке
+          onClick={handleDrag}
           style={{
             marginRight: '8px',
             cursor: 'grab',
@@ -158,18 +155,16 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
 
   const handleMouseMove = (e) => {
     if (resizingColumnRef.current === null) return;
-  
+
     const deltaX = e.clientX - startXRef.current;
     const newWidth = startWidthRef.current + deltaX;
-  
-    requestAnimationFrame(() => {
-      if (newWidth >= 100) {
-        setColumnWidths((prevWidths) => ({
-          ...prevWidths,
-          [resizingColumnRef.current]: newWidth,
-        }));
-      }
-    });
+
+    if (newWidth >= 100) {
+      setColumnWidths((prevWidths) => ({
+        ...prevWidths,
+        [resizingColumnRef.current]: newWidth,
+      }));
+    }
   };
 
   const handleMouseUp = () => {
@@ -257,29 +252,29 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
               ))}
             </thead>
             <tbody {...getTableBodyProps()}>
-  {page.map((row) => {
-    prepareRow(row);
-    return (
-      <tr
-        {...row.getRowProps()}
-        onClick={() => onIncidentClick(row.original.id)}
-        style={{
-          cursor: 'pointer',
-          backgroundColor: row.isSelected ? '#333333' : 'transparent',
-        }}
-      >
-        {row.cells.map((cell, cellIndex) => (
-          <td
-            {...cell.getCellProps()}
-            className={targetIndex === cellIndex ? 'target-column-highlight' : ''} // Добавляем подсветку для всех ячеек столбца
-          >
-            {cell.render('Cell')}
-          </td>
-        ))}
-      </tr>
-    );
-  })}
-</tbody>
+              {page.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr
+                    {...row.getRowProps()}
+                    onClick={() => onIncidentClick(row.original.id)}
+                    style={{
+                      cursor: 'pointer',
+                      backgroundColor: row.isSelected ? '#333333' : 'transparent',
+                    }}
+                  >
+                    {row.cells.map((cell, cellIndex) => (
+                      <td
+                        {...cell.getCellProps()}
+                        className={targetIndex === cellIndex ? 'target-column-highlight' : ''}
+                      >
+                        {cell.render('Cell')}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         </div>
         <div className="pagination">

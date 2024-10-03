@@ -480,7 +480,7 @@ def get_incidents():
             for type_id in types:
                 table_name = f"incident_type_{type_id[0]}"
                 if table_exists(cur, table_name):
-                    cur.execute(f"SELECT * FROM {table_name}")
+                    cur.execute(f"SELECT * FROM {table_name} LIMIT 10")
                     incidents += cur.fetchall()
         return jsonify(incidents)
     except pg8000.dbapi.DatabaseError as e:

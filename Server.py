@@ -504,7 +504,7 @@ def get_incidents():
             for type_id, type_name in types:
                 table_name = f"incident_type_{type_id}"
                 if table_exists(cur, table_name):
-                    cur.execute(f"SELECT * FROM {table_name}")
+                    cur.execute(f"SELECT * FROM {table_name} LIMIT 10")
                     rows = cur.fetchall()
                     columns = [desc[0] for desc in cur.description]
                     incident_fields.extend([col for col in columns if col not in incident_fields])
