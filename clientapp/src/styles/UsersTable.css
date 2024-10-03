@@ -1,17 +1,29 @@
+
+
 /* Основные стили */
 .table-container {
-  width: calc(100% - 40px); /* Ширина контейнера таблицы с учётом отступов */
-  margin: 0 auto; /* Центрирование контейнера */
-  padding: 10px; /* Внутренние отступы */
-  color: #ffffff; /* Белый цвет текста */
-  box-shadow: 0 0 10px #5c9dcf44; /* Тень вокруг контейнера */
-  display: block; /* Блочное отображение */
-  border-radius: 8px; /* Скругление углов */
-  background: rgba(27, 39, 53, 0.8); /* Прозрачный темный фон с 80% непрозрачностью */
+  width: 100%; /* Убедитесь, что контейнер занимает всю ширину */
+  margin: 0 auto;
+  padding: 10px;
+  color: #ffffff;
+  box-shadow: 0 0 10px #5c9dcf44;
+  display: block;
+  border-radius: 8px;
+  background: rgba(27, 39, 53, 0.8);
+  overflow-x: auto; /* Добавляем горизонтальную прокрутку */
 }
 
 .table-wrapper {
   overflow-x: auto; /* Горизонтальная прокрутка при переполнении */
+}
+
+/* Подсветка всего столбца при перетаскивании */
+.target-column {
+  border: 2px dashed #00f !important;
+}
+
+.target-column-highlight {
+  background-color: rgba(0, 123, 255, 0.1); /* Цвет подсветки всего столбца */
 }
 
 .UserTableClass {
@@ -32,6 +44,7 @@
   overflow: hidden; /* Скрывает переполнение текста */
   text-overflow: ellipsis; /* Добавляет многоточие в конце текста */
   position: relative;
+
 
 }
 
@@ -268,7 +281,7 @@
 }
 
 .resize-enabled .UserTableClass th .resize-handle:hover {
-  background-color: rgba(0, 123, 255, 0.5);
+  background-color: rgba(0, 123, 255, 0.189);
 }
 
 .resize-handle {
@@ -282,7 +295,7 @@
 }
 
 .resize-handle:hover {
-  background-color: rgba(0, 123, 255, 0.5);
+  background-color: rgba(0, 123, 255, 0.2); /* Изменение фона при наведении */
 }
 
 .draggable-header {
@@ -290,15 +303,47 @@
 }
 
 .target-column {
-  border: 2px dashed #00f; /* Подсветка целевого столбца при перетаскивании */
+  border: 2px dashed rgba(18, 18, 18, 0); /* Подсветка целевого столбца при перетаскивании */
 }
 
 .resize-handle {
-  cursor: col-resize;
   position: absolute;
-  right: 0;
+  right: -4px; /* Смещаем разделитель к границе */
   top: 0;
-  width: 5px;
+  width: 8px; /* Делаем разделитель шире для захвата */
   height: 100%;
-  background-color: transparent;
+  cursor: col-resize;
+  z-index: 10; /* Высокий z-index для активации разделителя */
+  background-color: transparent; /* Прозрачный, чтобы не перекрывать контент */
+}
+
+/* Границы разделителя */
+.resize-handle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%; /* Линия точно по середине разделителя */
+  width: 2px;
+  background-color: #5c9dcf; /* Цвет линии */
+}
+
+
+.resize-hhandle::after {
+  right: 0; /* Правая граница */
+}
+
+.resize-handle:hover::before {
+  background-color: #00f; /* Подсветка при наведении мышью */
+}
+
+.UserTableClass th:hover .resize-handle::before {
+  background-color: #00f; /* Подсветка при наведении мышью */
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
 }

@@ -10,7 +10,7 @@ if (-not $changes) {
     git add -A
 
     # Создайте коммит с текущей датой и временем
-    $commitMessage = "Улучшина таблица инцидентов $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    $commitMessage = "отдельная кнопка перетаскивания столбцов и подсвечивание всего столбца при dnd $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     git commit -m $commitMessage
 
     # Push изменений

@@ -1,19 +1,37 @@
+import { useSortable } from '@dnd-kit/sortable';
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useTable, useSortBy, usePagination, useFilters } from 'react-table';
 import { useDrag, useDrop, DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndContext, closestCenter, useSensor, useSensors, MouseSensor, KeyboardSensor, TouchSensor } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import '../styles/UsersTable.css';
 
+// Определение компонента для перетаскивания строк
+const DraggableRow = ({ row }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: row.original.userId,
+  });
+
+  const style = {
+    transform: `translateY(${transform ? transform.y : 0}px)`,
+    transition,
+    opacity: isDragging ? 0.8 : 1,
+  };
+
+  return (
+    <tr ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {row.cells.map((cell) => (
+        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+      ))}
+    </tr>
+  );
+};
+
+// Определение компонента DraggableHeader
 const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnWidths, isTarget }) => {
   const ref = React.useRef(null);
-
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: 'column',
-    item: { type: 'column', index },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
 
   const [, drop] = useDrop({
     accept: 'column',
@@ -36,12 +54,18 @@ const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnW
       moveColumn(dragIndex, hoverIndex);
       item.index = hoverIndex;
     },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
   });
 
-  // Ограничение перетаскивания только для кнопки
-  const handleDrag = (e) => {
-    e.stopPropagation();
-  };
+  const [{ isDragging }, drag] = useDrag({
+    type: 'column',
+    item: { type: 'column', index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
 
   drag(drop(ref));
 
@@ -51,47 +75,29 @@ const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnW
       className={`draggable-header ${isTarget ? 'target-column' : ''}`}
       style={{
         opacity: isDragging ? 0.5 : 1,
-        cursor: 'default',
+        cursor: 'move',
         width: columnWidths[index] || 100,
         position: 'relative',
-        border: isTarget ? '2px dashed #00f' : '',
+        border: isTarget ? '2px dashed #00f' : '', // Подсветка будущего места
       }}
     >
-      <div className="header-wrapper" style={{ display: 'flex', position: 'relative', alignItems: 'center' }}>
-        <div
-          ref={drag}
-          onClick={handleDrag} // Применяем drag только к кнопке
-          style={{
-            marginRight: '8px',
-            cursor: 'grab',
-            padding: '4px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            backgroundColor: '#f9f9f9',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          ⠿
-        </div>
-
+      <div className="header-wrapper" style={{ display: 'flex', position: 'relative' }}>
         {column.render('Header')}
         <span {...column.getSortByToggleProps()}>
           {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
         </span>
-
         <div
           className="resize-handle"
           onMouseDown={(e) => handleResizeStart(index, e)}
           style={{
             position: 'absolute',
-            right: '-4px',
+            right: '-4px', // Смещаем разделитель к границе
             top: 0,
-            width: '8px',
+            width: '8px', // Ширина разделителя для удобного захвата
             height: '100%',
             cursor: 'col-resize',
             zIndex: 10,
-            backgroundColor: 'transparent',
+            backgroundColor: 'transparent', // Прозрачный фон
           }}
         />
       </div>
@@ -99,13 +105,30 @@ const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnW
   );
 };
 
+// Создание данных
+const makeData = (rows = 50) => {
+  const statuses = ['Active', 'Inactive', 'Pending'];
+  const firstNames = ['John', 'Jane', 'Alice', 'Bob'];
+  const lastNames = ['Doe', 'Smith', 'Johnson', 'Brown'];
+
+  return Array.from({ length: rows }, (_, index) => ({
+    userId: index + 1,
+    firstName: firstNames[Math.floor(Math.random() * firstNames.length)],
+    lastName: lastNames[Math.floor(Math.random() * lastNames.length)],
+    age: Math.floor(Math.random() * 50) + 20,
+    status: statuses[Math.floor(Math.random() * statuses.length)],
+  }));
+};
+
+// Главный компонент IncidentsTable
 const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarCollapsed }) => {
-  const [incidents, setIncidents] = useState([]);
+  const [incidents, setIncidents] = useState(() => makeData(50)); // Инициализация данных
   const [fields, setFields] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleFields, setVisibleFields] = useState([]);
   const [columnWidths, setColumnWidths] = useState({});
-  const [targetIndex, setTargetIndex] = useState(null);
+  const [targetIndex, setTargetIndex] = useState(null); // Для отслеживания целевого индекса при перетаскивании
+  const [data, setData] = useState(() => makeData(20)); // Данные для перетаскивания строк
 
   const resizingColumnRef = useRef(null);
   const startXRef = useRef(0);
@@ -124,7 +147,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
       const data = await response.json();
       if (fields.length === 0) {
         setFields(data);
-        setVisibleFields(data);
+        setVisibleFields(data); // Изначально показываем все поля
       }
     } catch (error) {
       console.error('Ошибка при получении полей:', error);
@@ -155,10 +178,11 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
 
   const handleMouseMove = (e) => {
     if (resizingColumnRef.current === null) return;
-  
+
     const deltaX = e.clientX - startXRef.current;
     const newWidth = startWidthRef.current + deltaX;
-  
+
+    // Используем requestAnimationFrame для плавной анимации
     requestAnimationFrame(() => {
       if (newWidth >= 100) {
         setColumnWidths((prevWidths) => ({
@@ -180,7 +204,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
     const [movedField] = newFields.splice(dragIndex, 1);
     newFields.splice(hoverIndex, 0, movedField);
     setFields(newFields);
-    setTargetIndex(hoverIndex);
+    setTargetIndex(hoverIndex); // Устанавливаем индекс целевого столбца
   }, [fields]);
 
   const columns = useMemo(() => fields.map((field, index) => ({
@@ -190,28 +214,36 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
     isTarget: targetIndex === index,
   })), [fields, targetIndex]);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    state,
-    page,
-    nextPage,
-    previousPage,
-    canNextPage,
-    canPreviousPage,
-    setPageSize,
-  } = useTable(
+  const table = useTable(
     {
       columns,
       data: incidents,
-      initialState: { pageSize: 10 },
+      initialState: { pageSize: 10 }, // Количество строк на странице
     },
     useFilters,
     useSortBy,
     usePagination
+  );
+
+  // Список ID для перетаскивания строк
+  const dataIds = useMemo(() => data?.map(({ userId }) => userId), [data]);
+
+  // reorder rows after drag & drop
+  function handleDragEnd(event) {
+    const { active, over } = event;
+    if (active && over && active.id !== over.id) {
+      setData((prevData) => {
+        const oldIndex = dataIds.indexOf(active.id);
+        const newIndex = dataIds.indexOf(over.id);
+        return arrayMove(prevData, oldIndex, newIndex);
+      });
+    }
+  }
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor)
   );
 
   return (
@@ -235,60 +267,53 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
       </div>
       <DndProvider backend={HTML5Backend}>
         <div className="table-wrapper">
-          <table {...getTableProps()} className="UserTableClass">
-            <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column, index) => (
-                    <DraggableHeader
-                      key={column.id}
-                      column={column}
-                      index={index}
-                      moveColumn={moveColumn}
-                      handleResizeStart={handleResizeStart}
-                      columnWidths={columnWidths}
-                      isTarget={column.isTarget}
-                    />
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-  {page.map((row) => {
-    prepareRow(row);
-    return (
-      <tr
-        {...row.getRowProps()}
-        onClick={() => onIncidentClick(row.original.id)}
-        style={{
-          cursor: 'pointer',
-          backgroundColor: row.isSelected ? '#333333' : 'transparent',
-        }}
-      >
-        {row.cells.map((cell, cellIndex) => (
-          <td
-            {...cell.getCellProps()}
-            className={targetIndex === cellIndex ? 'target-column-highlight' : ''} // Добавляем подсветку для всех ячеек столбца
+          <DndContext
+            collisionDetection={closestCenter}
+            modifiers={[restrictToVerticalAxis]}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}
           >
-            {cell.render('Cell')}
-          </td>
-        ))}
-      </tr>
-    );
-  })}
-</tbody>
-          </table>
+            <table {...table.getTableProps()} className="UserTableClass">
+              <thead>
+                {table.headerGroups.map((headerGroup) => (
+                  <tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map((column, index) => (
+                      <DraggableHeader
+                        key={column.id}
+                        column={column}
+                        index={index}
+                        moveColumn={moveColumn}
+                        handleResizeStart={handleResizeStart}
+                        columnWidths={columnWidths}
+                        isTarget={column.isTarget} // Подсвечиваем целевой столбец
+                      />
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
+                <tbody {...table.getTableBodyProps()}>
+                  {table.page.map((row) => {
+                    table.prepareRow(row);
+                    return (
+                      <DraggableRow key={row.id} row={row} />
+                    );
+                  })}
+                </tbody>
+              </SortableContext>
+            </table>
+          </DndContext>
         </div>
         <div className="pagination">
-          <button onClick={previousPage} disabled={!canPreviousPage}>
+          <button onClick={table.previousPage} disabled={!table.canPreviousPage}>
             {'<'}
           </button>
-          <button onClick={nextPage} disabled={!canNextPage}>
+          <button onClick={table.nextPage} disabled={!table.canNextPage}>
             {'>'}
           </button>
           <select
-            value={state.pageSize}
-            onChange={(e) => setPageSize(Number(e.target.value))}
+            value={table.state.pageSize}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
           >
             {[10, 20, 30, 40, 50].map((pageSize) => (
               <option key={pageSize} value={pageSize}>
@@ -303,9 +328,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
 };
 
 // Пример фильтрации текста
-function TextFilter({
-  column: { filterValue, setFilter },
-}) {
+function TextFilter({ column: { filterValue, setFilter } }) {
   return (
     <input
       value={filterValue || ''}
