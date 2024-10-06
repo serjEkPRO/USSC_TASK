@@ -106,6 +106,15 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
   const [visibleFields, setVisibleFields] = useState([]);
   const [columnWidths, setColumnWidths] = useState({});
   const [targetIndex, setTargetIndex] = useState(null);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [filterValues, setFilterValues] = useState({});
+  const [savedFilters, setSavedFilters] = useState([]);
+  const [selectedAttributes, setSelectedAttributes] = useState([]);
+  const [activeFilter, setActiveFilter] = useState(null);
+  const [filterOperators, setFilterOperators] = useState({});
+  const [filterTexts, setFilterTexts] = useState({});
+  const filterButtonRef = useRef(null); // Ссылка на кнопку фильтра
+  const [filterPanelPosition, setFilterPanelPosition] = useState({ top: 0, left: 0 });
 
   const resizingColumnRef = useRef(null);
   const startXRef = useRef(0);
@@ -116,7 +125,18 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
     fetchIncidents();
     const intervalId = setInterval(() => fetchIncidents(searchQuery), 5000);
     return () => clearInterval(intervalId);
-  }, [searchQuery]);
+  }, [searchQuery, filterValues]);
+
+  const handleOpenFilterSettings = (attribute, event) => {
+    setActiveFilter(attribute);
+    if (event && event.target) {
+      const buttonRect = event.target.getBoundingClientRect();
+      setFilterPanelPosition({
+        top: buttonRect.bottom + window.scrollY,
+        left: buttonRect.left + window.scrollX,
+      });
+    }
+  };
 
   const fetchFields = async () => {
     try {
@@ -133,8 +153,16 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
 
   const fetchIncidents = async (query = '') => {
     try {
-      const url = query
-        ? `http://127.0.0.1:5000/api/search-incidents?query=${query}`
+      let filterQuery = Object.entries(filterValues)
+        .filter(([key, value]) => value)
+        .map(([key, value]) => {
+          const operator = filterOperators[key] || 'eq';
+          return `${key}__${operator}=${value}`;
+        })
+        .join('&');
+
+      const url = query || filterQuery
+        ? `http://127.0.0.1:5000/api/search-incidents?${query ? `query=${query}&` : ''}${filterQuery}`
         : 'http://127.0.0.1:5000/api/incidents';
       const response = await fetch(url);
       const data = await response.json();
@@ -181,12 +209,46 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
     setTargetIndex(hoverIndex);
   }, [fields]);
 
+  const handleSaveFilter = () => {
+    const newFilters = Object.entries(filterValues)
+      .filter(([key, value]) => value)
+      .map(([key, value]) => ({ column: key, operator: filterOperators[key] || 'eq', value }));
+
+    setSavedFilters([...savedFilters, ...newFilters]);
+    setFilterValues({});
+    setFilterOperators({});
+    setIsFilterPanelOpen(false);
+  };
+
+  const handleAddAttribute = (attribute) => {
+    if (!selectedAttributes.includes(attribute)) {
+      setSelectedAttributes((prev) => [...prev, attribute]);
+    }
+  };
+
+  const handleRemoveAttribute = (attribute) => {
+    setSelectedAttributes((prev) => prev.filter((attr) => attr !== attribute));
+  };
+
+
+
+  const handleOperatorChange = (attribute, operator) => {
+    setFilterOperators((prev) => ({ ...prev, [attribute]: operator }));
+  };
+
+  const handleFilterTextChange = (attribute, value) => {
+    setFilterTexts((prev) => ({ ...prev, [attribute]: value }));
+    setFilterValues((prev) => ({ ...prev, [attribute]: value }));
+  };
+
   const columns = useMemo(() => fields.map((field, index) => ({
     Header: field,
     accessor: field,
     Filter: TextFilter,
     isTarget: targetIndex === index,
-  })), [fields, targetIndex]);
+    filterValue: filterValues[field] || '',
+    setFilter: (value) => setFilterValues((prev) => ({ ...prev, [field]: value })),
+  })), [fields, targetIndex, filterValues]);
 
   const {
     getTableProps,
@@ -214,6 +276,163 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
 
   return (
     <div className={`table-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <div className="filter-settings">
+        <div className="filter-settings-content">
+          {selectedAttributes.length === 0 ? (
+            <span>Настройка фильтров</span>
+          ) : (
+            selectedAttributes.map((attribute) => (
+              <button
+                key={attribute}
+                className="filter-attribute"
+                onClick={(e) => handleOpenFilterSettings(attribute, e)}
+                ref={attribute === activeFilter ? filterButtonRef : null} // Сохраняем ссылку на активную кнопку
+              >
+                Настроить фильтр для {attribute}
+                <button onClick={(e) => { e.stopPropagation(); handleRemoveAttribute(attribute); }}>x</button>
+              </button>
+            ))
+          )}
+          <button className="add-filter-button" onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}>
+            +
+          </button>
+        </div>
+        {isFilterPanelOpen && (
+          <div className="filter-panel" style={{ position: 'absolute', top: '100%', left: '0', zIndex: 2 }}>
+            {fields.map((field) => (
+              <div key={field} className="filter-field">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedAttributes.includes(field)}
+                    onChange={() =>
+                      selectedAttributes.includes(field)
+                        ? handleRemoveAttribute(field)
+                        : handleAddAttribute(field)
+                    }
+                  />
+                  {field}
+                </label>
+              </div>
+            ))}
+            <div className="filter-panel-actions">
+              <button onClick={handleSaveFilter}>Сохранить</button>
+              <button onClick={() => setIsFilterPanelOpen(false)}>Отменить</button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {activeFilter && (
+        <div
+          className="filter-operator-panel"
+          style={{
+            position: 'absolute',
+            top: `${filterPanelPosition.top}px`,
+            left: `${filterPanelPosition.left}px`,
+            zIndex: 5,
+            transform: 'translateY(-10px)', // чтобы отображать панель оператора выше кнопки
+            transition: 'all 0.3s ease', // добавляем анимацию для плавного появления
+          }}
+        >
+    <div className="filter-operator-settings">
+      <h4>Настройка фильтра для {activeFilter}</h4>
+            <div className="filter-operator-options">
+              <label>
+                <input
+                  type="radio"
+                  name="operator"
+                  value="contains"
+                  checked={filterOperators[activeFilter] === 'contains'}
+                  onChange={() => handleOperatorChange(activeFilter, 'contains')}
+                />
+                Содержит
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="operator"
+                  value="eq"
+                  checked={filterOperators[activeFilter] === 'eq'}
+                  onChange={() => handleOperatorChange(activeFilter, 'eq')}
+                />
+                Равно
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="operator"
+                  value="startswith"
+                  checked={filterOperators[activeFilter] === 'startswith'}
+                  onChange={() => handleOperatorChange(activeFilter, 'startswith')}
+                />
+                Начинается с
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="operator"
+                  value="endswith"
+                  checked={filterOperators[activeFilter] === 'endswith'}
+                  onChange={() => handleOperatorChange(activeFilter, 'endswith')}
+                />
+                Заканчивается на
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="operator"
+                  value="isnull"
+                  checked={filterOperators[activeFilter] === 'isnull'}
+                  onChange={() => handleOperatorChange(activeFilter, 'isnull')}
+                />
+                Пусто
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="operator"
+                  value="isnotnull"
+                  checked={filterOperators[activeFilter] === 'isnotnull'}
+                  onChange={() => handleOperatorChange(activeFilter, 'isnotnull')}
+                />
+                Не пусто
+              </label>
+              </div>
+      {filterOperators[activeFilter] !== 'isnull' && filterOperators[activeFilter] !== 'isnotnull' && (
+        <input
+          type="text"
+          value={filterTexts[activeFilter] || ''}
+          onChange={(e) => handleFilterTextChange(activeFilter, e.target.value)}
+          placeholder="Введите значение для фильтрации"
+        />
+      )}
+      <div className="filter-operator-actions">
+        <button onClick={handleSaveFilter}>Сохранить</button>
+        <button onClick={() => setActiveFilter(null)}>Закрыть</button>
+      </div>
+    </div>
+  </div>
+)}
+        
+
+      <div className="table-wrapper" style={{
+  transform: isFilterPanelOpen || activeFilter ? 'translateY(100px)' : 'translateY(0)',
+  transition: 'transform 0.3s ease'
+}}>
+  <table {...getTableProps()} className="UserTableClass">
+    {/* таблица без изменений */}
+  </table>
+</div>
+
+      <div className="saved-filters">
+        {savedFilters.map((filter, index) => (
+          <div key={index} className="saved-filter">
+            {filter.column} {filter.operator} {filter.value}
+          </div>
+        ))}
+      </div>
+
       <div className="action-bar">
         <div className="search-container">
           <input
@@ -231,6 +450,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
           Создать инцидент
         </button>
       </div>
+
       <DndProvider backend={HTML5Backend}>
         <div className="table-wrapper">
           <table {...getTableProps()} className="UserTableClass">

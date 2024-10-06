@@ -1,8 +1,6 @@
-
-
 /* Основные стили */
 .table-container {
-  width: 100%; /* Убедитесь, что контейнер занимает всю ширину */
+  width: 100%;
   margin: 0 auto;
   padding: 10px;
   color: #ffffff;
@@ -10,11 +8,14 @@
   display: block;
   border-radius: 8px;
   background: rgba(27, 39, 53, 0.8);
-  overflow-x: auto; /* Добавляем горизонтальную прокрутку */
+  overflow-x: auto;
+  transition: all 0.3s ease; /* Плавный переход для сдвига таблицы */
+  position: relative;
+  z-index: 1; /* Обеспечиваем, что таблица не перекрывает фильтры */
 }
 
 .table-wrapper {
-  overflow-x: auto; /* Горизонтальная прокрутка при переполнении */
+  overflow-x: auto;
 }
 
 /* Подсветка всего столбца при перетаскивании */
@@ -23,16 +24,17 @@
 }
 
 .target-column-highlight {
-  background-color: rgba(0, 123, 255, 0.1); /* Цвет подсветки всего столбца */
+  background-color: rgba(0, 123, 255, 0.1);
 }
 
 .UserTableClass {
-  width: 100%; /* Ширина таблицы на 100% контейнера */
-  border-collapse: collapse; /* Схлопывание границ ячеек */
-  table-layout: fixed; /* Фиксированная ширина столбцов */
-  background: rgba(27, 39, 53, 0.8); /* Прозрачный темный фон с 80% непрозрачностью */
-
-  color: #ffffff; /* Белый цвет текста */
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: rgba(27, 39, 53, 0.8);
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
 }
 
 .UserTableClass th, .UserTableClass td {
@@ -41,15 +43,13 @@
   text-align: left;
   font-family: 'Courier New', Courier, monospace;
   white-space: nowrap;
-  overflow: hidden; /* Скрывает переполнение текста */
-  text-overflow: ellipsis; /* Добавляет многоточие в конце текста */
+  overflow: hidden;
+  text-overflow: ellipsis;
   position: relative;
-
-
 }
 
 .UserTableClass tr:hover td {
-  background-color: rgba(240, 248, 250, 0.021); /* Светло-голубое свечение при наведении */
+  background-color: rgba(240, 248, 250, 0.021);
 }
 
 .UserTableClass th {
@@ -63,25 +63,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: middle;
-  min-width: 5px; /* Минимальная ширина заголовка */
-  max-width: 500px; /* Максимальная ширина */
+  min-width: 5px;
+  max-width: 500px;
 }
 
 .th-content {
-  display: inline-block; /* Важно: сохраняем поведение inline-блока */
-  width: 100%; /* Ограничиваем ширину контейнера */
+  display: inline-block;
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .UserTableClass th:hover {
-  background-color: rgba(0, 123, 255, 0.1); /* Подсветка при наведении */
+  background-color: rgba(0, 123, 255, 0.1);
 }
 
 .UserTableClass td {
-  border-left: 1px solid #0076fd1e; /* Светло-голубая вертикальная граница слева */
-  /*width: auto; /* Убедитесь, что ширина по умолчанию установлена как auto */
+  border-left: 1px solid #0076fd1e;
   border-right: 1px solid #0076fd1e;
 }
 
@@ -93,172 +92,169 @@
   width: 16px;
   cursor: col-resize;
   z-index: 1;
-  background-image: url('/src/assets/image.png'); /* Обновите путь до вашего изображения */
+  background-image: url('/src/assets/image.png');
   background-size: contain;
   background-repeat: no-repeat;
 }
 
 /* Остальные стили */
-
 .search-form {
-  display: flex; /* Использование флексбоксов для выравнивания элементов */
-  margin-bottom: 10px; /* Отступ снизу */
+  display: flex;
+  margin-bottom: 10px;
 }
 
 .search-input {
-  padding: 8px 12px; /* Внутренние отступы */
-  border: 1px solid #46566c; /* Граница ввода */
-  border-radius: 5px; /* Скругление углов */
-  background: #1b2735; /* Темный фон ввода */
-  color: #ffffff; /* Белый цвет текста */
-  width: 200px; /* Ширина ввода */
+  padding: 8px 12px;
+  border: 1px solid #46566c;
+  border-radius: 5px;
+  background: #1b2735;
+  color: #ffffff;
+  width: 200px;
 }
 
 .search-button {
-  padding: 8px 16px; /* Внутренние отступы */
-  background-color: #5a6b8c; /* Фон кнопки */
-  color: white; /* Белый цвет текста */
-  border: none; /* Отсутствие границы */
-  border-radius: 5px; /* Скругление углов */
-  cursor: pointer; /* Курсор в виде руки */
-  margin-left: 10px; /* Отступ слева */
+  padding: 8px 16px;
+  background-color: #5a6b8c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px;
 }
 
 .search-button:hover {
-  background-color: #3a4a7c; /* Фон кнопки при наведении */
+  background-color: #3a4a7c;
 }
 
 .action-button {
-  padding: 8px 16px; /* Внутренние отступы */
-  background-color: #5a6b8c; /* Фон кнопки */
-  color: white; /* Белый цвет текста */
-  border: none; /* Отсутствие границы */
-  border-radius: 5px; /* Скругление углов */
-  cursor: pointer; /* Курсор в виде руки */
-  margin: 0 5px; /* Отступы по горизонтали */
+  padding: 8px 16px;
+  background-color: #5a6b8c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 5px;
 }
 
 .action-button:hover {
-  background-color: #3a4a7c; /* Фон кнопки при наведении */
+  background-color: #3a4a7c;
 }
 
 .field-visibility-controls {
-  margin-bottom: 1rem; /* Отступ снизу */
+  margin-bottom: 1rem;
 }
 
 .field-visibility-controls label {
-  margin-right: 1rem; /* Отступ справа */
+  margin-right: 1rem;
 }
 
 .dropdown {
-  position: relative; /* Относительное позиционирование */
-  display: inline-block; /* Встроенно-блочное отображение */
-  margin-bottom: 0; /* Отсутствие отступа снизу */
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0;
 }
 
 .dropdown-toggle {
-  background-color: #5a6b8c; /* Фон кнопки */
-  color: white; /* Белый цвет текста */
-  padding: 10px; /* Внутренние отступы */
-  border: none; /* Отсутствие границы */
-  cursor: pointer; /* Курсор в виде руки */
-  border-radius: 4px; /* Скругление углов */
+  background-color: #5a6b8c;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
 .dropdown-menu {
-  display: block; /* Блочное отображение */
-  position: absolute; /* Абсолютное позиционирование */
-  background-color: #2e3a59; /* Темный фон выпадающего меню */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Тень вокруг меню */
-  padding: 10px; /* Внутренние отступы */
-  z-index: 1; /* Уровень наложения */
-  max-height: 300px; /* Максимальная высота меню */
-  overflow-y: auto; /* Вертикальная прокрутка при переполнении */
-  width: 200px; /* Ширина меню */
-  border-radius: 4px; /* Скругление углов */
+  display: block;
+  position: absolute;
+  background-color: #2e3a59;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  z-index: 3;
+  max-height: 300px;
+  overflow-y: auto;
+  width: 200px;
+  border-radius: 4px;
 }
 
 .dropdown-menu input[type="text"] {
-  width: 100%; /* Ширина на 100% */
-  padding: 5px; /* Внутренние отступы */
-  margin-bottom: 10px; /* Отступ снизу */
-  box-sizing: border-box; /* Учет границ и отступов в ширине */
-  background: #1b2735; /* Темный фон ввода */
-  color: #ffffff; /* Белый цвет текста */
-  border: 1px solid #46566c; /* Граница ввода */
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  background: #1b2735;
+  color: #ffffff;
+  border: 1px solid #46566c;
 }
 
 .dropdown-menu label {
-  display: block; /* Блочное отображение */
-  margin-bottom: 5px; /* Отступ снизу */
+  display: block;
+  margin-bottom: 5px;
 }
 
 .action-bar {
-  display: flex; /* Использование флексбоксов */
-  justify-content: space-between; /* Распределение пространства между элементами */
-  align-items: center; /* Выравнивание по центру по вертикали */
-  margin-bottom: 0; /* Отсутствие отступа снизу */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
 }
 
 .action-bar .search-form, .action-bar .action-button, .action-bar .dropdown {
-  margin-bottom: 10px; /* Отступ снизу */
+  margin-bottom: 10px;
 }
-
-
 
 /* Стили для полос прокрутки */
 .table-wrapper::-webkit-scrollbar {
-  width: 12px; /* Ширина полосы прокрутки */
+  width: 12px;
 }
 
 .table-wrapper::-webkit-scrollbar-track {
-  background: #1b2735; /* Темный фон полосы прокрутки */
+  background: #1b2735;
 }
 
 .table-wrapper::-webkit-scrollbar-thumb {
-  background-color: #5c9dcf; /* Светло-голубой ползунок */
-  border-radius: 6px; /* Радиус скругления ползунка */
-  border: 3px solid #1b2735; /* Темный фон вокруг ползунка */
+  background-color: #5c9dcf;
+  border-radius: 6px;
+  border: 3px solid #1b2735;
 }
 
 @media (max-width: 1024px) {
   .table-container {
-    width: calc(100% - 90px); /* Измененное значение для отступа справа */
+    width: calc(100% - 90px);
   }
 
   .search-button, .action-button {
-    padding: 6px 12px; /* Уменьшенные отступы */
+    padding: 6px 12px;
   }
 }
 
 @media (max-width: 768px) {
   .search-form {
-    flex-direction: column; /* Вертикальное выравнивание элементов */
-    align-items: flex-start; /* Выравнивание по началу по вертикали */
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .table-container {
-    width: calc(100% - 90px); /* Измененное значение для отступа справа */
+    width: calc(100% - 90px);
   }
 
   .search-input {
-    width: 100%; /* Ширина на 100% */
-    margin-bottom: 10px; /* Отступ снизу */
+    width: 100%;
+    margin-bottom: 10px;
   }
 
   .action-button, .search-button {
-    width: 100%; /* Ширина на 100% */
-    margin-left: 0; /* Отсутствие отступа слева */
+    width: 100%;
+    margin-left: 0;
   }
 
   .action-bar {
-    flex-direction: column; /* Вертикальное выравнивание элементов */
-    align-items: flex-start; /* Выравнивание по началу по вертикали */
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .action-bar .search-form, .action-bar .action-button, .action-bar .dropdown {
-    width: 100%; /* Ширина на 100% */
-    margin-bottom: 10px; /* Отступ снизу */
+    width: 100%;
+    margin-bottom: 10px;
   }
 }
 
@@ -291,11 +287,10 @@
   width: 10px;
   height: 100%;
   cursor: col-resize;
-
 }
 
 .resize-handle:hover {
-  background-color: rgba(0, 123, 255, 0.2); /* Изменение фона при наведении */
+  background-color: rgba(0, 123, 255, 0.2);
 }
 
 .draggable-header {
@@ -303,18 +298,18 @@
 }
 
 .target-column {
-  border: 2px dashed rgba(18, 18, 18, 0); /* Подсветка целевого столбца при перетаскивании */
+  border: 2px dashed rgba(18, 18, 18, 0);
 }
 
 .resize-handle {
   position: absolute;
-  right: -4px; /* Смещаем разделитель к границе */
+  right: -4px;
   top: 0;
-  width: 8px; /* Делаем разделитель шире для захвата */
+  width: 8px;
   height: 100%;
   cursor: col-resize;
-  z-index: 10; /* Высокий z-index для активации разделителя */
-  background-color: transparent; /* Прозрачный, чтобы не перекрывать контент */
+  z-index: 10;
+  background-color: transparent;
 }
 
 /* Границы разделителя */
@@ -323,22 +318,21 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 50%; /* Линия точно по середине разделителя */
+  left: 50%;
   width: 2px;
-  background-color: #5c9dcf; /* Цвет линии */
+  background-color: #5c9dcf;
 }
 
-
 .resize-hhandle::after {
-  right: 0; /* Правая граница */
+  right: 0;
 }
 
 .resize-handle:hover::before {
-  background-color: #00f; /* Подсветка при наведении мышью */
+  background-color: #00f;
 }
 
 .UserTableClass th:hover .resize-handle::before {
-  background-color: #00f; /* Подсветка при наведении мышью */
+  background-color: #00f;
 }
 
 .header-wrapper {
@@ -346,4 +340,216 @@
   align-items: center;
   justify-content: space-between;
   position: relative;
+}
+
+/* Основные стили */
+.filter-settings {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 4;
+}
+
+.filter-settings-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-filter-button {
+  margin-left: auto;
+  padding: 8px;
+  background-color: #5a6b8c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+.add-filter-button:hover::after {
+  content: 'Добавить фильтр';
+  position: absolute;
+  top: -30px;
+  right: 0;
+  background-color: #333;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.filter-panel {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #2e3a59;
+  border-radius: 5px;
+  width: 300px;
+  position: relative;
+  z-index: 4;
+}
+
+.filter-panel .filter-panel-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.filter-panel .filter-panel-actions button {
+  padding: 8px 16px;
+  background-color: #5a6b8c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.filter-field {
+  margin-bottom: 10px;
+}
+
+.filter-field label {
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+}
+
+.filter-field input[type='checkbox'] {
+  margin-right: 5px;
+}
+
+.filter-panel .filter-panel-actions {
+  margin-top: 20px;
+}
+
+.filter-attribute {
+  background-color: #5a6b8c;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  z-index: 4;
+}
+
+.saved-filters {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.saved-filter {
+  padding: 5px 10px;
+  background-color: #5a6b8c;
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.filter-operator-panel {
+  position: absolute;
+  top: auto;
+  left: 0;
+  transform: translateY(-120%); /* Меняем положение над таблицей */
+  background-color: #2e3a59;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 5; /* Увеличиваем z-index для перекрытия таблицы */
+  width: 300px;
+  transition: all 0.3s ease;
+}
+
+.filter-operator-panel.open {
+  height: auto;
+  opacity: 1;
+  transform: translateY(-120%); /* Меняем направление открытия вверх */
+  transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+.filter-operator-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-operator-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #ffffff;
+}
+
+.filter-operator-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.filter-operator-actions button {
+  padding: 8px 16px;
+  background-color: #5a6b8c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Стили для кнопок Сохранить и Отменить в меню фильтров */
+.filter-panel-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.filter-operator-panel {
+  position: absolute;
+  z-index: 10;
+  background-color: #2e3a59;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.filter-operator-panel.open {
+  transform: translateY(0);
+}
+
+.filter-operator-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-operator-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #ffffff;
+}
+
+.filter-operator-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.filter-operator-actions button {
+  padding: 8px 16px;
+  background-color: #5a6b8c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.table-wrapper {
+  transition: all 0.3s ease;
 }
