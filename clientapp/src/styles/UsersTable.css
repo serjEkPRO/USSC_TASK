@@ -345,27 +345,45 @@
 /* Основные стили */
 .filter-settings {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: space-between; /* Кнопка всегда будет справа */
   margin-bottom: 10px;
   position: relative;
   z-index: 4;
+  border: 1px solid #46566c;
+  padding: 10px;
+  background-color: #1b2735;
+  border-radius: 5px;
 }
 
 .filter-settings-content {
   display: flex;
-  align-items: center;
+
   gap: 10px;
+  
+  flex-grow: 1;
+  flex-wrap: wrap; /* Чтобы фильтры переходили на следующую строку при необходимости */
 }
 
 .add-filter-button {
-  margin-left: auto;
-  padding: 8px;
+  width: 40px;
+  height: 40px;
   background-color: #5a6b8c;
   color: white;
   border: none;
-  border-radius: 50%;
+  border-radius: 5px;
   cursor: pointer;
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  position: absolute; /* Фиксируем кнопку */
+  top: 0; /* Кнопка будет всегда сверху */
+  right: 0; /* Кнопка будет всегда справа */
+}
+
+.add-filter-button:hover {
+  background-color: #3a4a7c;
 }
 
 .add-filter-button:hover::after {
@@ -383,20 +401,37 @@
 }
 
 .filter-panel {
-  margin-top: 10px;
-  padding: 10px;
+  position: absolute; /* Абсолютное позиционирование, чтобы меню было поверх */
+  top: calc(100% + 2px); /* Позиционируем меню сразу под блоком filter-settings */
+  right: 0;
+  width: 300px; /* Фиксированная ширина */
   background-color: #2e3a59;
   border-radius: 5px;
-  width: 300px;
-  position: relative;
-  z-index: 4;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  max-height: 0; /* Начальная высота меню — 0 */
+  overflow: hidden; /* Чтобы содержимое не выходило за пределы */
+  transition: max-height 0.3s ease-in-out, padding 0.2s ease-in-out, opacity 0.2s ease-in-out, visibility 0s 0.3s;
+  opacity: 0; /* Прозрачность 0 для скрытого меню */
 }
 
-.filter-panel .filter-panel-actions {
+
+
+
+.filter-panel-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
 }
+
+.filter-panel.open {
+  max-height: 300px; /* Максимальная высота, до которой будет выдвигаться меню */
+  padding: 10px; /* Поддерживаем отступы при открытии */
+  transition: max-height 0.3s ease-in-out, padding 0.2s ease-in-out, opacity 0.2s ease-in-out;
+  opacity: 1; /* Прозрачность 0 для скрытого меню */
+}
+
 
 .filter-panel .filter-panel-actions button {
   padding: 8px 16px;
@@ -435,6 +470,15 @@
   gap: 5px;
   cursor: pointer;
   z-index: 4;
+  border: 1px solid #46566c;
+}
+
+.filter-attribute .remove-filter-button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0 5px;
 }
 
 .saved-filters {
@@ -454,23 +498,16 @@
 
 .filter-operator-panel {
   position: absolute;
-  top: auto;
-  left: 0;
-  transform: translateY(-120%); /* Меняем положение над таблицей */
+  z-index: 10;
   background-color: #2e3a59;
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 5; /* Увеличиваем z-index для перекрытия таблицы */
-  width: 300px;
   transition: all 0.3s ease;
 }
 
 .filter-operator-panel.open {
-  height: auto;
-  opacity: 1;
-  transform: translateY(-120%); /* Меняем направление открытия вверх */
-  transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(0);
 }
 
 .filter-operator-settings {
