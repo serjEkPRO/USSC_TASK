@@ -2,27 +2,29 @@ import React, { useState, useRef } from 'react';
 import '../styles/incidentList/IncidentFilters.css';
 
 const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators, setFilterOperators }) => {
-  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [isAddFilterPanelOpen, setIsAddFilterPanelOpen] = useState(false); // Отдельное состояние для панели добавления фильтра
+  const [isFilterSettingsOpen, setIsFilterSettingsOpen] = useState(false); // Отдельное состояние для панели настроек фильтра
   const [selectedAttributes, setSelectedAttributes] = useState([]);
   const [activeFilter, setActiveFilter] = useState(null);
   const [filterTexts, setFilterTexts] = useState({});
   const filterPanelRef = useRef(null);
-  const [filterPanelPosition, setFilterPanelPosition] = useState({ top: 0, left: 0 });
+  const [filterSettingsPosition, setFilterSettingsPosition] = useState({ top: 0, left: 0 }); // Отдельное состояние для позиции панели настроек фильтра
 
   const handleOpenFilterSettings = (attribute, event) => {
     setActiveFilter(attribute);
     if (event && event.target) {
       const buttonRect = event.target.getBoundingClientRect();
-      setFilterPanelPosition({
+      setFilterSettingsPosition({
         top: buttonRect.bottom + window.scrollY,
         left: buttonRect.left + window.scrollX,
       });
+      setIsFilterSettingsOpen(true); // Открываем панель настроек фильтра
     }
   };
 
   const handleSaveFilter = () => {
     setActiveFilter(null);
-    setIsFilterPanelOpen(false);
+    setIsFilterSettingsOpen(false); // Закрываем панель настроек фильтра
   };
 
   const handleAddAttribute = (attribute) => {
@@ -56,13 +58,19 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
     setFilterValues((prev) => ({ ...prev, [attribute]: value }));
   };
 
-  const toggleFilterPanel = () => {
-    setIsFilterPanelOpen(!isFilterPanelOpen);
+  const toggleAddFilterPanel = () => {
+    setIsAddFilterPanelOpen(!isAddFilterPanelOpen);
   };
 
   return (
     <div className="filter-settings">
       <div className="filter-settings-content">
+        <button
+          className="add-filter-button"
+          onClick={toggleAddFilterPanel}
+        >
+          +
+        </button>
         {selectedAttributes.map((attribute) => (
           <div key={attribute} className="filter-attribute-container">
             <button
@@ -71,25 +79,12 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
             >
               {attribute} {filterOperators[attribute] ? `${filterOperators[attribute]} ${filterTexts[attribute] || 'не задано'}` : 'Значение не задано'}
             </button>
-            <button
-              className="remove-filter-button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRemoveAttribute(attribute);
-              }}
-            >
-              x
-            </button>
           </div>
         ))}
-        <button
-          className="add-filter-button"
-          onClick={toggleFilterPanel}
-        >
-          +
-        </button>
       </div>
-      <div ref={filterPanelRef} className={`filter-panel ${isFilterPanelOpen ? 'open' : ''}`} style={{ top: `${filterPanelPosition.top}px`, left: `${filterPanelPosition.left}px` }}>
+      
+      {/* Панель добавления фильтра */}
+      <div ref={filterPanelRef} className={`filter-panel ${isAddFilterPanelOpen ? 'open' : ''}`}> {/* Фиксированная позиция панели добавления фильтра */}
         {fields.map((field) => (
           <div key={field} className="filter-field">
             <label>
@@ -107,11 +102,13 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
           </div>
         ))}
         <div className="filter-panel-actions">
-          <button onClick={() => setIsFilterPanelOpen(false)}>Закрыть</button>
+          <button onClick={() => setIsAddFilterPanelOpen(false)}>Закрыть</button>
         </div>
       </div>
-      {activeFilter && (
-        <div className="filter-operator-panel" style={{ top: `${filterPanelPosition.top}px`, left: `${filterPanelPosition.left}px` }}>
+
+      {/* Панель настроек фильтра */}
+      {activeFilter && isFilterSettingsOpen && (
+        <div className="filter-operator-panel" style={{ top: `${filterSettingsPosition.top}px`, left: `${filterSettingsPosition.left}px` }}>
           <div className="filter-operator-settings">
             <h4>Настройка фильтра для {activeFilter}</h4>
             <div className="filter-operator-options">
@@ -186,7 +183,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
             )}
             <div className="filter-operator-actions">
               <button onClick={handleSaveFilter}>Сохранить</button>
-              <button onClick={() => setActiveFilter(null)}>Закрыть</button>
+              <button onClick={() => setIsFilterSettingsOpen(false)}>Закрыть</button>
             </div>
           </div>
         </div>
