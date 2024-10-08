@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
-//import '../styles/Filters.css';
+import '../styles/incidentList/IncidentFilters.css';
 
-const FiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators, setFilterOperators }) => {
+const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators, setFilterOperators }) => {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState([]);
   const [activeFilter, setActiveFilter] = useState(null);
@@ -195,4 +195,4 @@ const FiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValu
   );
 };
 
-export default FiltersComponent;
+export default IncidentFiltersComponent;

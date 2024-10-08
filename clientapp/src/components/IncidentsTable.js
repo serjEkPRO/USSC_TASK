@@ -2,8 +2,8 @@ import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useTable, useSortBy, usePagination, useFilters } from 'react-table';
 import { useDrag, useDrop, DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import FiltersComponent from './FiltersComponent';
-import '../styles/UsersTable.css';
+import FiltersComponent from './IncidentFiltersComponent';
+import '../styles/incidentList/IncidentTable.css';
 
 const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnWidths, isTarget }) => {
   const ref = React.useRef(null);

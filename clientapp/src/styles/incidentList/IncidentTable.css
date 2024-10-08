@@ -1,0 +1,154 @@
+/* Основные стили для таблицы */
+.table-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px;
+  color: #ffffff;
+  box-shadow: 0 0 10px #5c9dcf44;
+  display: block;
+  border-radius: 8px;
+  background: rgba(27, 39, 53, 0.8);
+  overflow-x: auto;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.UserTableClass {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: rgba(27, 39, 53, 0.8);
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.UserTableClass th, .UserTableClass td {
+  padding: 8px;
+  border-bottom: 1px solid #46566c;
+  text-align: left;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+.UserTableClass tr:hover td {
+  background-color: rgba(240, 248, 250, 0.021);
+}
+
+.UserTableClass th {
+  position: relative;
+  background-color: transparent;
+  border-top: 1px solid #46566c;
+  border-left: 1px solid #5c9dcf3b;
+  border-right: 1px solid #46566c;
+  padding: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  min-width: 5px;
+  max-width: 500px;
+}
+
+.th-content {
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.UserTableClass th:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.UserTableClass td {
+  border-left: 1px solid #0076fd1e;
+  border-right: 1px solid #0076fd1e;
+}
+
+.resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  cursor: col-resize;
+  z-index: 1;
+  background-image: url('/src/assets/image.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Подсветка всего столбца при перетаскивании */
+.target-column {
+  border: 2px dashed #00f !important;
+}
+
+.target-column-highlight {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Стили для полос прокрутки */
+.table-wrapper::-webkit-scrollbar {
+  width: 12px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #1b2735;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #5c9dcf;
+  border-radius: 6px;
+  border: 3px solid #1b2735;
+}
+
+@media (max-width: 1024px) {
+  .table-container {
+    width: calc(100% - 90px);
+  }
+
+  .search-button, .action-button {
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-form {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table-container {
+    width: calc(100% - 90px);
+  }
+
+  .search-input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .action-button, .search-button {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .action-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .action-bar .search-form, .action-bar .action-button, .action-bar .dropdown {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

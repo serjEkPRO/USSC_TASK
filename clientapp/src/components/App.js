@@ -9,7 +9,7 @@ import CreateIncidentModal from '../components/CreateIncidentModal';
 import WorkFlow from '../components/WorkFlow'; // Импортируем новый компонент
 
 import '../styles/App.css';
-import '../styles/UsersTable.css';
+
 import '../styles/BackgroundAnimation.css';
 
 function App() {
