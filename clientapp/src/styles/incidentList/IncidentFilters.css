@@ -33,21 +33,17 @@
 }
 
 .add-filter-button {
-  width: 25px;
-  height: 25px;
+  padding: 2px 6px; /* Увеличим отступы для кнопки */
   background-color: #5a6b8c;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  display: flex;
+  font-size: 12px; /* Размер текста немного меньше */
+  white-space: nowrap; /* Запрещаем перенос текста на новую строку */
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  font-size: 18px;
- 
-  top: 2px;
-  left: 2px; 
-  z-index: 5;
 }
 
 .add-filter-button:hover {
@@ -127,7 +123,7 @@
 
 @keyframes slideIn {
   0% {
-      transform: translateX(100%);
+      transform: translateX(50px); /* Вместо 100% - сдвиг по горизонтали внутрь контейнера */
       opacity: 0;
   }
   100% {

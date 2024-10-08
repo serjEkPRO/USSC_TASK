@@ -8,7 +8,7 @@
   display: block;
   border-radius: 8px;
   background: rgba(27, 39, 53, 0.8);
-  overflow-x: auto;
+  overflow-x: hidden;
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
