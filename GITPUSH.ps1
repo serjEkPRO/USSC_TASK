@@ -10,7 +10,7 @@ if (-not $changes) {
     git add -A
 
     # Создайте коммит с текущей датой и временем
-    $commitMessage = "бета фильтров для таблицы инцидентов. Бета бэкап $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    $commitMessage = "бета фильтров для таблицы инцидентов. Добавлены логические операторы $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     git commit -m $commitMessage
 
     # Push изменений

@@ -2,13 +2,15 @@ import React, { useState, useRef } from 'react';
 import '../styles/incidentList/IncidentFilters.css';
 
 const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators, setFilterOperators }) => {
-  const [isAddFilterPanelOpen, setIsAddFilterPanelOpen] = useState(false); // Отдельное состояние для панели добавления фильтра
-  const [isFilterSettingsOpen, setIsFilterSettingsOpen] = useState(false); // Отдельное состояние для панели настроек фильтра
+  const [isAddFilterPanelOpen, setIsAddFilterPanelOpen] = useState(false);
+  const [isFilterSettingsOpen, setIsFilterSettingsOpen] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState([]);
   const [activeFilter, setActiveFilter] = useState(null);
   const [filterTexts, setFilterTexts] = useState({});
+  const [logicalOperators, setLogicalOperators] = useState([]);
+  const [negations, setNegations] = useState({});
   const filterPanelRef = useRef(null);
-  const [filterSettingsPosition, setFilterSettingsPosition] = useState({ top: 0, left: 0 }); // Отдельное состояние для позиции панели настроек фильтра
+  const [filterSettingsPosition, setFilterSettingsPosition] = useState({ top: 0, left: 0 });
 
   const handleOpenFilterSettings = (attribute, event) => {
     setActiveFilter(attribute);
@@ -18,13 +20,13 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
         top: buttonRect.bottom + window.scrollY,
         left: buttonRect.left + window.scrollX,
       });
-      setIsFilterSettingsOpen(true); // Открываем панель настроек фильтра
+      setIsFilterSettingsOpen(true);
     }
   };
 
   const handleSaveFilter = () => {
     setActiveFilter(null);
-    setIsFilterSettingsOpen(false); // Закрываем панель настроек фильтра
+    setIsFilterSettingsOpen(false);
   };
 
   const handleAddAttribute = (attribute) => {
@@ -32,10 +34,12 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
       setSelectedAttributes((prev) => [...prev, attribute]);
       setFilterOperators((prev) => ({ ...prev, [attribute]: 'eq' }));
       setFilterTexts((prev) => ({ ...prev, [attribute]: '' }));
+      setNegations((prev) => ({ ...prev, [attribute]: false }));
+      setLogicalOperators((prev) => [...prev, 'AND']);
     }
   };
 
-  const handleRemoveAttribute = (attribute) => {
+  const handleRemoveAttribute = (attribute, index) => {
     setSelectedAttributes((prev) => prev.filter((attr) => attr !== attribute));
     setFilterOperators((prev) => {
       const updatedOperators = { ...prev };
@@ -47,15 +51,29 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
       delete updatedTexts[attribute];
       return updatedTexts;
     });
+    setNegations((prev) => {
+      const updatedNegations = { ...prev };
+      delete updatedNegations[attribute];
+      return updatedNegations;
+    });
+    setLogicalOperators((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleOperatorChange = (attribute, operator) => {
     setFilterOperators((prev) => ({ ...prev, [attribute]: operator }));
   };
 
+  const handleNegationToggle = (attribute) => {
+    setNegations((prev) => ({ ...prev, [attribute]: !prev[attribute] }));
+  };
+
   const handleFilterTextChange = (attribute, value) => {
     setFilterTexts((prev) => ({ ...prev, [attribute]: value }));
     setFilterValues((prev) => ({ ...prev, [attribute]: value }));
+  };
+
+  const handleLogicalOperatorChange = (index, value) => {
+    setLogicalOperators((prev) => prev.map((op, i) => (i === index ? value : op)));
   };
 
   const toggleAddFilterPanel = () => {
@@ -65,27 +83,34 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   return (
     <div className="filter-settings">
       <div className="filter-settings-content">
-        <button
-          className="add-filter-button"
-          onClick={toggleAddFilterPanel}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon></svg>
-
+        <button className="add-filter-button" onClick={toggleAddFilterPanel}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-filter">
+            <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
+          </svg>
         </button>
-        {selectedAttributes.map((attribute) => (
+        {selectedAttributes.map((attribute, index) => (
           <div key={attribute} className="filter-attribute-container">
-            <button
-              className="filter-attribute"
-              onClick={(e) => handleOpenFilterSettings(attribute, e)}
-            >
-              {attribute} {filterOperators[attribute] ? `${filterOperators[attribute]} ${filterTexts[attribute] || 'не задано'}` : 'Значение не задано'}
-            </button>
+            <div className="filter-item-group">
+              <button className="filter-attribute" onClick={(e) => handleOpenFilterSettings(attribute, e)}>
+                {attribute} {negations[attribute] ? '!' : ''} {filterOperators[attribute]} {filterTexts[attribute] || 'не задано'}
+                <button className="remove-filter-button" onClick={() => handleRemoveAttribute(attribute, index)}>X</button>
+              </button>
+              {index < selectedAttributes.length - 1 && (
+                <select
+                  className="logical-operator-select custom-select"
+                  value={logicalOperators[index]}
+                  onChange={(e) => handleLogicalOperatorChange(index, e.target.value)}
+                >
+                  <option value="AND">И</option>
+                  <option value="OR">ИЛИ</option>
+                </select>
+              )}
+            </div>
           </div>
         ))}
       </div>
-      
-      {/* Панель добавления фильтра */}
-      <div ref={filterPanelRef} className={`filter-panel ${isAddFilterPanelOpen ? 'open' : ''}`}> {/* Фиксированная позиция панели добавления фильтра */}
+
+      <div ref={filterPanelRef} className={`filter-panel ${isAddFilterPanelOpen ? 'open' : ''}`}>
         {fields.map((field) => (
           <div key={field} className="filter-field">
             <label>
@@ -107,11 +132,10 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
         </div>
       </div>
 
-      {/* Панель настроек фильтра */}
       {activeFilter && isFilterSettingsOpen && (
         <div className="filter-operator-panel" style={{ top: `${filterSettingsPosition.top}px`, left: `${filterSettingsPosition.left}px` }}>
           <div className="filter-operator-settings">
-            <h4>Настройка фильтра для {activeFilter}</h4>
+            {/* <h4>Настройка фильтра для {activeFilter}</h4> */}
             <div className="filter-operator-options">
               <label>
                 <input
@@ -163,17 +187,11 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                 />
                 Пусто
               </label>
-              <label>
-                <input
-                  type="radio"
-                  name={`operator-${activeFilter}`}
-                  value="isnotnull"
-                  checked={filterOperators[activeFilter] === 'isnotnull'}
-                  onChange={() => handleOperatorChange(activeFilter, 'isnotnull')}
-                />
-                Не пусто
-              </label>
+              
             </div>
+
+
+
             {filterOperators[activeFilter] !== 'isnull' && filterOperators[activeFilter] !== 'isnotnull' && (
               <input
                 type="text"
@@ -182,6 +200,16 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                 placeholder="Введите значение для фильтрации"
               />
             )}
+                        {/* Отрицание */}
+                        <label>
+              <input
+                type="checkbox"
+                checked={negations[activeFilter] || false}
+                onChange={() => handleNegationToggle(activeFilter)}
+              />
+              Отрицание
+            </label>
+
             <div className="filter-operator-actions">
               <button onClick={handleSaveFilter}>Сохранить</button>
               <button onClick={() => setIsFilterSettingsOpen(false)}>Закрыть</button>
