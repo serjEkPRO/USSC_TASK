@@ -10,18 +10,18 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [logicalOperators, setLogicalOperators] = useState([]);
   const [negations, setNegations] = useState({});
   const filterPanelRef = useRef(null);
-  const [filterSettingsPosition, setFilterSettingsPosition] = useState({ top: 0, left: 0 });
+  const filterButtonRef = useRef(null); // Ссылка на кнопку
 
   const handleOpenFilterSettings = (attribute, event) => {
     setActiveFilter(attribute);
-    if (event && event.target) {
-      const buttonRect = event.target.getBoundingClientRect();
-      setFilterSettingsPosition({
-        top: buttonRect.bottom + window.scrollY,
-        left: buttonRect.left + window.scrollX,
-      });
-      setIsFilterSettingsOpen(true);
+    const buttonRect = event.target.getBoundingClientRect(); // Получаем координаты кнопки
+    const panel = document.querySelector('.filter-operator-panel');
+    
+    if (panel) {
+      panel.style.top = `${buttonRect.bottom}px`; // Расположим под кнопкой
+      panel.style.left = `${buttonRect.left}px`; // Совместим по левому краю
     }
+    setIsFilterSettingsOpen(true);
   };
 
   const handleSaveFilter = () => {
@@ -91,7 +91,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
         {selectedAttributes.map((attribute, index) => (
           <div key={attribute} className="filter-attribute-container">
             <div className="filter-item-group">
-              <button className="filter-attribute" onClick={(e) => handleOpenFilterSettings(attribute, e)}>
+              <button className="filter-attribute" ref={filterButtonRef} onClick={(e) => handleOpenFilterSettings(attribute, e)}>
                 {attribute} {negations[attribute] ? '!' : ''} {filterOperators[attribute]} {filterTexts[attribute] || 'не задано'}
                 <button className="remove-filter-button" onClick={() => handleRemoveAttribute(attribute, index)}>X</button>
               </button>
@@ -106,6 +106,173 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                 </select>
               )}
             </div>
+            {activeFilter === attribute && isFilterSettingsOpen && (
+              <div className="filter-operator-panel">
+                <div className="filter-operator-settings">
+                  <div className="filter-operator-options">
+                    <div style={{ display: 'flex', alignItems: 'left' }}>
+                      <label>
+                        <input
+                          type="radio"
+                          name={`operator-${attribute}`}
+                          value="eq"
+                          checked={filterOperators[attribute] === 'eq'}
+                          onChange={() => handleOperatorChange(attribute, 'eq')}
+                        />
+                        Равно
+                      </label>
+                      {filterOperators[attribute] === 'eq' && (
+                        <label className="negation-checkbox" style={{ marginLeft: '10px' }}>
+                          <input
+                            type="checkbox"
+                            checked={negations[attribute] || false}
+                            onChange={() => handleNegationToggle(attribute)}
+                          />
+                          Отрицание
+                        </label>
+                      )}
+                    </div>
+
+                    <div className={`filter-text-input ${filterOperators[attribute] === 'eq' ? 'visible' : ''}`}>
+                      <input
+                        type="text"
+                        className="custom-text-filter-input"
+                        value={filterTexts[attribute] || ''}
+                        onChange={(e) => handleFilterTextChange(attribute, e.target.value)}
+                        placeholder="Введите значение для фильтрации"
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <label>
+                        <input
+                          type="radio"
+                          name={`operator-${attribute}`}
+                          value="contains"
+                          checked={filterOperators[attribute] === 'contains'}
+                          onChange={() => handleOperatorChange(attribute, 'contains')}
+                        />
+                        Содержит
+                      </label>
+                      {filterOperators[attribute] === 'contains' && (
+                        <label className="negation-checkbox" style={{ marginLeft: '10px' }}>
+                          <input
+                            type="checkbox"
+                            checked={negations[attribute] || false}
+                            onChange={() => handleNegationToggle(attribute)}
+                          />
+                          Отрицание
+                        </label>
+                      )}
+                    </div>
+
+                    <div className={`filter-text-input ${filterOperators[attribute] === 'contains' ? 'visible' : ''}`}>
+                      <input
+                        type="text"
+                        className="custom-text-filter-input"
+                        value={filterTexts[attribute] || ''}
+                        onChange={(e) => handleFilterTextChange(attribute, e.target.value)}
+                        placeholder="Введите значение для фильтрации"
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <label>
+                        <input
+                          type="radio"
+                          name={`operator-${attribute}`}
+                          value="startswith"
+                          checked={filterOperators[attribute] === 'startswith'}
+                          onChange={() => handleOperatorChange(attribute, 'startswith')}
+                        />
+                        Начинается с
+                      </label>
+                      {filterOperators[attribute] === 'startswith' && (
+                        <label className="negation-checkbox" style={{ marginLeft: '10px' }}>
+                          <input
+                            type="checkbox"
+                            checked={negations[attribute] || false}
+                            onChange={() => handleNegationToggle(attribute)}
+                          />
+                          Отрицание
+                        </label>
+                      )}
+                    </div>
+
+                    <div className={`filter-text-input ${filterOperators[attribute] === 'startswith' ? 'visible' : ''}`}>
+                      <input
+                        type="text"
+                        className="custom-text-filter-input"
+                        value={filterTexts[attribute] || ''}
+                        onChange={(e) => handleFilterTextChange(attribute, e.target.value)}
+                        placeholder="Введите значение для фильтрации"
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <label>
+                        <input
+                          type="radio"
+                          name={`operator-${attribute}`}
+                          value="endswith"
+                          checked={filterOperators[attribute] === 'endswith'}
+                          onChange={() => handleOperatorChange(attribute, 'endswith')}
+                        />
+                        Заканчивается на
+                      </label>
+                      {filterOperators[attribute] === 'endswith' && (
+                        <label className="negation-checkbox" style={{ marginLeft: '10px' }}>
+                          <input
+                            type="checkbox"
+                            checked={negations[attribute] || false}
+                            onChange={() => handleNegationToggle(attribute)}
+                          />
+                          Отрицание
+                        </label>
+                      )}
+                    </div>
+
+                    <div className={`filter-text-input ${filterOperators[attribute] === 'endswith' ? 'visible' : ''}`}>
+                      <input
+                        type="text"
+                        className="custom-text-filter-input"
+                        value={filterTexts[attribute] || ''}
+                        onChange={(e) => handleFilterTextChange(attribute, e.target.value)}
+                        placeholder="Введите значение для фильтрации"
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <label>
+                        <input
+                          type="radio"
+                          name={`operator-${attribute}`}
+                          value="isnull"
+                          checked={filterOperators[attribute] === 'isnull'}
+                          onChange={() => handleOperatorChange(attribute, 'isnull')}
+                        />
+                        Пусто
+                      </label>
+                      {filterOperators[attribute] === 'isnull' && (
+                        <label className="negation-checkbox" style={{ marginLeft: '10px' }}>
+                          <input
+                            type="checkbox"
+                            checked={negations[attribute] || false}
+                            onChange={() => handleNegationToggle(attribute)}
+                          />
+                          Отрицание
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="filter-operator-actions">
+                    <button onClick={handleSaveFilter}>Сохранить</button>
+                    <button onClick={() => setIsFilterSettingsOpen(false)}>Закрыть</button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -131,92 +298,6 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
           <button onClick={() => setIsAddFilterPanelOpen(false)}>Закрыть</button>
         </div>
       </div>
-
-      {activeFilter && isFilterSettingsOpen && (
-        <div className="filter-operator-panel" style={{ top: `${filterSettingsPosition.top}px`, left: `${filterSettingsPosition.left}px` }}>
-          <div className="filter-operator-settings">
-            {/* <h4>Настройка фильтра для {activeFilter}</h4> */}
-            <div className="filter-operator-options">
-              <label>
-                <input
-                  type="radio"
-                  name={`operator-${activeFilter}`}
-                  value="contains"
-                  checked={filterOperators[activeFilter] === 'contains'}
-                  onChange={() => handleOperatorChange(activeFilter, 'contains')}
-                />
-                Содержит
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name={`operator-${activeFilter}`}
-                  value="eq"
-                  checked={filterOperators[activeFilter] === 'eq'}
-                  onChange={() => handleOperatorChange(activeFilter, 'eq')}
-                />
-                Равно
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name={`operator-${activeFilter}`}
-                  value="startswith"
-                  checked={filterOperators[activeFilter] === 'startswith'}
-                  onChange={() => handleOperatorChange(activeFilter, 'startswith')}
-                />
-                Начинается с
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name={`operator-${activeFilter}`}
-                  value="endswith"
-                  checked={filterOperators[activeFilter] === 'endswith'}
-                  onChange={() => handleOperatorChange(activeFilter, 'endswith')}
-                />
-                Заканчивается на
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name={`operator-${activeFilter}`}
-                  value="isnull"
-                  checked={filterOperators[activeFilter] === 'isnull'}
-                  onChange={() => handleOperatorChange(activeFilter, 'isnull')}
-                />
-                Пусто
-              </label>
-              
-            </div>
-
-
-
-            {filterOperators[activeFilter] !== 'isnull' && filterOperators[activeFilter] !== 'isnotnull' && (
-              <input
-                type="text"
-                value={filterTexts[activeFilter] || ''}
-                onChange={(e) => handleFilterTextChange(activeFilter, e.target.value)}
-                placeholder="Введите значение для фильтрации"
-              />
-            )}
-                        {/* Отрицание */}
-                        <label>
-              <input
-                type="checkbox"
-                checked={negations[activeFilter] || false}
-                onChange={() => handleNegationToggle(activeFilter)}
-              />
-              Отрицание
-            </label>
-
-            <div className="filter-operator-actions">
-              <button onClick={handleSaveFilter}>Сохранить</button>
-              <button onClick={() => setIsFilterSettingsOpen(false)}>Закрыть</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
