@@ -17,68 +17,64 @@ const KeycloakProvider = ({ children }) => {
         console.log('Keycloak already initialized or authenticated.');
         return;
       }
-
-      console.log('Initializing Keycloak...');
-
+  
       const storedToken = Cookies.get('kcToken');
       const storedRefreshToken = Cookies.get('kcRefreshToken');
-
+  
+      // Проверяем наличие токенов
       if (storedToken && storedRefreshToken) {
         keycloak.token = storedToken;
         keycloak.refreshToken = storedRefreshToken;
-
-        // Проверка сессии пользователя через Keycloak
+  
         try {
-          const userInfoResponse = await fetch(
-            'http://localhost:8080/realms/soar-master-realm/protocol/openid-connect/userinfo',
-            {
-              headers: {
-                'Authorization': `Bearer ${storedToken}`,
-              },
-            }
-          );
-
+          // Попытка проверки валидности токена через /userinfo
+          const userInfoResponse = await fetch('http://localhost:8080/realms/soar-master-realm/protocol/openid-connect/userinfo', {
+            headers: {
+              'Authorization': `Bearer ${storedToken}`,
+            },
+          });
+  
           if (userInfoResponse.ok) {
-            const userInfoData = await userInfoResponse.json(); // Получаем данные пользователя
+            const userInfoData = await userInfoResponse.json();
             console.log('Session is valid, user info:', userInfoData);
             setKeycloakAuthenticated(true);
-            setUserInfo(userInfoData); // Сохраняем данные пользователя
+            setUserInfo(userInfoData);
             setKcInitialized(true);
-            navigate('/'); // Перенаправляем на главную страницу
+            navigate('/');
             return;
           } else {
             console.log('Session invalid, clearing session.');
             clearSession();
+            return;
           }
         } catch (error) {
           console.error('Failed to fetch userinfo:', error);
           clearSession();
+          return;
         }
       }
-
+  
       try {
         const authenticated = await keycloak.init({
           onLoad: 'check-sso',
           silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
         });
-
+  
         if (authenticated) {
           Cookies.set('kcToken', keycloak.token, { expires: 1 });
           Cookies.set('kcRefreshToken', keycloak.refreshToken, { expires: 1 });
           setKeycloakAuthenticated(true);
-          setKcInitialized(true);
-          navigate('/');
         } else {
           clearSession();
         }
-
+  
         setKcInitialized(true);
       } catch (error) {
         console.error('Keycloak initialization error:', error);
         clearSession();
       }
     };
-
+  
     initKeycloak();
   }, [kcInitialized, navigate]);
 

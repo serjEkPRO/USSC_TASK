@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { KeycloakContext } from '../components/KeycloakProvider'; // Импортируем контекст Keycloak
 import '../styles/Sidebar.scss';
 import CustomIcon from '../assets/12197372.png'; // Путь к вашей иконке
@@ -6,6 +6,14 @@ import CustomIcon from '../assets/12197372.png'; // Путь к вашей ик�
 const Sidebar = ({ setActiveTab, toggleSidebar }) => {
   const [isShrinkView, setIsShrinkView] = useState(false);
   const { userInfo } = useContext(KeycloakContext); // Получаем данные пользователя из контекста
+  const [isLoading, setIsLoading] = useState(true); // Добавляем состояние загрузки
+
+  // Эффект, который устанавливает статус загрузки после получения userInfo
+  useEffect(() => {
+    if (userInfo) {
+      setIsLoading(false); // Останавливаем загрузку, если данные получены
+    }
+  }, [userInfo]);
 
   const handleSidebarView = () => {
     setIsShrinkView(!isShrinkView);
@@ -100,7 +108,9 @@ const Sidebar = ({ setActiveTab, toggleSidebar }) => {
           </li>
         </ul>
         <div className="sidebar-profileSection">
-          {userInfo ? (
+          {isLoading ? (
+            <span>Загрузка...</span> // Отображаем состояние загрузки
+          ) : userInfo ? (
             <>
               <img
                 src="https://assets.codepen.io/3306515/i-know.jpg"

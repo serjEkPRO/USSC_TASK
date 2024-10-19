@@ -10,14 +10,14 @@ if (-not $changes) {
     git add -A
 
     # Создайте коммит с текущей датой и временем
-    $commitMessage = "Отображение текущего пользователя $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    $commitMessage = "Исправлена повторная инициализация кейклок $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     git commit -m $commitMessage
 
     # Push изменений
     git push origin main
 }
 #посмотреть хеши git log
-#вернуть git reset --hard 30a7e3b73568e6f15c3f0e0ab6a946e8d69dfe8b
+#вернуть git reset --hard 3765c0b4691acb23e3a45a408c78bcffdec4c03d
 
 #вернуть на предыдущую ветку.
 #git reset --hard origin/main
