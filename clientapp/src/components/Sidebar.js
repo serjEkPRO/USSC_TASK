@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { KeycloakContext } from '../components/KeycloakProvider'; // Импортируем контекст Keycloak
 import '../styles/Sidebar.scss';
 import CustomIcon from '../assets/12197372.png'; // Путь к вашей иконке
 
 const Sidebar = ({ setActiveTab, toggleSidebar }) => {
   const [isShrinkView, setIsShrinkView] = useState(false);
+  const { userInfo } = useContext(KeycloakContext); // Получаем данные пользователя из контекста
 
   const handleSidebarView = () => {
     setIsShrinkView(!isShrinkView);
-    toggleSidebar(); // Вызовите функцию toggleSidebar при изменении состояния боковой панели
+    toggleSidebar(); // Вызов функции для изменения состояния боковой панели
   };
 
   return (
@@ -98,13 +100,19 @@ const Sidebar = ({ setActiveTab, toggleSidebar }) => {
           </li>
         </ul>
         <div className="sidebar-profileSection">
-          <img
-            src="https://assets.codepen.io/3306515/i-know.jpg"
-            width="40"
-            height="40"
-            alt="Monica Geller"
-          />
-          <span>Monica Geller</span>
+          {userInfo ? (
+            <>
+              <img
+                src="https://assets.codepen.io/3306515/i-know.jpg"
+                width="40"
+                height="40"
+                alt={userInfo.preferred_username}
+              />
+              <span>{userInfo.preferred_username || "Пользователь"}</span> {/* Отображаем имя пользователя */}
+            </>
+          ) : (
+            <span>Не удалось загрузить информацию о пользователе</span> // Показываем сообщение, если данные не были загружены
+          )}
         </div>
       </div>
     </div>

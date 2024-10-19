@@ -8,6 +8,7 @@ export const KeycloakContext = createContext(null);
 const KeycloakProvider = ({ children }) => {
   const [keycloakAuthenticated, setKeycloakAuthenticated] = useState(false);
   const [kcInitialized, setKcInitialized] = useState(false);
+  const [userInfo, setUserInfo] = useState(null); // Сохраняем информацию о пользователе
   const navigate = useNavigate(); // для перенаправления
 
   useEffect(() => {
@@ -38,8 +39,10 @@ const KeycloakProvider = ({ children }) => {
           );
 
           if (userInfoResponse.ok) {
-            console.log('Session is valid');
+            const userInfoData = await userInfoResponse.json(); // Получаем данные пользователя
+            console.log('Session is valid, user info:', userInfoData);
             setKeycloakAuthenticated(true);
+            setUserInfo(userInfoData); // Сохраняем данные пользователя
             setKcInitialized(true);
             navigate('/'); // Перенаправляем на главную страницу
             return;
@@ -63,6 +66,7 @@ const KeycloakProvider = ({ children }) => {
           Cookies.set('kcToken', keycloak.token, { expires: 1 });
           Cookies.set('kcRefreshToken', keycloak.refreshToken, { expires: 1 });
           setKeycloakAuthenticated(true);
+          setKcInitialized(true);
           navigate('/');
         } else {
           clearSession();
@@ -83,10 +87,10 @@ const KeycloakProvider = ({ children }) => {
     Cookies.remove('kcToken');
     Cookies.remove('kcRefreshToken');
     setKeycloakAuthenticated(false);
+    setUserInfo(null); // Очищаем данные пользователя при выходе
     navigate('/login');
   };
 
-  // Функция для проверки и обновления токена
   const checkTokenValidity = async () => {
     try {
       const refreshed = await keycloak.updateToken(60);
@@ -104,7 +108,7 @@ const KeycloakProvider = ({ children }) => {
 
   useEffect(() => {
     const intervalId = setInterval(checkTokenValidity, 300000);
-    return () => clearInterval(intervalId); // Очищаем интервал при размонтировании компонента
+    return () => clearInterval(intervalId);
   }, []);
 
   if (!kcInitialized) {
@@ -112,7 +116,7 @@ const KeycloakProvider = ({ children }) => {
   }
 
   return (
-    <KeycloakContext.Provider value={{ keycloakAuthenticated, keycloak }}>
+    <KeycloakContext.Provider value={{ keycloakAuthenticated, keycloak, userInfo }}>
       {children}
     </KeycloakContext.Provider>
   );
