@@ -1,7 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import Sidebar from '../components/Sidebar';
-import Cookies from 'js-cookie'; // Импортируем библиотеку для работы с cookies
-
 import IncidentsTable from '../components/IncidentsTable';
 import BackgroundAnimation from '../components/BackgroundAnimation';
 import IncidentManagement from '../components/IncidentManagement';
@@ -11,6 +9,7 @@ import CreateIncidentModal from '../components/CreateIncidentModal';
 import WorkFlow from '../components/WorkFlow';
 import { KeycloakContext } from '../components/KeycloakProvider'; // Импортируем контекст Keycloak
 import LoginForm from '../components/LoginForm'; // Импортируем компонент LoginForm
+import Cookies from 'js-cookie'; // Подключаем библиотеку для работы с cookies
 
 import '../styles/App.css';
 import '../styles/BackgroundAnimation.css';
@@ -20,22 +19,11 @@ function App() {
   const [selectedIncidentId, setSelectedIncidentId] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [authenticated, setAuthenticated] = useState(false);
+  const { keycloakAuthenticated } = useContext(KeycloakContext); // Используем контекст Keycloak
 
-  // Проверяем, есть ли токен в куках
-  useEffect(() => {
-    const token = Cookies.get('kcToken');
-    if (token) {
-      setAuthenticated(true); // Устанавливаем, что пользователь аутентифицирован
-    }
-  }, []);
-
-  const handleLogin = (token) => {
-    setAuthenticated(true); // Пользователь залогинен
-  };
-
-  if (!authenticated) {
-    return <LoginForm onLogin={handleLogin} />; // Если не аутентифицирован, показываем форму логина
+  // Если не аутентифицирован, показываем форму логина
+  if (!keycloakAuthenticated) {
+    return <LoginForm />;
   }
 
   const openDetail = (incidentId) => {
@@ -57,7 +45,7 @@ function App() {
   };
 
   const handleCreateIncident = async (incident) => {
-    const token = sessionStorage.getItem('kcToken'); // Получаем токен из sessionStorage
+    const token = Cookies.get('kcToken'); // Получаем токен из куки
 
     const response = await fetch('http://127.0.0.1:5000/api/incidents', {
       method: 'POST',
@@ -99,9 +87,7 @@ function App() {
         )}
 
         {activeTab === 'incident-management' && <IncidentManagement />}
-
         {activeTab === 'dictionaries' && <DictionaryManagement />}
-
         {activeTab === 'workflow' && <WorkFlow />}
 
         <CreateIncidentModal
