@@ -1,15 +1,65 @@
+<<<<<<< HEAD
 import React, { useState, useContext } from 'react';
 import { KeycloakContext } from '../components/KeycloakProvider'; // Импортируем контекст Keycloak
+=======
+import React, { useState, useEffect, useContext } from 'react';
+import { KeycloakContext } from '../components/KeycloakProvider'; // Импортируем контекст Keycloak
+import Cookies from 'js-cookie'; // Для работы с куки
+>>>>>>> 6e5fd227dbb3621da3e81531eaab50ace63c450f
 import '../styles/Sidebar.scss';
 import CustomIcon from '../assets/12197372.png'; // Путь к вашей иконке
 
 const Sidebar = ({ setActiveTab, toggleSidebar }) => {
   const [isShrinkView, setIsShrinkView] = useState(false);
+<<<<<<< HEAD
   const { userInfo } = useContext(KeycloakContext); // Получаем данные пользователя из контекста
+=======
+  const { keycloakAuthenticated, keycloak } = useContext(KeycloakContext); // Доступ к keycloak и статусу аутентификации
+  const [userInfo, setUserInfo] = useState(null); // Состояние для хранения информации о пользователе
+  const [isLoading, setIsLoading] = useState(true); // Состояние для отслеживания загрузки
+
+  // Загрузка информации о пользователе
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (keycloakAuthenticated) {
+        try {
+          console.log('Загрузка информации о пользователе...');
+          const info = await keycloak.loadUserInfo();
+          console.log('Информация о пользователе:', info);
+          setUserInfo(info); // Сохраняем данные пользователя
+        } catch (error) {
+          console.error('Ошибка загрузки информации о пользователе:', error);
+        } finally {
+          setIsLoading(false); // Устанавливаем флаг, что загрузка завершена
+        }
+      }
+    };
+
+    fetchUserInfo();
+  }, [keycloakAuthenticated, keycloak]);
+>>>>>>> 6e5fd227dbb3621da3e81531eaab50ace63c450f
 
   const handleSidebarView = () => {
     setIsShrinkView(!isShrinkView);
     toggleSidebar(); // Вызов функции для изменения состояния боковой панели
+<<<<<<< HEAD
+=======
+  };
+
+  // Логика выхода из системы
+  const handleLogout = () => {
+    if (keycloak && typeof keycloak.logout === 'function') {
+      keycloak.logout({
+        redirectUri: window.location.origin, // Перенаправление после выхода
+      });
+
+      // Очищаем токены из cookies
+      Cookies.remove('kcToken');
+      Cookies.remove('kcRefreshToken');
+    } else {
+      console.error('Keycloak не инициализирован или метод logout недоступен');
+    }
+>>>>>>> 6e5fd227dbb3621da3e81531eaab50ace63c450f
   };
 
   return (
@@ -100,12 +150,19 @@ const Sidebar = ({ setActiveTab, toggleSidebar }) => {
           </li>
         </ul>
         <div className="sidebar-profileSection">
+<<<<<<< HEAD
           {userInfo ? (
+=======
+          {isLoading ? (
+            <span>Загрузка...</span> // Показываем состояние загрузки
+          ) : userInfo ? (
+>>>>>>> 6e5fd227dbb3621da3e81531eaab50ace63c450f
             <>
               <img
                 src="https://assets.codepen.io/3306515/i-know.jpg"
                 width="40"
                 height="40"
+<<<<<<< HEAD
                 alt={userInfo.preferred_username}
               />
               <span>{userInfo.preferred_username || "Пользователь"}</span> {/* Отображаем имя пользователя */}
@@ -113,6 +170,18 @@ const Sidebar = ({ setActiveTab, toggleSidebar }) => {
           ) : (
             <span>Не удалось загрузить информацию о пользователе</span> // Показываем сообщение, если данные не были загружены
           )}
+=======
+                alt={userInfo.name}
+              />
+              <span>{userInfo.name}</span> {/* Отображаем реальное имя пользователя */}
+            </>
+          ) : (
+            <span>Ошибка загрузки данных</span> // Показываем сообщение, если данные не были загружены
+          )}
+          <button onClick={handleLogout} className="logout-button">
+            Выйти
+          </button> {/* Кнопка выхода */}
+>>>>>>> 6e5fd227dbb3621da3e81531eaab50ace63c450f
         </div>
       </div>
     </div>

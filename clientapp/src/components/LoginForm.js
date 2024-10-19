@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie'; // Импортируем библиотеку для работы с cookies
+import Cookies from 'js-cookie'; // Для работы с куки
 
 function LoginForm() {
   const [username, setUsername] = useState('');
@@ -29,11 +29,17 @@ function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
-        // Сохраняем токен и refresh токен в cookies
+        // Сохраняем токены в cookies или sessionStorage
         Cookies.set('kcToken', data.access_token, { expires: 1 });
         Cookies.set('kcRefreshToken', data.refresh_token, { expires: 1 });
 
-        // Перенаправляем на основную страницу
+        // Выполняем инициализацию Keycloak вручную с полученными токенами
+        const keycloak = await import('../components/keycloak'); // Импортируем Keycloak динамически
+        keycloak.token = data.access_token;
+        keycloak.refreshToken = data.refresh_token;
+        keycloak.authenticated = true;
+
+        // Перенаправляем на главную страницу
         navigate('/');
       } else {
         setError('Неверный логин или пароль');
