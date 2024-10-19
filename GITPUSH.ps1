@@ -10,7 +10,7 @@ if (-not $changes) {
     git add -A
 
     # Создайте коммит с текущей датой и временем
-    $commitMessage = "Отображение текущего пользователя $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    $commitMessage = "Отображение текущего пользователя 123 $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     git commit -m $commitMessage
 
     # Push изменений
