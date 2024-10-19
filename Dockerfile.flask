@@ -1,0 +1,14 @@
+# Dockerfile для Flask сервера
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Копируем скрипт Server.py из директории C:\SOARMASTER\
+COPY ../Server.py /app/
+
+# Установим зависимости, если у вас есть requirements.txt
+COPY ../requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Запуск сервера
+CMD ["python", "Server.py", "--host=0.0.0.0"]

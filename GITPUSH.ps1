@@ -10,7 +10,7 @@ if (-not $changes) {
     git add -A
 
     # Создайте коммит с текущей датой и временем
-    $commitMessage = "правильное позиционирование меню операторов фильтра $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    $commitMessage = "Подключен keycloak. Настроена аутентификация с использованием куки $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     git commit -m $commitMessage
 
     # Push изменений

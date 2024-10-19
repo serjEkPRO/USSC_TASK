@@ -12,10 +12,10 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 #1 Настройка подключения к базе данных
 db_config = {
-    "host": "127.0.0.1",
+    "host": "10.23.52.55",
     "database": "soar_struct",
-    "user": "postgres",
-    "password": "852456"
+    "user": "master",
+    "password": "o6yyB2oD"
 }
 
 logging.basicConfig(level=logging.ERROR)
@@ -600,4 +600,5 @@ def get_incident(incident_id):
         return jsonify({"error": str(e), "details": e.args}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+

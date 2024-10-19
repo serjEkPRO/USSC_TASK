@@ -1,0 +1,16 @@
+# Dockerfile для React приложения
+FROM node:18-slim
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем package.json и package-lock.json из директории clientapp
+COPY ../clientapp/package*.json ./
+
+# Устанавливаем все зависимости за один шаг
+RUN npm install --no-cache \
+    && npm install --save-dev @babel/plugin-proposal-private-property-in-object \
+    && npm install keycloak-js
+
+# Команда для запуска React приложения
+CMD ["npm", "start"]
