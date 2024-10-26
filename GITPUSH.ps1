@@ -14,7 +14,7 @@ if (-not $changes) {
     git commit -m $commitMessage
 
     # Push изменений
-    git push origin main
+    git push origin main --force
 }
 #посмотреть хеши git log
 #вернуть git reset --hard 3765c0b4691acb23e3a45a408c78bcffdec4c03d
