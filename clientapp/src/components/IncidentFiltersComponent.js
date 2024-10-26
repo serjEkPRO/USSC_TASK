@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import '../styles/incidentList/IncidentFilters.css';
 
 const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators = {}, setFilterOperators, userId }) => {
@@ -12,6 +12,46 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [filterName, setFilterName] = useState("Мой фильтр");
   const filterPanelRef = useRef(null);
   const filterButtonRef = useRef(null);
+
+    // Загрузка фильтров из sessionStorage при инициализации
+    useEffect(() => {
+      const savedFilters = JSON.parse(sessionStorage.getItem(`user_filters_${userId}`));
+      if (savedFilters) {
+          setFilterValues(savedFilters.filterValues || {});
+          setFilterOperators(savedFilters.filterOperators || {});
+          setNegations(savedFilters.negations || {});
+          setSelectedAttributes(savedFilters.selectedAttributes || []);
+          setLogicalOperators(savedFilters.logicalOperators || []);
+          setFilterTexts(savedFilters.filterTexts || {}); // Загрузка текста фильтров
+      }
+  }, [userId]);
+
+  // Сохранение фильтров в sessionStorage при каждом изменении
+  useEffect(() => {
+    sessionStorage.setItem(
+        `user_filters_${userId}`,
+        JSON.stringify({
+            filterValues,
+            filterOperators,
+            negations,
+            selectedAttributes,
+            logicalOperators,
+            filterTexts // Сохранение текста фильтров
+        })
+    );
+}, [filterValues, filterOperators, negations, selectedAttributes, logicalOperators, filterTexts, userId]);
+
+
+  const handleAddAttribute = (attribute) => {
+      if (!selectedAttributes.includes(attribute)) {
+          setSelectedAttributes((prev) => [...prev, attribute]);
+          setFilterOperators((prev) => ({ ...prev, [attribute]: 'eq' }));
+          setFilterTexts((prev) => ({ ...prev, [attribute]: '' }));
+          setNegations((prev) => ({ ...prev, [attribute]: false }));
+          setLogicalOperators((prev) => [...prev, 'AND']);
+      }
+  };
+
 
   const handleOpenFilterSettings = (attribute, event) => {
     setActiveFilter(attribute);
@@ -30,15 +70,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
     setIsFilterSettingsOpen(false);
   };
 
-  const handleAddAttribute = (attribute) => {
-    if (!selectedAttributes.includes(attribute)) {
-      setSelectedAttributes((prev) => [...prev, attribute]);
-      setFilterOperators((prev) => ({ ...prev, [attribute]: 'eq' }));
-      setFilterTexts((prev) => ({ ...prev, [attribute]: '' }));
-      setNegations((prev) => ({ ...prev, [attribute]: false }));
-      setLogicalOperators((prev) => [...prev, 'AND']);
-    }
-  };
+
 
   const handleRemoveAttribute = (attribute, index) => {
     setSelectedAttributes((prev) => prev.filter((attr) => attr !== attribute));
