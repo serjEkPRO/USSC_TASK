@@ -100,7 +100,7 @@ const DraggableHeader = ({ column, moveColumn, index, handleResizeStart, columnW
   );
 };
 
-const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarCollapsed }) => {
+const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarCollapsed, userId }) => {
   const [incidents, setIncidents] = useState([]);
   const [fields, setFields] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -116,11 +116,13 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
   const startWidthRef = useRef(0);
 
   useEffect(() => {
-    fetchFields();
-    fetchIncidents();
-    const intervalId = setInterval(() => fetchIncidents(searchQuery), 5000);
-    return () => clearInterval(intervalId);
-  }, [searchQuery, filterValues]);
+    if (userId) {
+      fetchFields();
+      fetchIncidents();
+      const intervalId = setInterval(() => fetchIncidents(searchQuery), 5000);
+      return () => clearInterval(intervalId);
+    }
+  }, [searchQuery, filterValues, userId]);
 
   const fetchFields = async () => {
     try {
@@ -137,7 +139,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
 
   const fetchIncidents = async (query = '') => {
     try {
-      let filterQuery = Object.entries(filterValues)
+      const filterQuery = Object.entries(filterValues)
         .filter(([key, value]) => value)
         .map(([key, value]) => {
           const operator = filterOperators[key] || 'eq';
@@ -218,13 +220,17 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
   } = useTable(
     {
       columns,
-      data: incidents,
+      data: userId ? incidents : [],
       initialState: { pageSize: 10 },
     },
     useFilters,
     useSortBy,
     usePagination
   );
+
+  if (!userId) {
+    return <p>Загрузка данных пользователя...</p>;
+  }
 
   return (
     <div className={`table-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
@@ -235,6 +241,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
         filterValues={filterValues}
         filterOperators={filterOperators}
         setFilterOperators={setFilterOperators}
+        userId={userId}
       />
 
       <div className="table-wrapper">

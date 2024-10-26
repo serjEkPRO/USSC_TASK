@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import Cookies from 'js-cookie'; // Импортируем библиотеку для работы с cookies
+import Cookies from 'js-cookie';
 
 import IncidentsTable from '../components/IncidentsTable';
 import BackgroundAnimation from '../components/BackgroundAnimation';
@@ -9,8 +9,8 @@ import DictionaryManagement from '../components/DictionaryManagement';
 import IncidentDetailModal from '../components/IncidentDetailModal';
 import CreateIncidentModal from '../components/CreateIncidentModal';
 import WorkFlow from '../components/WorkFlow';
-import { KeycloakContext } from '../components/KeycloakProvider'; // Импортируем контекст Keycloak
-import LoginForm from '../components/LoginForm'; // Импортируем компонент LoginForm
+import { KeycloakContext } from '../components/KeycloakProvider'; 
+import LoginForm from '../components/LoginForm';
 
 import '../styles/App.css';
 import '../styles/BackgroundAnimation.css';
@@ -22,20 +22,34 @@ function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
 
-  // Проверяем, есть ли токен в куках
+  const { userInfo, kcInitialized } = useContext(KeycloakContext);
+  const userId = userInfo?.sub; // Получаем userId из userInfo
+  
   useEffect(() => {
     const token = Cookies.get('kcToken');
     if (token) {
-      setAuthenticated(true); // Устанавливаем, что пользователь аутентифицирован
+      setAuthenticated(true);
     }
   }, []);
 
+  useEffect(() => {
+    if (userId) {
+      console.log("Переданный userId из App:", userId);
+    }
+  }, [userId]);
+
   const handleLogin = (token) => {
-    setAuthenticated(true); // Пользователь залогинен
+    setAuthenticated(true);
   };
 
+  // Если аутентификация не завершена, показываем только загрузку
+  if (!kcInitialized) {
+    return <p>Загрузка...</p>;
+  }
+
+  // Если не аутентифицирован, показываем форму входа
   if (!authenticated) {
-    return <LoginForm onLogin={handleLogin} />; // Если не аутентифицирован, показываем форму логина
+    return <LoginForm onLogin={handleLogin} />;
   }
 
   const openDetail = (incidentId) => {
@@ -57,13 +71,13 @@ function App() {
   };
 
   const handleCreateIncident = async (incident) => {
-    const token = sessionStorage.getItem('kcToken'); // Получаем токен из sessionStorage
+    const token = Cookies.get('kcToken');
 
     const response = await fetch('http://127.0.0.1:5000/api/incidents', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`, // Передаем токен в заголовке
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(incident),
     });
@@ -79,7 +93,7 @@ function App() {
 
   return (
     <div className={`App ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <Sidebar setActiveTab={setActiveTab} toggleSidebar={toggleSidebar} />
+      <Sidebar setActiveTab={setActiveTab} toggleSidebar={toggleSidebar} userId={userId} />
       <BackgroundAnimation />
       <div className={`main-content ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ height: '100vh', overflow: 'hidden' }}>
         {activeTab === 'incidents' && (
@@ -88,6 +102,7 @@ function App() {
               onIncidentClick={openDetail}
               onCreateIncidentClick={openCreateModal}
               isSidebarCollapsed={isSidebarCollapsed}
+              userId={userId} // Передаем только userId в IncidentsTable
             />
             {selectedIncidentId && (
               <IncidentDetailModal
@@ -99,9 +114,7 @@ function App() {
         )}
 
         {activeTab === 'incident-management' && <IncidentManagement />}
-
         {activeTab === 'dictionaries' && <DictionaryManagement />}
-
         {activeTab === 'workflow' && <WorkFlow />}
 
         <CreateIncidentModal

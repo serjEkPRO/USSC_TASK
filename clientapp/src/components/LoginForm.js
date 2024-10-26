@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
+import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie'; // Импортируем библиотеку для работы с cookies
 
-function LoginForm() {
+function LoginForm({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,19 +21,16 @@ function LoginForm() {
           'client_id': 'soar-master',
           'username': username,
           'password': password,
-          'scope': 'openid profile'  // Убедитесь, что 'openid' включен
+          'scope': 'openid profile'
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Сохраняем токен и refresh токен в cookies
         Cookies.set('kcToken', data.access_token, { expires: 1 });
         Cookies.set('kcRefreshToken', data.refresh_token, { expires: 1 });
-
-        // Перенаправляем на основную страницу
-        navigate('/');
+        await onLogin(); // Уведомляем KeycloakProvider об успешном входе
       } else {
         setError('Неверный логин или пароль');
       }

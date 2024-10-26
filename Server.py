@@ -12,7 +12,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 #1 Настройка подключения к базе данных
 db_config = {
-    "host": "10.23.52.55",
+    "host": "postgres",
     "database": "soar_struct",
     "user": "master",
     "password": "o6yyB2oD"
@@ -598,6 +598,69 @@ def get_incident(incident_id):
     except pg8000.dbapi.DatabaseError as e:
         logging.error(f"Error fetching incident: {str(e)}")
         return jsonify({"error": str(e), "details": e.args}), 500
+
+@app.route('/api/filters', methods=['GET'])
+def get_filters():
+    try:
+        user_id = request.args.get('user_id')
+        if not user_id:
+            return jsonify({"error": "User ID is required"}), 400
+
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            # Выполняем запрос для получения фильтров пользователя
+            cur.execute("""
+                SELECT filter_data
+                FROM user_filters
+                WHERE user_id = %s
+                ORDER BY (filter_data->>'installed_by_user')::boolean DESC
+            """, (user_id,))
+            filters = cur.fetchall()
+
+        # Преобразуем результат в удобный формат
+        filters_list = [filter[0] for filter in filters]  # Извлекаем JSON каждого фильтра
+        return jsonify(filters_list), 200
+
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error retrieving filters: {str(e)}")
+        return jsonify({"error": str(e), "details": e.args}), 500
+
+@app.route('/api/filters/add', methods=['POST'])
+def save_filter():
+    try:
+        filter_data = request.json
+        user_id = filter_data.get("user_id")  # Получаем ID пользователя из данных фильтра
+
+        # Логируем полученные данные для диагностики
+        print("Полученные данные фильтра:", filter_data)
+        print("Полученный user_id:", user_id)
+
+        # Проверка на наличие обязательных данных
+        if not user_id or not filter_data:
+            return jsonify({
+                "error": "User ID and filter data are required", 
+                "received_data": filter_data, 
+                "received_user_id": user_id
+            }), 400
+
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            # Выполняем запрос на вставку данных фильтра в таблицу user_filters
+            cur.execute("""
+                INSERT INTO user_filters (user_id, filter_data)
+                VALUES (%s, %s::jsonb)
+                RETURNING id
+            """, (user_id, filter_data))
+            filter_id = cur.fetchone()[0]
+            conn.commit()
+        
+        # Возвращаем ID сохраненного фильтра
+        return jsonify({"message": "Filter saved successfully", "filter_id": filter_id}), 201
+
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error saving filter: {str(e)}")
+        return jsonify({"error": str(e), "details": e.args, "received_data": filter_data}), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

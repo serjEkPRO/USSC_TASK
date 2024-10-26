@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   flask-server:
-    build:
-      context: .
-      dockerfile: Dockerfile.flask
+    image: ${FLASK_IMAGE}  # Используем образ вместо сборки
     container_name: flask_server
     ports:
       - "${FLASK_PORT}:5000"
@@ -15,23 +13,25 @@ services:
       - postgres
       - elasticsearch
       - keycloak
+    networks:
+      - backend
 
   react-frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.react
+    image: ${REACT_IMAGE}  # Используем образ вместо сборки
     container_name: react_frontend
     ports:
       - "${REACT_PORT}:3000"
     volumes:
       # Монтируем директорию C:/SOARMASTER/clientapp в контейнер
       - C:/SOARMASTER/clientapp:/app
-      - /app/node_modules 
+      - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     depends_on:
       - flask-server
+    networks:
+      - backend
 
   keycloak:
     image: quay.io/keycloak/keycloak:21.0.0
@@ -49,9 +49,11 @@ services:
     ports:
       - "${KEYCLOAK_PORT}:8080"
     command:
-      - start-dev --db=postgres --db-url=jdbc:postgresql://10.23.52.55:5432/${KEYCLOAK_DB_NAME} --db-username=${POSTGRES_USER} --db-password=${POSTGRES_PASSWORD}
+      - start-dev --db=postgres --db-url=jdbc:postgresql://postgres:5432/${KEYCLOAK_DB_NAME} --db-username=${POSTGRES_USER} --db-password=${POSTGRES_PASSWORD}
     depends_on:
       - postgres
+    networks:
+      - backend
 
   pgadmin:
     image: dpage/pgadmin4
@@ -63,6 +65,8 @@ services:
       - "${PGADMIN_PORT}:80"
     depends_on:
       - postgres
+    networks:
+      - backend
 
   postgres:
     image: postgres:latest

@@ -10,7 +10,8 @@ COPY ../clientapp/package*.json ./
 # Устанавливаем все зависимости за один шаг
 RUN npm install --no-cache \
     && npm install --save-dev @babel/plugin-proposal-private-property-in-object \
-    && npm install keycloak-js
+    && npm install keycloak-js \
+	&& npm install js-cookie
 
 # Команда для запуска React приложения
 CMD ["npm", "start"]

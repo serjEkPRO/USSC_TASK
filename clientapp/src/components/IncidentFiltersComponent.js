@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import '../styles/incidentList/IncidentFilters.css';
 
-const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators, setFilterOperators }) => {
+const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators = {}, setFilterOperators, userId }) => {
   const [isAddFilterPanelOpen, setIsAddFilterPanelOpen] = useState(false);
   const [isFilterSettingsOpen, setIsFilterSettingsOpen] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState([]);
@@ -9,17 +9,18 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [filterTexts, setFilterTexts] = useState({});
   const [logicalOperators, setLogicalOperators] = useState([]);
   const [negations, setNegations] = useState({});
+  const [filterName, setFilterName] = useState("Мой фильтр");
   const filterPanelRef = useRef(null);
-  const filterButtonRef = useRef(null); // Ссылка на кнопку
+  const filterButtonRef = useRef(null);
 
   const handleOpenFilterSettings = (attribute, event) => {
     setActiveFilter(attribute);
-    const buttonRect = event.target.getBoundingClientRect(); // Получаем координаты кнопки
+    const buttonRect = event.target.getBoundingClientRect();
     const panel = document.querySelector('.filter-operator-panel');
     
     if (panel) {
-      panel.style.top = `${buttonRect.bottom}px`; // Расположим под кнопкой
-      panel.style.left = `${buttonRect.left}px`; // Совместим по левому краю
+      panel.style.top = `${buttonRect.bottom}px`;
+      panel.style.left = `${buttonRect.left}px`;
     }
     setIsFilterSettingsOpen(true);
   };
@@ -80,6 +81,51 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
     setIsAddFilterPanelOpen(!isAddFilterPanelOpen);
   };
 
+  const saveFilterToServer = async () => {
+    if (!userId) {
+      console.error("User ID не найден, фильтр не может быть сохранен.");
+      return;
+    }
+
+    const conditions = selectedAttributes.map((attribute, index) => ({
+      attribute,
+      operator: filterOperators[attribute],
+      value: filterTexts[attribute],
+      negation: negations[attribute],
+      logical_operator: logicalOperators[index] || "AND"
+    }));
+
+    const filterData = {
+      filter_name: filterName,
+      user_id: userId,
+      installed_by_user: true,
+      is_shared: false,
+      shared_with_users: [],
+      shared_with_groups: [],
+      conditions
+    };
+
+    console.log("Отправка данных фильтра:", filterData);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/filters/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(filterData),
+      });
+      
+      if (response.ok) {
+        const savedFilter = await response.json();
+        setSavedFilters((prev) => [...prev, savedFilter]);
+        alert("Фильтр сохранен!");
+      } else {
+        console.error("Ошибка при сохранении фильтра:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Ошибка при сохранении фильтра:", error);
+    }
+  };
+
   return (
     <div className="filter-settings">
       <div className="filter-settings-content">
@@ -88,6 +134,10 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
             <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
           </svg>
         </button>
+
+        {/* Кнопка для сохранения фильтра */}
+        <button className="save-filter-button" onClick={saveFilterToServer}>Сохранить фильтр</button>
+
         {selectedAttributes.map((attribute, index) => (
           <div key={attribute} className="filter-attribute-container">
             <div className="filter-item-group">
@@ -110,6 +160,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
               <div className="filter-operator-panel">
                 <div className="filter-operator-settings">
                   <div className="filter-operator-options">
+                    {/* Оператор 'eq' */}
                     <div style={{ display: 'flex', alignItems: 'left' }}>
                       <label>
                         <input
@@ -132,7 +183,6 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                         </label>
                       )}
                     </div>
-
                     <div className={`filter-text-input ${filterOperators[attribute] === 'eq' ? 'visible' : ''}`}>
                       <input
                         type="text"
@@ -143,6 +193,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                       />
                     </div>
 
+                    {/* Оператор 'contains' */}
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <label>
                         <input
@@ -165,7 +216,6 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                         </label>
                       )}
                     </div>
-
                     <div className={`filter-text-input ${filterOperators[attribute] === 'contains' ? 'visible' : ''}`}>
                       <input
                         type="text"
@@ -176,6 +226,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                       />
                     </div>
 
+                    {/* Оператор 'startswith' */}
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <label>
                         <input
@@ -198,7 +249,6 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                         </label>
                       )}
                     </div>
-
                     <div className={`filter-text-input ${filterOperators[attribute] === 'startswith' ? 'visible' : ''}`}>
                       <input
                         type="text"
@@ -209,6 +259,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                       />
                     </div>
 
+                    {/* Оператор 'endswith' */}
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <label>
                         <input
@@ -231,7 +282,6 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                         </label>
                       )}
                     </div>
-
                     <div className={`filter-text-input ${filterOperators[attribute] === 'endswith' ? 'visible' : ''}`}>
                       <input
                         type="text"
@@ -242,6 +292,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
                       />
                     </div>
 
+                    {/* Оператор 'isnull' */}
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <label>
                         <input
