@@ -49,27 +49,35 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
 }, [filterValues, filterOperators, negations, selectedAttributes, logicalOperators, filterTexts, userId]);
 
 
-useEffect(() => {
-  const fetchSavedFilters = async () => {
-      if (savedFiltersData.length === 0) { // Проверка на дублирование
-          try {
-              const response = await fetch(`http://localhost:5000/api/filters?user_id=${userId}`);
-              if (response.ok) {
-                  const filters = await response.json();
-                  setSavedFiltersData(filters); // Устанавливаем полученные фильтры в локальное состояние
-              } else {
-                  console.error("Ошибка при получении фильтров:", response.statusText);
-              }
-          } catch (error) {
-              console.error("Ошибка при получении фильтров:", error);
-          }
-      }
-  };
-  
-  fetchSavedFilters();
-}, [userId, savedFiltersData.length]);  // Добавляем savedFiltersData.length в зависимости
 
-  
+  // Перенос функции fetchSavedFilters
+const fetchSavedFilters = async () => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/filters?user_id=${userId}`);
+    if (response.ok) {
+      const filters = await response.json();
+      setSavedFiltersData(filters); // Устанавливаем полученные фильтры в локальное состояние
+    } else {
+      console.error("Ошибка при получении фильтров:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Ошибка при получении фильтров:", error);
+  }
+};
+
+// Вызываем fetchSavedFilters в useEffect только при монтировании компонента
+useEffect(() => {
+  fetchSavedFilters();
+}, [userId]);
+
+// Обновляем toggleSavedFiltersPanel, чтобы обновлять список при открытии панели
+const toggleSavedFiltersPanel = () => {
+  if (!isSavedFiltersPanelOpen) {
+    fetchSavedFilters(); // Загружаем сохраненные фильтры перед открытием панели
+  }
+  setIsSavedFiltersPanelOpen((prev) => !prev);
+};
+
 
 
   const handleAddAttribute = (attribute) => {
@@ -82,9 +90,7 @@ useEffect(() => {
       }
   };
 
-  const toggleSavedFiltersPanel = () => {
-    setIsSavedFiltersPanelOpen((prev) => !prev);
-  };
+
   
   
 
@@ -171,7 +177,7 @@ useEffect(() => {
     }));
   
     const filterData = {
-      filter_name: modalFilterName, // используем имя из модального окна
+      filter_name: modalFilterName, // устанавливаем имя фильтра прямо перед отправкой
       user_id: userId,
       installed_by_user: true,
       is_shared: false,
@@ -188,8 +194,8 @@ useEffect(() => {
       });
   
       if (response.ok) {
-        const savedFilter = await response.json();
-        setSavedFilters((prev) => [...prev, savedFilter]);
+        const savedFilter = await response.json(); // Получаем созданный фильтр с сервера
+        setSavedFiltersData((prev) => [...prev, savedFilter]); // Добавляем новый фильтр к существующим
         alert("Фильтр сохранен!");
       } else {
         console.error("Ошибка при сохранении фильтра:", response.statusText);
@@ -198,8 +204,12 @@ useEffect(() => {
       console.error("Ошибка при сохранении фильтра:", error);
     }
   
-    setIsModalOpen(false); // закрытие модального окна после сохранения
+    setIsModalOpen(false); // Закрываем модальное окно
+    setModalFilterName(""); // Очищаем имя фильтра после сохранения
   };
+  
+  
+  
   
 
   return (
@@ -403,6 +413,21 @@ useEffect(() => {
     {/* Панель для переключения между контентом */}
     <div ref={filterPanelRef} className={`filter-panel ${isAddFilterPanelOpen ? 'open' : ''}`}>
     
+    {isModalOpen && (
+  <div className="modal-overlay">
+    <div className="modal">
+      <h3>Сохранить фильтр</h3>
+      <input
+        type="text"
+        value={modalFilterName}
+        onChange={(e) => setModalFilterName(e.target.value)}
+        placeholder="Введите имя фильтра"
+      />
+      <button onClick={handleSaveModalFilter}>OK</button>
+      <button onClick={() => setIsModalOpen(false)}>Отмена</button>
+    </div>
+  </div>
+)}
   <div className={`panel-content ${isSavedFiltersPanelOpen ? 'shifted' : ''}`}>
 
     {/* Основной контент панели фильтров */}
@@ -454,39 +479,45 @@ useEffect(() => {
 
     {/* Контент сохранённых фильтров */}
     <div className="saved-filters-content">
-    <div className="saved-filter-list">
+        {/* Кнопка возврата над списком сохраненных фильтров */}
+        <button className="back-button-mini" onClick={toggleSavedFiltersPanel}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+  >
+    <circle cx="12" cy="12" r="10" stroke="black" fill="white" /> {/* Окружность */}
+    <path d="M12 8l-4 4 4 4M8 12h8" /> {/* Стрелка */}
+  </svg>
+</button>
+    <div className="saved-filter-list custom-scrollbar">
+
     {savedFiltersData.length > 0 ? (
-        savedFiltersData.map((filter, index) => (
-            <div key={index} className="saved-filter-item">
-                <span>{filter.filter_name || `Фильтр ${index + 1}`}</span>
-            </div>
-        ))
-    ) : (
-        <p>Нет сохранённых фильтров</p>
-    )}
-</div>
-
-
-      <button onClick={toggleSavedFiltersPanel}>Назад</button>
-    </div>
-  </div>
-</div>
-  </div>
-  {isModalOpen && (
-  <div className="modal-overlay">
-    <div className="modal">
-      <h3>Сохранить фильтр</h3>
-      <input
-        type="text"
-        value={modalFilterName}
-        onChange={(e) => setModalFilterName(e.target.value)}
-        placeholder="Введите имя фильтра"
-      />
-      <button onClick={handleSaveModalFilter}>OK</button>
-      <button onClick={() => setIsModalOpen(false)}>Отмена</button>
-    </div>
-  </div>
+    savedFiltersData.map((filter) => (
+        <div key={filter.id || filter.tempId} className="saved-filter-item">
+            <span>{filter.filter_name}</span>
+        </div>
+    ))
+) : (
+    <p>Нет сохранённых фильтров</p>
 )}
+
+
+</div>
+
+
+      
+    </div>
+  </div>
+</div>
+  </div>
+  
 
 </div>
 

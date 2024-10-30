@@ -5,6 +5,7 @@
   font-style: normal;
 }
 
+
 @font-face {
   font-family: 'MasterFont3';
   src: url('/fonts/master3.ttf') format('truetype');
@@ -166,6 +167,14 @@
   justify-content: flex-end;
 }
 
+.saved-filter-list {
+  overflow-y: auto; /* Включаем прокрутку только для списка */
+  padding-top: 5px; /* Отступ для кнопки */
+  max-height: 350px; /* Устанавливаем максимальную высоту для списка */
+  width: 100%; /* Устанавливаем максимальную высоту для списка */
+  align-items: flex-start;
+}
+
 .saved-filter {
   padding: 5px 10px;
   background-color: #5a6b8c;
@@ -229,6 +238,7 @@
   display: flex;
   width: 200%;
   transition: transform 0.5s ease;
+  transform: translateX(0); /* Изначально показываем первую страницу */
 }
 
 .main-filters-content {
@@ -258,8 +268,13 @@
 
 .saved-filters-content {
   width: 50%;
-  flex-shrink: 0;
-  align-self: flex-start;
+  padding-top: 5px; /* Отступ для размещения кнопки */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .panel-content.shifted {
@@ -333,7 +348,7 @@
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 300px;
-  text-align: center;
+  
 }
 .modal input {
   margin: 10px 0;
@@ -342,4 +357,29 @@
 }
 .modal button {
   margin: 5px;
+  flex-direction: column;
 }
+
+
+/* Позиционирование кнопки "Назад" */
+.back-button-mini {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.back-button-mini svg {
+  width: 24px;
+  height: 24px;
+  stroke: #000; /* Цвет стрелки */
+  transition: transform 0.2s;
+}
+
+.back-button-mini:hover svg {
+  transform: scale(1.1); /* Легкий эффект увеличения при наведении */
+}
+
