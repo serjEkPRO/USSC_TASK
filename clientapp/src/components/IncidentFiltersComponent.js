@@ -496,16 +496,16 @@ const toggleSavedFiltersPanel = () => {
     <path d="M12 8l-4 4 4 4M8 12h8" /> {/* Стрелка */}
   </svg>
 </button>
-    <div className="saved-filter-list custom-scrollbar">
-
+<div className="saved-filter-list custom-scrollbar">
     {savedFiltersData.length > 0 ? (
-    savedFiltersData.map((filter) => (
-        <div key={filter.id || filter.tempId} className="saved-filter-item">
-            <span>{filter.filter_name}</span>
+      savedFiltersData.map((filter) => (
+        <div key={filter.id || filter.tempId} className="saved-filter-row">
+          <span className="saved-filter-cell">{filter.filter_name}</span>
+          {/* Можно добавить дополнительные ячейки, если нужно больше информации */}
         </div>
-    ))
-) : (
-    <p>Нет сохранённых фильтров</p>
+      ))
+    ) : (
+      <p>Нет сохранённых фильтров</p>
 )}
 
 

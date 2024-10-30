@@ -175,6 +175,23 @@
   align-items: flex-start;
 }
 
+.saved-filter-row {
+  display: flex;
+  padding: 4px 5px;
+  border-bottom: 1px solid #215438;
+  transition: background-color 0.2s ease;
+}
+.saved-filter-row:hover {
+  background-color: rgba(40, 75, 71, 0.178); /* Цвет выделения при наведении */
+}
+
+.saved-filter-cell {
+  padding: 4px;
+  padding-left: 10px;
+  color: white; /* Цвет текста */
+  font-size: 14px;
+}
+
 .saved-filter {
   padding: 5px 10px;
   background-color: #5a6b8c;
