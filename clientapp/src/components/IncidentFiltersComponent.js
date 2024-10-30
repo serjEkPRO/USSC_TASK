@@ -16,6 +16,10 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const filterButtonRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState(''); // состояние для поиска
   const [savedFiltersData, setSavedFiltersData] = useState([]);
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [selectedFilterId, setSelectedFilterId] = useState(null);
+
 
 // Добавляем эффект для закрытия панели при клике вне её области
 useEffect(() => {
@@ -64,22 +68,30 @@ const toggleAddFilterPanel = () => {
     );
 }, [filterValues, filterOperators, negations, selectedAttributes, logicalOperators, filterTexts, userId]);
 
+const handleContextMenu = (event, filterId) => {
+  event.preventDefault();
+  console.log("ID выбранного фильтра при правом клике:", filterId); // Отладка
+  setSelectedFilterId(filterId);
+  setMenuPosition({ x: event.clientX, y: event.clientY });
+  setContextMenuVisible(true);
+};
 
 
   // Перенос функции fetchSavedFilters
-const fetchSavedFilters = async () => {
-  try {
-    const response = await fetch(`http://localhost:5000/api/filters?user_id=${userId}`);
-    if (response.ok) {
-      const filters = await response.json();
-      setSavedFiltersData(filters); // Устанавливаем полученные фильтры в локальное состояние
-    } else {
-      console.error("Ошибка при получении фильтров:", response.statusText);
+  const fetchSavedFilters = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/filters?user_id=${userId}`);
+      if (response.ok) {
+        const filters = await response.json();
+        console.log("Полученные фильтры с сервера:", filters); // Проверка данных
+        setSavedFiltersData(filters); // Убедитесь, что каждый объект содержит "id"
+      } else {
+        console.error("Ошибка при получении фильтров:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Ошибка при получении фильтров:", error);
     }
-  } catch (error) {
-    console.error("Ошибка при получении фильтров:", error);
-  }
-};
+  };
 
 // Вызываем fetchSavedFilters в useEffect только при монтировании компонента
 useEffect(() => {
@@ -109,7 +121,31 @@ const toggleSavedFiltersPanel = () => {
 
   
   
-
+  const handleRenameFilter = async (filterId) => {
+    // код для переименования
+  };
+  
+  const handleEditFilter = (filterId) => {
+    // код для редактирования
+  };
+  
+  const handleDeleteFilter = async (filterId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/filters/delete/${filterId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setSavedFiltersData((prev) => prev.filter((filter) => filter.id !== filterId));
+        alert("Фильтр успешно удалён!");
+      } else {
+        console.error("Ошибка при удалении фильтра:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Ошибка при удалении фильтра:", error);
+    }
+    setContextMenuVisible(false);
+  };
+  
 
 
   const handleOpenFilterSettings = (attribute, event) => {
@@ -208,8 +244,8 @@ const toggleSavedFiltersPanel = () => {
       });
   
       if (response.ok) {
-        const savedFilter = await response.json(); // Получаем созданный фильтр с сервера
-        setSavedFiltersData((prev) => [...prev, savedFilter]); // Добавляем новый фильтр к существующим
+        const savedFilter = await response.json();
+        setSavedFiltersData((prev) => [...prev, { ...filterData, id: savedFilter.filter_id }]); // Устанавливаем filter_id
         alert("Фильтр сохранен!");
       } else {
         console.error("Ошибка при сохранении фильтра:", response.statusText);
@@ -511,17 +547,35 @@ const toggleSavedFiltersPanel = () => {
   </svg>
 </button>
 <div className="saved-filter-list custom-scrollbar">
-    {savedFiltersData.length > 0 ? (
-      savedFiltersData.map((filter) => (
-        <div key={filter.id || filter.tempId} className="saved-filter-row">
-          <span className="saved-filter-cell">{filter.filter_name}</span>
-          {/* Можно добавить дополнительные ячейки, если нужно больше информации */}
-        </div>
-      ))
-    ) : (
-      <p>Нет сохранённых фильтров</p>
-)}
+  {savedFiltersData.length > 0 ? (
+    savedFiltersData.map((filter) => (
+      <div
+        key={filter.id}
+        className="saved-filter-row"
+        onContextMenu={(e) => handleContextMenu(e, filter.id)}
+      >
+        <span className="saved-filter-cell">{filter.filter_name}</span>
+      </div>
+    ))
+  ) : (
+    <p>Нет сохранённых фильтров</p>
+  )}
+</div>
 
+        
+
+
+{contextMenuVisible && (
+  <div
+    className="context-menu"
+    style={{ top: menuPosition.y, left: menuPosition.x }}
+    onMouseLeave={() => setContextMenuVisible(false)}
+  >
+    <button onClick={() => handleRenameFilter(selectedFilterId)}>Переименовать</button>
+    <button onClick={() => handleEditFilter(selectedFilterId)}>Изменить</button>
+    <button onClick={() => handleDeleteFilter(selectedFilterId)}>Удалить</button>
+  </div>
+)}
 
 </div>
 
@@ -533,7 +587,7 @@ const toggleSavedFiltersPanel = () => {
   </div>
   
 
-</div>
+
 
     
   );

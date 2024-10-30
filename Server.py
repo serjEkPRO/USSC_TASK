@@ -608,22 +608,23 @@ def get_filters():
 
         with get_db_connection() as conn:
             cur = conn.cursor()
-            # Выполняем запрос для получения фильтров пользователя
+            # Выполняем запрос для получения id и данных фильтров пользователя
             cur.execute("""
-                SELECT filter_data
+                SELECT id, filter_data
                 FROM user_filters
                 WHERE user_id = %s
                 ORDER BY (filter_data->>'installed_by_user')::boolean DESC
             """, (user_id,))
             filters = cur.fetchall()
 
-        # Преобразуем результат в удобный формат
-        filters_list = [filter[0] for filter in filters]  # Извлекаем JSON каждого фильтра
+        # Преобразуем результат в удобный формат, включая id каждого фильтра
+        filters_list = [{"id": filter[0], **filter[1]} for filter in filters]  # id и данные фильтра
         return jsonify(filters_list), 200
 
     except pg8000.dbapi.DatabaseError as e:
         logging.error(f"Error retrieving filters: {str(e)}")
         return jsonify({"error": str(e), "details": e.args}), 500
+
 
 @app.route('/api/filters/add', methods=['POST'])
 def save_filter():
@@ -660,6 +661,50 @@ def save_filter():
     except pg8000.dbapi.DatabaseError as e:
         logging.error(f"Error saving filter: {str(e)}")
         return jsonify({"error": str(e), "details": e.args, "received_data": filter_data}), 500
+
+@app.route('/api/filters/delete/<int:filter_id>', methods=['DELETE'])
+def delete_filter(filter_id):
+    try:
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM user_filters WHERE id = %s", (filter_id,))
+            conn.commit()
+        return jsonify({"message": "Filter deleted successfully"}), 200
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error deleting filter: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/filters/update/<int:filter_id>', methods=['PUT'])
+def update_filter(filter_id):
+    try:
+        data = request.json
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "UPDATE user_filters SET filter_data = %s::jsonb WHERE id = %s",
+                (json.dumps(data.get("filter_data")), filter_id)
+            )
+            conn.commit()
+        return jsonify({"message": "Filter updated successfully"}), 200
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error updating filter: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/filters/rename/<int:filter_id>', methods=['PATCH'])
+def rename_filter(filter_id):
+    try:
+        new_name = request.json.get("new_name")
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "UPDATE user_filters SET filter_data = jsonb_set(filter_data, '{filter_name}', %s::jsonb) WHERE id = %s",
+                (json.dumps(new_name), filter_id)
+            )
+            conn.commit()
+        return jsonify({"message": "Filter renamed successfully"}), 200
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error renaming filter: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
