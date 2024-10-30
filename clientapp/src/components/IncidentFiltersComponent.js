@@ -17,7 +17,23 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [searchTerm, setSearchTerm] = useState(''); // состояние для поиска
   const [savedFiltersData, setSavedFiltersData] = useState([]);
 
+// Добавляем эффект для закрытия панели при клике вне её области
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (isAddFilterPanelOpen && filterPanelRef.current && !filterPanelRef.current.contains(event.target)) {
+      setIsAddFilterPanelOpen(false); // Закрываем панель, если клик был вне неё
+    }
+  };
 
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside); // Убираем слушатель при размонтировании
+  };
+}, [isAddFilterPanelOpen]);
+
+const toggleAddFilterPanel = () => {
+  setIsAddFilterPanelOpen(!isAddFilterPanelOpen);
+};
     // Загрузка фильтров из sessionStorage при инициализации
     useEffect(() => {
       const savedFilters = JSON.parse(sessionStorage.getItem(`user_filters_${userId}`));
@@ -155,9 +171,7 @@ const toggleSavedFiltersPanel = () => {
     setLogicalOperators((prev) => prev.map((op, i) => (i === index ? value : op)));
   };
 
-  const toggleAddFilterPanel = () => {
-    setIsAddFilterPanelOpen(!isAddFilterPanelOpen);
-  };
+ 
   const saveFilterToServer = () => {
     setIsModalOpen(true); // открытие модального окна
   };
