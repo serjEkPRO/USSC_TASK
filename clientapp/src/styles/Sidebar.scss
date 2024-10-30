@@ -1,7 +1,7 @@
 
 @font-face {
   font-family: 'MasterFont';
-  src: url('/fonts/master.ttf') format('truetype');
+  src: url('/fonts/master3.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -11,12 +11,12 @@
 
 body {
   --main-bg: #00071d;
-  --item-hover: #1c2339;
+  --item-hover: #4ec5a393;
   --secondary-bg: #36415e;
-  --main-container-bg: #131c31;
+  --main-container-bg: linear-gradient(0.25turn, #3f87a6, #ebf8e1, #f69d3c);
   --text-color: #fff;
   --tooltip-bg: #251d33;
-  --container-shadow: rgba(19, 28, 49, 0.2) 0px 7px 29px 0px;
+  --container-shadow: rgba(8, 107, 69, 0.2) 0px 7px 29px 0px;
 }
 
 html, body {
@@ -32,7 +32,7 @@ body {
 }
 
 .sidebar-container {
-  background-color: var(--main-container-bg);
+  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
   box-shadow: var(--container-shadow);
   padding: 16px;
   transition: width .3s ease-in-out;

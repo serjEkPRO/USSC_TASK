@@ -6,7 +6,7 @@
     width: 100%;
     height: 100%;
     z-index: -1; /* Фон всегда будет на заднем плане */
-    background-color: #00294d; /* Цвет фона */
+    background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%); /* Цвет фона */
   }
   
   .background svg {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import '../styles/incidentList/IncidentFilters.css';
+import '../styles/incidentList/IncidentFilters.scss';
 
 const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators = {}, setFilterOperators, userId }) => {
   const [isSavedFiltersPanelOpen, setIsSavedFiltersPanelOpen] = useState(false); // Управление панелью сохранённых фильтров
@@ -10,9 +10,13 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [filterTexts, setFilterTexts] = useState({});
   const [logicalOperators, setLogicalOperators] = useState([]);
   const [negations, setNegations] = useState({});
-  const [filterName, setFilterName] = useState("Мой фильтр");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalFilterName, setModalFilterName] = useState("");
   const filterPanelRef = useRef(null);
   const filterButtonRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState(''); // состояние для поиска
+  const [savedFiltersData, setSavedFiltersData] = useState([]);
+
 
     // Загрузка фильтров из sessionStorage при инициализации
     useEffect(() => {
@@ -26,6 +30,8 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
           setFilterTexts(savedFilters.filterTexts || {}); // Загрузка текста фильтров
       }
   }, [userId]);
+
+
 
   // Сохранение фильтров в sessionStorage при каждом изменении
   useEffect(() => {
@@ -41,6 +47,29 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
         })
     );
 }, [filterValues, filterOperators, negations, selectedAttributes, logicalOperators, filterTexts, userId]);
+
+
+useEffect(() => {
+  const fetchSavedFilters = async () => {
+      if (savedFiltersData.length === 0) { // Проверка на дублирование
+          try {
+              const response = await fetch(`http://localhost:5000/api/filters?user_id=${userId}`);
+              if (response.ok) {
+                  const filters = await response.json();
+                  setSavedFiltersData(filters); // Устанавливаем полученные фильтры в локальное состояние
+              } else {
+                  console.error("Ошибка при получении фильтров:", response.statusText);
+              }
+          } catch (error) {
+              console.error("Ошибка при получении фильтров:", error);
+          }
+      }
+  };
+  
+  fetchSavedFilters();
+}, [userId, savedFiltersData.length]);  // Добавляем savedFiltersData.length в зависимости
+
+  
 
 
   const handleAddAttribute = (attribute) => {
@@ -79,6 +108,9 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   };
 
 
+  const filteredFields = fields.filter((field) =>
+  field.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   const handleRemoveAttribute = (attribute, index) => {
     setSelectedAttributes((prev) => prev.filter((attr) => attr !== attribute));
@@ -120,13 +152,16 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const toggleAddFilterPanel = () => {
     setIsAddFilterPanelOpen(!isAddFilterPanelOpen);
   };
-
-  const saveFilterToServer = async () => {
+  const saveFilterToServer = () => {
+    setIsModalOpen(true); // открытие модального окна
+  };
+  
+  const handleSaveModalFilter = async () => {
     if (!userId) {
       console.error("User ID не найден, фильтр не может быть сохранен.");
       return;
     }
-
+  
     const conditions = selectedAttributes.map((attribute, index) => ({
       attribute,
       operator: filterOperators[attribute],
@@ -134,9 +169,9 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
       negation: negations[attribute],
       logical_operator: logicalOperators[index] || "AND"
     }));
-
+  
     const filterData = {
-      filter_name: filterName,
+      filter_name: modalFilterName, // используем имя из модального окна
       user_id: userId,
       installed_by_user: true,
       is_shared: false,
@@ -144,16 +179,14 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
       shared_with_groups: [],
       conditions
     };
-
-    console.log("Отправка данных фильтра:", filterData);
-
+  
     try {
       const response = await fetch('http://localhost:5000/api/filters/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filterData),
       });
-      
+  
       if (response.ok) {
         const savedFilter = await response.json();
         setSavedFilters((prev) => [...prev, savedFilter]);
@@ -164,7 +197,10 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
     } catch (error) {
       console.error("Ошибка при сохранении фильтра:", error);
     }
+  
+    setIsModalOpen(false); // закрытие модального окна после сохранения
   };
+  
 
   return (
 <div className="filter-settings">
@@ -366,43 +402,92 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
 
     {/* Панель для переключения между контентом */}
     <div ref={filterPanelRef} className={`filter-panel ${isAddFilterPanelOpen ? 'open' : ''}`}>
+    
   <div className={`panel-content ${isSavedFiltersPanelOpen ? 'shifted' : ''}`}>
+
     {/* Основной контент панели фильтров */}
-    <div className="main-filters-content">
-      {fields.map((field) => (
-        <div key={field} className="filter-field">
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedAttributes.includes(field)}
-              onChange={() =>
-                selectedAttributes.includes(field)
-                  ? handleRemoveAttribute(field)
-                  : handleAddAttribute(field)
-              }
-            />
-            {field}
-          </label>
-        </div>
-      ))}
-      <div className="filter-panel-actions">
-        <button onClick={saveFilterToServer}>Сохранить фильтр</button>
-        <button onClick={toggleSavedFiltersPanel}>Выбрать фильтры</button>
-        <button onClick={() => setIsAddFilterPanelOpen(false)}>Закрыть</button>
+    <div className={`main-filters-content ${isSavedFiltersPanelOpen ? 'main-hidden' : ''}`}>
+    <div className="search-input-container">
+  <input
+    type="text"
+    className="search-input"
+    placeholder="Поиск по полям..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+  />
+  <span className="search-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.742-9.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z"/>
+    </svg>
+  </span>
+</div>
+
+
+  <div className="filter-list custom-scrollbar">
+
+  
+    {filteredFields.map((field) => (
+      <div key={field} className="filter-field">
+
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedAttributes.includes(field)}
+            onChange={() =>
+              selectedAttributes.includes(field)
+                ? handleRemoveAttribute(field)
+                : handleAddAttribute(field)
+            }
+          />
+          {field}
+        </label>
       </div>
-    </div>
+    ))}
+  </div>
+  <div className="filter-panel-actions">
+    <button onClick={saveFilterToServer}>Сохранить фильтр</button>
+    <button onClick={toggleSavedFiltersPanel}>Выбрать фильтры</button>
+    <button onClick={() => setIsAddFilterPanelOpen(false)}>Закрыть</button>
+  </div>
+</div>
+
 
     {/* Контент сохранённых фильтров */}
     <div className="saved-filters-content">
-      <h3>Сохранённые фильтры</h3>
-      <div className="saved-filter-list">
-        <p>Здесь будет список сохранённых фильтров</p>
-      </div>
+    <div className="saved-filter-list">
+    {savedFiltersData.length > 0 ? (
+        savedFiltersData.map((filter, index) => (
+            <div key={index} className="saved-filter-item">
+                <span>{filter.filter_name || `Фильтр ${index + 1}`}</span>
+            </div>
+        ))
+    ) : (
+        <p>Нет сохранённых фильтров</p>
+    )}
+</div>
+
+
       <button onClick={toggleSavedFiltersPanel}>Назад</button>
     </div>
   </div>
 </div>
   </div>
+  {isModalOpen && (
+  <div className="modal-overlay">
+    <div className="modal">
+      <h3>Сохранить фильтр</h3>
+      <input
+        type="text"
+        value={modalFilterName}
+        onChange={(e) => setModalFilterName(e.target.value)}
+        placeholder="Введите имя фильтра"
+      />
+      <button onClick={handleSaveModalFilter}>OK</button>
+      <button onClick={() => setIsModalOpen(false)}>Отмена</button>
+    </div>
+  </div>
+)}
+
 </div>
 
     

@@ -1,0 +1,345 @@
+@font-face {
+  font-family: 'MasterFont2';
+  src: url('/fonts/master2.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MasterFont3';
+  src: url('/fonts/master3.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+.filter-settings {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 4;
+  border: 1px solid #46566c;
+  padding: 2px;
+  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
+  border-radius: 5px;
+}
+
+.filter-operator-panel {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 20;
+  background-color: #1b2735;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logical-operator-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
+  color: white;
+  padding: 2px 3px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid #46566c;
+  font-size: 12px;
+}
+
+.filter-item-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.filter-settings-content {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.add-filter-button {
+  padding: 2px 8px;
+  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* плавный переход для цвета и подсветки */
+
+}
+
+.add-filter-button:hover {
+  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
+}
+
+.filter-panel {
+  position: absolute;
+  width: 350px;
+  min-width: 350px;
+  max-width: 350px;
+  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
+  border-radius: 5px;
+  border: 1px solid #014d2f;
+  padding: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, padding 0.2s ease-in-out, opacity 0.2s ease-in-out;
+  opacity: 0;
+  top: 100%;
+  display: flex;
+  flex-direction: column;
+  left: -3px;
+  transform: translateY(5px);
+}
+
+.filter-panel.open {
+  max-height: 350px;
+  padding: 10px;
+  opacity: 1;
+  
+}
+
+/* Закрепление кнопок управления внизу */
+.filter-panel-actions {
+  //margin-top: auto; /* Закрепление внизу контейнера */
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  
+
+}
+
+
+.filter-operator-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.custom-text-filter-input {
+  width: 350px;
+  box-sizing: border-box;
+}
+
+.filter-attribute {
+  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
+  color: white;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  border: 1px solid #46566c;
+  position: relative;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+.filter-attribute .remove-filter-button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.saved-filters {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.saved-filter {
+  padding: 5px 10px;
+  background-color: #5a6b8c;
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  animation: slideIn 0.5s ease-in-out;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.negation-checkbox {
+  margin-left: 7px;
+  padding: 5px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.filter-text-input {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-10px) scale(0.9);
+  height: 30px;
+  transition: max-height 0.5s ease, opacity 0.5s ease, transform 0.5s ease;
+}
+
+.filter-text-input.visible {
+  opacity: 1;
+  max-height: 100%;
+  height: 30px;
+  transform: translateY(0) scale(1);
+}
+
+.filter-attribute-container {
+  position: relative;
+}
+
+.filter-field {
+  width: auto; /* Если нужно ограничить ширину, чтобы не растягивалось */
+
+  text-align: left; /* Выравнивание текста в поле по левому краю */
+
+}
+
+.panel-content {
+  display: flex;
+  width: 200%;
+  transition: transform 0.5s ease;
+}
+
+.main-filters-content {
+  width: 50%;
+  gap: 5px; /* Определите фиксированное расстояние между элементами */
+  flex-shrink: 0;
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  max-height: 350px; /* Ограничение высоты */
+  min-height: 350px; /* Ограничение высоты */
+  overflow-y: auto; /* Включение вертикальной прокрутки */
+}
+
+.filter-list {
+  max-height: 235px; /* Ограничьте высоту списка фильтров */
+  overflow-y: auto; /* Скролл только внутри списка фильтров */
+  flex-grow: 1; /* Заполнит оставшееся пространство */
+  align-items: flex-start;
+  width: 100%; /* Ширина на 100% от контейнера */
+
+  justify-content: flex-start; /* Выравнивание дочерних элементов по левому краю */
+
+}
+
+.saved-filters-content {
+  width: 50%;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.panel-content.shifted {
+  transform: translateX(-50%);
+}
+.main-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(1px) scale(0.95);
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s 0.5s;
+}
+
+
+.search-input-container {
+  margin-bottom: 5px; /* Добавить фиксированный отступ */
+  min-width: 320px; /* Установка минимальной ширины */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%; /* Ширина контейнера на всю доступную область */
+}
+
+.search-input {
+  background: linear-gradient(184deg, rgb(18, 28, 26) 0%, rgb(51, 63, 70) 100%);
+  color: #a3a3a3;
+  border: 1px solid #037240;
+  border-radius: 5px;
+  padding: 5px 35px 5px 10px; /* Отступ справа для иконки */
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #5a6b8c;
+}
+
+.search-input:focus {
+  border-color: #5a6b8c;
+  box-shadow: 0 0 5px rgba(90, 107, 140, 0.5);
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px; /* Расстояние от правого края контейнера */
+  color: #5a6b8c; /* Цвет иконки, чтобы соответствовать общему стилю */
+  pointer-events: none; /* Иконка не будет мешать вводу текста */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  transform: translateY(-50%); /* Центрирование по вертикали */
+
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  text-align: center;
+}
+.modal input {
+  margin: 10px 0;
+  width: 100%;
+  padding: 8px;
+}
+.modal button {
+  margin: 5px;
+}

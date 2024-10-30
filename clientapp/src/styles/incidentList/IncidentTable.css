@@ -7,7 +7,7 @@
   box-shadow: 0 0 10px #5c9dcf44;
   display: block;
   border-radius: 8px;
-  background: rgba(27, 39, 53, 0.8);
+  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
   overflow-x: hidden;
   transition: all 0.3s ease;
   position: relative;
@@ -22,7 +22,7 @@
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  background: rgba(27, 39, 53, 0.8);
+  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
   color: #ffffff;
   position: relative;
   z-index: 1;
@@ -30,7 +30,7 @@
 
 .UserTableClass th, .UserTableClass td {
   padding: 8px;
-  border-bottom: 1px solid #46566c;
+  border-bottom: 1px solid #20503e;
   text-align: left;
   font-family: 'Courier New', Courier, monospace;
   white-space: nowrap;
@@ -40,15 +40,15 @@
 }
 
 .UserTableClass tr:hover td {
-  background-color: rgba(240, 248, 250, 0.021);
+  background-color: rgba(46, 228, 143, 0.021);
 }
 
 .UserTableClass th {
   position: relative;
   background-color: transparent;
-  border-top: 1px solid #46566c;
-  border-left: 1px solid #5c9dcf3b;
-  border-right: 1px solid #46566c;
+  border-top: 1px solid #20503e;
+  border-left: 1px solid #20503e;
+  border-right: 1px solid #20503e;
   padding: 8px;
   white-space: nowrap;
   overflow: hidden;
@@ -71,8 +71,8 @@
 }
 
 .UserTableClass td {
-  border-left: 1px solid #0076fd1e;
-  border-right: 1px solid #0076fd1e;
+  border-left: 1px solid #20503e;
+  border-right: 1px solid #20503e;
 }
 
 .resize-handle {
@@ -90,27 +90,14 @@
 
 /* Подсветка всего столбца при перетаскивании */
 .target-column {
-  border: 2px dashed #00f !important;
+  border: 1.5px dashed #24805e !important;
 }
 
 .target-column-highlight {
-  background-color: rgba(0, 123, 255, 0.1);
+  background: #20503e;
 }
 
-/* Стили для полос прокрутки */
-.table-wrapper::-webkit-scrollbar {
-  width: 12px;
-}
 
-.table-wrapper::-webkit-scrollbar-track {
-  background: #1b2735;
-}
-
-.table-wrapper::-webkit-scrollbar-thumb {
-  background-color: #5c9dcf;
-  border-radius: 6px;
-  border: 3px solid #1b2735;
-}
 
 @media (max-width: 1024px) {
   .table-container {

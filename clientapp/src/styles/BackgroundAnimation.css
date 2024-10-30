@@ -1,7 +1,7 @@
 body {
   margin: 0;
   overflow: hidden;
-  background-color: #00294d; /* Светлее темно-синий фон */
+  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
   position: relative;
 }
 

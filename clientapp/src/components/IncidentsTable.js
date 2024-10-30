@@ -244,7 +244,7 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
         userId={userId}
       />
 
-      <div className="table-wrapper">
+      <div className="table-wrapper custom-scrollbar">
         <DndProvider backend={HTML5Backend}>
           <table {...getTableProps()} className="UserTableClass">
             <thead>
