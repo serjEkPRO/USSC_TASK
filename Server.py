@@ -624,6 +624,29 @@ def get_filters():
     except pg8000.dbapi.DatabaseError as e:
         logging.error(f"Error retrieving filters: {str(e)}")
         return jsonify({"error": str(e), "details": e.args}), 500
+    
+
+@app.route('/api/filters/<int:filter_id>', methods=['GET'])
+def get_filter_by_id(filter_id):
+    try:
+        with get_db_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT filter_data
+                FROM user_filters
+                WHERE id = %s
+            """, (filter_id,))
+            filter_data = cur.fetchone()
+
+        if not filter_data:
+            return jsonify({"error": "Filter not found"}), 404
+
+        return jsonify(filter_data[0]), 200  # Возвращаем только данные фильтра
+
+    except pg8000.dbapi.DatabaseError as e:
+        logging.error(f"Error retrieving filter by ID: {str(e)}")
+        return jsonify({"error": str(e), "details": e.args}), 500
+
 
 
 @app.route('/api/filters/add', methods=['POST'])

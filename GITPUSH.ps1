@@ -10,7 +10,7 @@ if (-not $changes) {
     git add -A
 
     # Создайте коммит с текущей датой и временем
-    $commitMessage = "Панель с сохраненными фильтрами. Закрытие панели управления фильтрами если нажать на свободную область $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    $commitMessage = "редактирование сохраненных фильтров 1.0 $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     git commit -m $commitMessage
 
     # Push изменений

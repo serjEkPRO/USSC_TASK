@@ -49,6 +49,8 @@
   cursor: pointer;
   border: 1px solid #46566c;
   font-size: 12px;
+  height: 19px; /* Установите фиксированную высоту, если это необходимо */
+
 }
 
 .filter-item-group {
@@ -145,10 +147,13 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  max-height: 30px;
   cursor: pointer;
   border: 1px solid #46566c;
   position: relative;
   animation: slideIn 0.5s ease-in-out;
+  height: 19px; /* Установите фиксированную высоту, если это необходимо */
+
 }
 
 .filter-attribute .remove-filter-button {
@@ -168,6 +173,7 @@
 }
 
 .saved-filter-list {
+  color: #b8d4d4; /* Светло-зелёный цвет текста */
   overflow-y: auto; /* Включаем прокрутку только для списка */
   padding-top: 5px; /* Отступ для кнопки */
   max-height: 350px; /* Устанавливаем максимальную высоту для списка */
@@ -176,6 +182,8 @@
 }
 
 .saved-filter-row {
+  color: #b8d4d4; /* Светло-зелёный цвет текста */
+
   display: flex;
   padding: 4px 5px;
   border-bottom: 1px solid #215438;
@@ -387,6 +395,7 @@
   border: none;
   cursor: pointer;
   padding: 0;
+  
 }
 
 .back-button-mini svg {
@@ -400,3 +409,59 @@
   transform: scale(1.1); /* Легкий эффект увеличения при наведении */
 }
 
+
+.context-menu {
+  position: fixed;
+  background-color: #1d2b2d; /* Тёмный фон для меню */
+  border: 1px solid #2f4f4f; /* Обводка с лёгким контрастом */
+  border-radius: 4px; /* Скругленные углы */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Тень для придания глубины */
+  padding: 8px 0; /* Внутренний отступ */
+  min-width: 150px; /* Минимальная ширина меню */
+  z-index: 1000; /* Поверх остальных элементов */
+}
+
+.context-menu button {
+  display: block;
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  color: #b8d4d4; /* Светло-зелёный цвет текста */
+  padding: 4px 12px; /* Внутренний отступ для кнопок */
+  text-align: left; /* Выравнивание текста по левому краю */
+  font-size: 14px; /* Размер шрифта */
+  cursor: pointer;
+  transition: background-color 0.1s ease; /* Плавный переход при наведении */
+}
+
+.context-menu button:hover {
+  background-color: #2f4f4f; /* Изменение цвета при наведении */
+  color: #e2f1f1; /* Светлее текст при наведении */
+}
+
+
+
+
+.active-filter-button {
+  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
+  color: white;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  border: 1px solid #46566c;
+  position: relative;
+  animation: slideIn 0.5s ease-in-out;
+  height: 19px; /* Установите фиксированную высоту, если это необходимо */
+
+}
+
+.remove-filter-button {
+  background: none;
+  border: none;
+  color: #fff;
+  margin-left: 5px;
+  cursor: pointer;
+}
