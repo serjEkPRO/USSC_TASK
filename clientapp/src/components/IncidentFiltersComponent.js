@@ -10,6 +10,8 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [filterTexts, setFilterTexts] = useState({});
   const [logicalOperators, setLogicalOperators] = useState([]);
   const [negations, setNegations] = useState({});
+  const [isEditingSavedFilter, setIsEditingSavedFilter] = useState(false); // Новый state для отслеживания режима редактирования сохраненного фильтра
+
 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,6 +27,21 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [activeAttribute, setActiveAttribute] = useState(null); // Новый state для управления активным атрибутом
   const filterOperatorPanelRef = useRef(null); // Добавьте ref для панели настроек
   const [isEditingFilter, setIsEditingFilter] = useState(false);
+
+
+
+  // Загрузка состояния `isEditingFilter` из sessionStorage при загрузке компонента
+  useEffect(() => {
+    const savedIsEditingFilter = sessionStorage.getItem(`isEditingFilter_${userId}`);
+    if (savedIsEditingFilter !== null) {
+      setIsEditingFilter(JSON.parse(savedIsEditingFilter));
+    }
+  }, [userId]);
+
+  // Сохранение состояния `isEditingFilter` в sessionStorage при каждом изменении
+  useEffect(() => {
+    sessionStorage.setItem(`isEditingFilter_${userId}`, JSON.stringify(isEditingFilter));
+  }, [isEditingFilter, userId]);
 
   const handleAddFilterClick = () => {
     setIsAddFilterPanelOpen((prev) => !prev);  // Переключаем состояние панели фильтрации
@@ -56,7 +73,15 @@ useEffect(() => {
   };
 }, []); // Убираем все зависимости, чтобы этот эффект выполнялся всегда
 
-
+const handleRemoveActiveFilter = () => {
+  setActiveFilter(null);
+  setIsEditingSavedFilter(false); // Выходим из режима редактирования сохраненного фильтра
+  setSelectedAttributes([]);
+  setFilterValues({});
+  setFilterOperators({});
+  setNegations({});
+  setLogicalOperators([]);
+};
 
 const toggleAddFilterPanel = (event) => {
   if (event && event.target.classList.contains('edit-filter-icon')) {
@@ -154,25 +179,24 @@ const toggleSavedFiltersPanel = () => {
 };
 
 
-
 const handleAddAttribute = (attribute) => {
   if (!selectedAttributes.includes(attribute)) {
-    // Сброс активного фильтра при выборе нового поля
-    setActiveFilter(null);
+    // Сбрасываем фильтры только если мы НЕ в режиме редактирования сохраненного фильтра
+    if (!isEditingSavedFilter) {
+      setActiveFilter(null);
+      setFilterValues({});
+      setFilterOperators({});
+      setNegations({});
+      setLogicalOperators([]);
+      setFilterTexts({});
+    }
 
-    // Очищаем значения фильтров
-    setFilterValues({});
-    setFilterOperators({});
-    setNegations({});
-    setLogicalOperators([]);
-    setFilterTexts({});
-
-
- setSelectedAttributes((prev) => [...prev, attribute]);
- setFilterOperators((prev) => ({ ...prev, [attribute]: 'eq' }));
- setFilterTexts((prev) => ({ ...prev, [attribute]: '' }));
- setNegations((prev) => ({ ...prev, [attribute]: false }));
- setLogicalOperators((prev) => [...prev, 'AND']);
+    // Добавляем новый атрибут
+    setSelectedAttributes((prev) => [...prev, attribute]);
+    setFilterOperators((prev) => ({ ...prev, [attribute]: 'eq' }));
+    setFilterTexts((prev) => ({ ...prev, [attribute]: '' }));
+    setNegations((prev) => ({ ...prev, [attribute]: false }));
+    setLogicalOperators((prev) => [...prev, 'AND']);
   }
 };
 
@@ -196,29 +220,24 @@ const applySavedFilter = (filter) => {
 
   
 const handleEditFilterClick = async (event, filterId) => {
-  // Проверяем, является ли event событием, и вызываем stopPropagation только если это так
-  if (event && event.stopPropagation) {
-    event.stopPropagation();
-  }
+  if (event && event.stopPropagation) event.stopPropagation();
 
+  // Переключаем состояние редактирования
   setIsEditingFilter((prev) => !prev);
 
   if (isEditingFilter) {
-    // Если режим редактирования активен, скрываем только выбранные атрибуты фильтра
-    setSelectedAttributes([]);  // Очищаем только выбранные атрибуты, не трогая другие состояния
-    setIsEditingFilter(false);  // Выключаем режим редактирования
+    // Если уже редактируем, скрываем атрибуты и выключаем режим редактирования
+    setSelectedAttributes([]);
+    setIsEditingFilter(false); 
     return;
   } else {
-    // Если режим редактирования не активен, начинаем редактирование
-    setIsEditingFilter(true);
-    setIsAddFilterPanelOpen(false); // Устанавливаем панель закрытой, чтобы избежать её открытия
+    // Начинаем редактирование
+    setIsAddFilterPanelOpen(false); 
 
     try {
       const response = await fetch(`http://localhost:5000/api/filters/${filterId}`);
       if (response.ok) {
         const filter = await response.json();
-
-        // Устанавливаем название фильтра и данные для редактирования
         setActiveFilter(filter.filter_name);
 
         const attributes = filter.conditions.map((cond) => cond.attribute);
@@ -236,12 +255,13 @@ const handleEditFilterClick = async (event, filterId) => {
         }, {});
         const logicalOperators = filter.conditions.map((cond) => cond.logical_operator);
 
-        // Устанавливаем состояния с данными фильтра
         setSelectedAttributes(attributes);
         setFilterValues(values);
         setFilterOperators(operators);
         setNegations(negations);
         setLogicalOperators(logicalOperators);
+        setIsEditingSavedFilter(true); // Включаем режим редактирования сохраненного фильтра
+
       } else {
         console.error("Ошибка при получении фильтра:", response.statusText);
       }
@@ -250,7 +270,6 @@ const handleEditFilterClick = async (event, filterId) => {
     }
   }
 };
-
 
 
 
@@ -309,6 +328,7 @@ const handleEditFilterClick = async (event, filterId) => {
     setActiveFilter(null);
     setIsFilterSettingsOpen(false);
   };
+
 
 
   const filteredFields = fields.filter((field) =>
@@ -413,18 +433,25 @@ const handleEditFilterClick = async (event, filterId) => {
     <div className="filter-settings-content">
 
       {/* Начало контейнера для объединения add-filter-button и active-filter-button */}
-      
+      <div className="add-filter-container">
       
         <button className="add-filter-button" onClick={handleAddFilterClick}>
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-filter">
             <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
           </svg>
         </button>
+        </div>
         {(selectedAttributes.length > 0 || activeFilter) && (
                   <div className="filter-container">
+                 <button
+    className="close-all-filters-button"
+    onClick={handleRemoveActiveFilter}
+  >
+    X
+  </button>     
         {activeFilter && (
           <div className="active-filter-button">
-            <span onClick={(e) => handleOpenFilterSettings(activeFilter, e)}>{activeFilter}</span>
+            <span >{activeFilter}</span>
             <span
               className="edit-filter-icon"
               onClick={(e) => handleEditFilterClick(e, selectedFilterId)}
@@ -672,7 +699,33 @@ const handleEditFilterClick = async (event, filterId) => {
                 </svg>
               </span>
             </div>
-  
+            {isEditingSavedFilter && (
+          <div className="active-filter-header">
+              <span>
+              <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="3"></circle>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2h-1.68a2 2 0 0 1-2-2v-.17a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2v-1.68a2 2 0 0 1 2-2h.17a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.04a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2h1.68a2 2 0 0 1 2 2v.17a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.04a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2v1.68a2 2 0 0 1-2 2h-.17a1.65 1.65 0 0 0-1.51 1z"></path>
+  </svg>
+    {activeFilter}
+  </span>
+            <button
+              className="remove-filter-button"
+              onClick={handleRemoveActiveFilter}
+            >
+              X
+            </button>
+          </div>
+        )}
             {/* Поля для фильтрации */}
             <div className="filter-list custom-scrollbar">
               {filteredFields.map((field) => (

@@ -23,6 +23,8 @@
   padding: 2px;
   background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
   border-radius: 5px;
+  position: relative; // Это нужно, чтобы кнопка крестика позиционировалась относительно этого контейнера
+
 }
 
 .filter-operator-panel {
@@ -61,9 +63,9 @@
 
 .filter-settings-content {
   display: flex;
+  flex-direction: row; /* Изменено с column на row для отображения в строку */
   gap: 5px;
-  flex-wrap: wrap;
-  position: relative;
+  width: 100%;
 }
 
 .add-filter-button {
@@ -75,11 +77,11 @@
   cursor: pointer;
   font-size: 12px;
   white-space: nowrap;
-  display: inline-flex;
+  display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* плавный переход для цвета и подсветки */
-
+  height: 100%; /* Растягиваем кнопку по высоте нового контейнера */
+  max-width: 100%;
 }
 
 .add-filter-button:hover {
@@ -491,9 +493,29 @@
 
 
 .filter-container {
-  border: 2px dashed pink; /* Пунктирная рамка розового цвета */
-  padding: 10px; /* Внутренний отступ для отделения рамки от содержимого */
-  display: inline-flex; /* Выравнивает элементы внутри контейнера */
-  align-items: center; /* Вертикальное выравнивание кнопок */
-  gap: 10px; /* Расстояние между кнопками */
+  border: 1px dashed pink;
+  padding: 1px;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  align-items: stretch;
 }
+.add-filter-container {
+  display: flex;
+  align-items: stretch; /* Растягиваем контейнер по высоте */
+}
+
+.close-all-filters-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #666;
+  &:hover {
+    color: #333;
+  }
+}
+
