@@ -465,3 +465,26 @@
   margin-left: 5px;
   cursor: pointer;
 }
+
+.filter-attribute-container.editing {
+  border: 1px dashed #24805e; /* Цвет и стиль пунктирной границы */
+  padding: 8px;
+  margin: 4px;
+}
+
+.edit-filter-icon {
+  cursor: pointer;
+  margin-left: 8px;
+  color: #007bff; // Цвет иконки редактирования
+}
+
+.edit-filter-icon:hover {
+  color: #0056b3; // Цвет при наведении
+}
+
+/* Добавьте в файл IncidentFilters.scss */
+.editing-mode {
+  border: 2px dotted #007acc; /* Цвет можно изменить на нужный */
+  padding: 5px; /* Отступы внутри обёртки, если нужно */
+  border-radius: 4px; /* Скругление углов, опционально */
+}

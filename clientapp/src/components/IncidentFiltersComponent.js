@@ -10,6 +10,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [filterTexts, setFilterTexts] = useState({});
   const [logicalOperators, setLogicalOperators] = useState([]);
   const [negations, setNegations] = useState({});
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalFilterName, setModalFilterName] = useState("");
   const filterPanelRef = useRef(null);
@@ -22,40 +23,43 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const contextMenuRef = useRef(null);
   const [activeAttribute, setActiveAttribute] = useState(null); // Новый state для управления активным атрибутом
   const filterOperatorPanelRef = useRef(null); // Добавьте ref для панели настроек
+  const [isEditingFilter, setIsEditingFilter] = useState(false);
+
+  const handleAddFilterClick = () => {
+    setIsAddFilterPanelOpen((prev) => !prev);  // Переключаем состояние панели фильтрации
+  };
+  
 
 // Добавляем эффект для закрытия панели при клике вне её области
 useEffect(() => {
   const handleClickOutside = (event) => {
-    // Закрываем панель добавления фильтра, если она открыта и клик вне неё
-    if (
-      isAddFilterPanelOpen &&
-      filterPanelRef.current &&
-      !filterPanelRef.current.contains(event.target) &&
-      filterButtonRef.current &&
-      !filterButtonRef.current.contains(event.target)
-    ) {
+    // Закрываем панель добавления фильтра, если клик произошел вне её области
+    if (filterPanelRef.current && !filterPanelRef.current.contains(event.target)) {
       setIsAddFilterPanelOpen(false);
     }
 
-    // Закрываем панель настроек фильтра, если она открыта и клик вне неё
-    if (
-      isFilterSettingsOpen &&
-      filterOperatorPanelRef.current &&
-      !filterOperatorPanelRef.current.contains(event.target)
-    ) {
+    // Закрываем панель настроек фильтра, если клик произошел вне её области
+    if (filterOperatorPanelRef.current && !filterOperatorPanelRef.current.contains(event.target)) {
       setIsFilterSettingsOpen(false);
       setActiveAttribute(null); // Сбрасываем активный атрибут
     }
   };
 
+  // Добавляем слушатель событий для любого клика мыши
   document.addEventListener("mousedown", handleClickOutside);
   return () => {
+    // Удаляем слушатель событий при размонтировании компонента
     document.removeEventListener("mousedown", handleClickOutside);
   };
-}, [isAddFilterPanelOpen, isFilterSettingsOpen]); // Зависимости для обеих панелей
+}, []); // Убираем все зависимости, чтобы этот эффект выполнялся всегда
 
 
-const toggleAddFilterPanel = () => {
+
+const toggleAddFilterPanel = (event) => {
+  if (event && event.target.classList.contains('edit-filter-icon')) {
+    // Если клик был на иконке редактирования, не открываем панель фильтрации
+    return;
+  }
   setIsAddFilterPanelOpen((prev) => !prev);
 };
     // Загрузка фильтров из sessionStorage при инициализации
@@ -174,54 +178,76 @@ const applySavedFilter = (filter) => {
   setLogicalOperators(filter.logicalOperators || []);
   setFilterTexts(filter.filterTexts || {});
 
-  // Устанавливаем activeFilter только для сохраненного фильтра
+  // Устанавливаем activeFilter и selectedFilterId для выбранного фильтра
   setActiveFilter(filter.filter_name);
+  setSelectedFilterId(filter.id); // добавляем установку selectedFilterId
 };
 
 
 
   
-const handleEditFilter = async (filterId) => {
-  try {
-    const response = await fetch(`http://localhost:5000/api/filters/${filterId}`);
-    if (response.ok) {
-      const filter = await response.json();
+const handleEditFilterClick = async (event, filterId) => {
+  // Проверяем, является ли event событием, и вызываем stopPropagation только если это так
+  if (event && event.stopPropagation) {
+    event.stopPropagation();
+  }
 
-      // Устанавливаем название фильтра
-      setActiveFilter(filter.filter_name);
+  setIsEditingFilter((prev) => !prev);
 
-      // Разбираем условия фильтра и устанавливаем состояния
-      const attributes = filter.conditions.map((cond) => cond.attribute);
-      const values = filter.conditions.reduce((acc, cond) => {
-        acc[cond.attribute] = cond.value;
-        return acc;
-      }, {});
-      const operators = filter.conditions.reduce((acc, cond) => {
-        acc[cond.attribute] = cond.operator;
-        return acc;
-      }, {});
-      const negations = filter.conditions.reduce((acc, cond) => {
-        acc[cond.attribute] = cond.negation;
-        return acc;
-      }, {});
-      const logicalOperators = filter.conditions.map((cond) => cond.logical_operator);
+  if (isEditingFilter) {
+    // Если режим редактирования активен, скрываем только выбранные атрибуты фильтра
+    setSelectedAttributes([]);  // Очищаем только выбранные атрибуты, не трогая другие состояния
+    setIsEditingFilter(false);  // Выключаем режим редактирования
+    return;
+  } else {
+    // Если режим редактирования не активен, начинаем редактирование
+    setIsEditingFilter(true);
+    setIsAddFilterPanelOpen(false); // Устанавливаем панель закрытой, чтобы избежать её открытия
 
-      // Устанавливаем состояния
-      setSelectedAttributes(attributes);
-      setFilterValues(values);
-      setFilterOperators(operators);
-      setNegations(negations);
-      setLogicalOperators(logicalOperators);
+    try {
+      const response = await fetch(`http://localhost:5000/api/filters/${filterId}`);
+      if (response.ok) {
+        const filter = await response.json();
 
-      // Открываем панель для редактирования
-      setIsAddFilterPanelOpen(true);
-    } else {
-      console.error("Ошибка при получении фильтра:", response.statusText);
+        // Устанавливаем название фильтра и данные для редактирования
+        setActiveFilter(filter.filter_name);
+
+        const attributes = filter.conditions.map((cond) => cond.attribute);
+        const values = filter.conditions.reduce((acc, cond) => {
+          acc[cond.attribute] = cond.value;
+          return acc;
+        }, {});
+        const operators = filter.conditions.reduce((acc, cond) => {
+          acc[cond.attribute] = cond.operator;
+          return acc;
+        }, {});
+        const negations = filter.conditions.reduce((acc, cond) => {
+          acc[cond.attribute] = cond.negation;
+          return acc;
+        }, {});
+        const logicalOperators = filter.conditions.map((cond) => cond.logical_operator);
+
+        // Устанавливаем состояния с данными фильтра
+        setSelectedAttributes(attributes);
+        setFilterValues(values);
+        setFilterOperators(operators);
+        setNegations(negations);
+        setLogicalOperators(logicalOperators);
+      } else {
+        console.error("Ошибка при получении фильтра:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Ошибка при запросе данных фильтра:", error);
     }
-  } catch (error) {
-    console.error("Ошибка при запросе данных фильтра:", error);
   }
 };
+
+
+
+
+
+
+
 
 
   
@@ -250,19 +276,25 @@ const handleEditFilter = async (filterId) => {
       setIsFilterSettingsOpen(false);
       setActiveAttribute(null);
     } else {
+      // Сбрасываем состояние перед открытием новой панели
+      setIsFilterSettingsOpen(false);
+      setActiveAttribute(null);
+      
       // Открываем панель для нового атрибута
       const buttonRect = event.target.getBoundingClientRect();
       const panel = document.querySelector('.filter-operator-panel');
-  
+    
       if (panel) {
         panel.style.top = `${buttonRect.bottom}px`;
         panel.style.left = `${buttonRect.left}px`;
       }
   
+      // Устанавливаем новое состояние для активного атрибута
       setActiveAttribute(attribute);
       setIsFilterSettingsOpen(true);
     }
   };
+  
 
   const handleSaveFilter = () => {
     setActiveFilter(null);
@@ -371,24 +403,36 @@ const handleEditFilter = async (filterId) => {
     <div className="filter-settings">
     <div className="filter-settings-content">
   
-      <button className="add-filter-button" onClick={toggleAddFilterPanel}>
+    <button className="add-filter-button" onClick={handleAddFilterClick}>
+  {/* Иконка или текст кнопки */}
+
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-filter">
           <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
         </svg>
       </button>
   
-      {/* Кнопка для активного сохранённого фильтра */}
+      
       {activeFilter && (
-        <div className="active-filter-button">
-          <span onClick={(e) => handleOpenFilterSettings(activeFilter, e)}>{activeFilter}</span>
-          <span
-            className="remove-filter-button"
-            onClick={() => setActiveFilter(null)}
-          >
-            X
-          </span>
-        </div>
-      )}
+        
+  <div className="active-filter-button">
+    <span onClick={(e) => handleOpenFilterSettings(activeFilter, e)}>{activeFilter}</span>
+    <span
+  className="edit-filter-icon"
+  onClick={(e) => handleEditFilterClick(e, selectedFilterId)} // Используем handleEditFilterClick вместо handleEditFilter
+>
+  ✏️ {/* Иконка редактирования */}
+</span>
+
+
+    <span
+      className="remove-filter-button"
+      onClick={() => setActiveFilter(null)}
+    >
+      X
+    </span>
+  </div>
+)}
+
   
       {/* Отображение выбранных атрибутов */}
       {selectedAttributes.map((attribute, index) => (
@@ -407,9 +451,12 @@ const handleEditFilter = async (filterId) => {
                 <option value="AND">И</option>
                 <option value="OR">ИЛИ</option>
               </select>
+             
+              
             )}
           </div>
-  
+          
+         
           {/* Панель настроек для конкретного атрибута */}
           {activeAttribute === attribute && isFilterSettingsOpen && (
             <div ref={filterOperatorPanelRef} className="filter-operator-panel">
@@ -690,7 +737,9 @@ const handleEditFilter = async (filterId) => {
         className="context-menu"
         style={{ top: menuPosition.y, left: menuPosition.x }}
       >
-<button onClick={() => { handleEditFilter(selectedFilterId); setContextMenuVisible(false); }}>Изменить</button>
+<button onClick={() => { handleEditFilterClick(null, selectedFilterId); setContextMenuVisible(false); }}>
+  Изменить
+</button>
         <button onClick={() => { handleDeleteFilter(selectedFilterId); setContextMenuVisible(false); }}>Удалить</button>
       </div>
     )}
