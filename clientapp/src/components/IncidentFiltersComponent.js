@@ -11,6 +11,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [logicalOperators, setLogicalOperators] = useState([]);
   const [negations, setNegations] = useState({});
 
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalFilterName, setModalFilterName] = useState("");
   const filterPanelRef = useRef(null);
@@ -30,6 +31,8 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   };
   
 
+
+  
 // Добавляем эффект для закрытия панели при клике вне её области
 useEffect(() => {
   const handleClickOutside = (event) => {
@@ -63,17 +66,20 @@ const toggleAddFilterPanel = (event) => {
   setIsAddFilterPanelOpen((prev) => !prev);
 };
     // Загрузка фильтров из sessionStorage при инициализации
-    useEffect(() => {
-      const savedFilters = JSON.parse(sessionStorage.getItem(`user_filters_${userId}`));
-      if (savedFilters) {
-          setFilterValues(savedFilters.filterValues || {});
-          setFilterOperators(savedFilters.filterOperators || {});
-          setNegations(savedFilters.negations || {});
-          setSelectedAttributes(savedFilters.selectedAttributes || []);
-          setLogicalOperators(savedFilters.logicalOperators || []);
-          setFilterTexts(savedFilters.filterTexts || {}); // Загрузка текста фильтров
-      }
-  }, [userId]);
+useEffect(() => {
+  const savedFilters = JSON.parse(sessionStorage.getItem(`user_filters_${userId}`));
+  if (savedFilters) {
+      setFilterValues(savedFilters.filterValues || {});
+      setFilterOperators(savedFilters.filterOperators || {});
+      setNegations(savedFilters.negations || {});
+      setSelectedAttributes(savedFilters.selectedAttributes || []);
+      setLogicalOperators(savedFilters.logicalOperators || []);
+      setFilterTexts(savedFilters.filterTexts || {});
+      setActiveFilter(savedFilters.activeFilter || null); // восстанавливаем activeFilter
+      setSelectedFilterId(savedFilters.selectedFilterId || null); // восстанавливаем selectedFilterId
+
+  }
+}, [userId]);
 
 
 
@@ -87,10 +93,13 @@ const toggleAddFilterPanel = (event) => {
             negations,
             selectedAttributes,
             logicalOperators,
-            filterTexts // Сохранение текста фильтров
+            filterTexts,
+            selectedFilterId, // добавляем сохранение selectedFilterId
+
+            activeFilter // добавляем сохранение activeFilter
         })
     );
-}, [filterValues, filterOperators, negations, selectedAttributes, logicalOperators, filterTexts, userId]);
+  }, [filterValues, filterOperators, negations, selectedAttributes, logicalOperators, filterTexts, activeFilter, userId]);
 
 const handleContextMenu = (event, filterId) => {
   event.preventDefault();
@@ -402,38 +411,37 @@ const handleEditFilterClick = async (event, filterId) => {
 
     <div className="filter-settings">
     <div className="filter-settings-content">
-  
-    <button className="add-filter-button" onClick={handleAddFilterClick}>
-  {/* Иконка или текст кнопки */}
 
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-filter">
-          <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
-        </svg>
-      </button>
-  
+      {/* Начало контейнера для объединения add-filter-button и active-filter-button */}
       
-      {activeFilter && (
-        
-  <div className="active-filter-button">
-    <span onClick={(e) => handleOpenFilterSettings(activeFilter, e)}>{activeFilter}</span>
-    <span
-  className="edit-filter-icon"
-  onClick={(e) => handleEditFilterClick(e, selectedFilterId)} // Используем handleEditFilterClick вместо handleEditFilter
->
-  ✏️ {/* Иконка редактирования */}
-</span>
+      
+        <button className="add-filter-button" onClick={handleAddFilterClick}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-filter">
+            <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
+          </svg>
+        </button>
+        {(selectedAttributes.length > 0 || activeFilter) && (
+                  <div className="filter-container">
+        {activeFilter && (
+          <div className="active-filter-button">
+            <span onClick={(e) => handleOpenFilterSettings(activeFilter, e)}>{activeFilter}</span>
+            <span
+              className="edit-filter-icon"
+              onClick={(e) => handleEditFilterClick(e, selectedFilterId)}
+            >
+              ✏️ {/* Иконка редактирования */}
+            </span>
+            <span
+              className="remove-filter-button"
+              onClick={() => setActiveFilter(null)}
+            >
+              X
+            </span>
+          </div>
+        )}
 
+       {/* Закрывающий тег для filter-container */}
 
-    <span
-      className="remove-filter-button"
-      onClick={() => setActiveFilter(null)}
-    >
-      X
-    </span>
-  </div>
-)}
-
-  
       {/* Отображение выбранных атрибутов */}
       {selectedAttributes.map((attribute, index) => (
         <div key={attribute} className="filter-attribute-container">
@@ -451,11 +459,9 @@ const handleEditFilterClick = async (event, filterId) => {
                 <option value="AND">И</option>
                 <option value="OR">ИЛИ</option>
               </select>
-             
-              
             )}
-          </div>
           
+          </div>
          
           {/* Панель настроек для конкретного атрибута */}
           {activeAttribute === attribute && isFilterSettingsOpen && (
@@ -628,7 +634,9 @@ const handleEditFilterClick = async (event, filterId) => {
           )}
         </div>
       ))}
-  
+      
+  </div>
+  )}
       {/* Панель для переключения между контентом */}
       <div ref={filterPanelRef} className={`filter-panel ${isAddFilterPanelOpen ? 'open' : ''}`}>
         {isModalOpen && (
