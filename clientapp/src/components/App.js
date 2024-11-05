@@ -92,6 +92,7 @@ function App() {
   };
 
   return (
+    
     <div className={`App ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <Sidebar setActiveTab={setActiveTab} toggleSidebar={toggleSidebar} userId={userId} />
       <BackgroundAnimation />
@@ -123,6 +124,7 @@ function App() {
           onCreate={handleCreateIncident}
         />
       </div>
+
     </div>
   );
 }

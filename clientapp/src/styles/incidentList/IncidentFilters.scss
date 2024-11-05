@@ -112,7 +112,7 @@
 
 .filter-panel.open {
   max-height: 350px;
-  padding: 10px;
+  padding: 4px;
   opacity: 1;
   
 }
@@ -126,6 +126,22 @@
   gap: 10px;
   
 
+}
+
+.filter-panel-actions button {
+  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
+  color: white;
+  padding: 4px 4px;
+  margin: 4px;
+
+
+
+  transition: background-color 0.3s ease;
+}
+
+.filter-panel-actions button:hover {
+  background-color: #3fa764; /* изменение цвета при наведении */
+  color: #ffffff;
 }
 
 
@@ -175,9 +191,10 @@
 }
 
 .saved-filter-list {
+
   color: #b8d4d4; /* Светло-зелёный цвет текста */
   overflow-y: auto; /* Включаем прокрутку только для списка */
-  padding-top: 5px; /* Отступ для кнопки */
+
   max-height: 350px; /* Устанавливаем максимальную высоту для списка */
   width: 100%; /* Устанавливаем максимальную высоту для списка */
   align-items: flex-start;
@@ -189,10 +206,24 @@
   display: flex;
   padding: 4px 5px;
   border-bottom: 1px solid #215438;
+ 
   transition: background-color 0.2s ease;
 }
 .saved-filter-row:hover {
-  background-color: rgba(40, 75, 71, 0.178); /* Цвет выделения при наведении */
+  background-color: rgba(222, 230, 229, 0.178); /* Цвет выделения при наведении */
+}
+
+.saved-filter-row.selected-filter {
+  background-color: rgba(56, 62, 58, 0.3); /* Цвет фона для подсветки */
+  color: #e0f0e0; /* Цвет текста для выбранного фильтра */
+}
+
+.saved-filter-row.selected-filter .saved-filter-cell {
+  color: #e0f0e0; /* Цвет текста */
+}
+
+.saved-filter-row.selected-filter:hover {
+  background-color: rgba(75, 88, 80, 0.5); /* Более яркий фон при наведении на выбранный фильтр */
 }
 
 .saved-filter-cell {
@@ -201,6 +232,13 @@
   color: white; /* Цвет текста */
   font-size: 14px;
 }
+
+.checkmark {
+  margin-left: auto;
+  color: #a9a7a7; /* Цвет галочки */
+  font-size: 16px;
+}
+
 
 .saved-filter {
   padding: 5px 10px;
@@ -256,10 +294,70 @@
 
 .filter-field {
   width: auto; /* Если нужно ограничить ширину, чтобы не растягивалось */
-
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
   text-align: left; /* Выравнивание текста в поле по левому краю */
+  border-bottom: 0.5px solid #28362d; /* Зелёная линия-разделитель */
 
 }
+
+.filter-field:last-child {
+  border-bottom: none; /* Убираем линию у последнего элемента */
+}
+
+.filter-field:hover {
+  background: linear-gradient(184deg, rgb(73, 126, 116) 0%, rgb(39, 78, 67) 100%); /* Цвет при наведении */
+}
+
+.filter-field label {
+  font-size: 14px;
+  cursor: pointer;
+  color: #f0f0f0; /* Цвет текста */
+  display: flex;
+  align-items: center;
+}
+
+/* Стили для неактивного чекбокса */
+.filter-field input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+  border: 1px solid #3e7851; /* Зелёная граница для неактивного состояния */
+  background-color: transparent; /* Прозрачный фон для неактивного состояния */
+  border-radius: 3px; /* Закругленные углы */
+  appearance: none; /* Убираем стандартный стиль чекбокса */
+  position: relative;
+}
+
+/* Цвет для активного чекбокса */
+.filter-field input[type="checkbox"]:checked {
+  background: linear-gradient(184deg, rgb(18, 28, 26) 0%, rgb(51, 63, 70) 100%);
+  border-color: #2e6140;
+  color: #716f6f; /* Белый цвет для галочки */
+}
+
+/* Псевдоэлемент для галочки внутри активного чекбокса */
+.filter-field input[type="checkbox"]:checked::before {
+  content: '✔'; /* Символ галочки */
+  color: #a9a7a7;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Стили для неактивного чекбокса при наведении */
+.filter-field input[type="checkbox"]:hover {
+  background-color: rgba(63, 167, 100, 0.2); /* Легкий зелёный оттенок при наведении */
+}
+
+
 
 .panel-content {
   display: flex;
@@ -283,6 +381,9 @@
 }
 
 .filter-list {
+  background-color: linear-gradient(184deg, rgba(18, 28, 26, 1) 0%, rgba(51, 63, 70, 1) 100%);
+  border: 0.5px solid #272d29; /* зелёная рамка */
+  color: #f0f0f0; /* светлый текст */
   max-height: 235px; /* Ограничьте высоту списка фильтров */
   overflow-y: auto; /* Скролл только внутри списка фильтров */
   flex-grow: 1; /* Заполнит оставшееся пространство */
@@ -295,7 +396,7 @@
 
 .saved-filters-content {
   width: 50%;
-  padding-top: 5px; /* Отступ для размещения кнопки */
+  padding-left: 5px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -388,27 +489,31 @@
 }
 
 
-/* Позиционирование кнопки "Назад" */
 .back-button-mini {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: none;
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ left: -2px;
+ top: 0px;
+  border: none; /* Убирает обводку */
+
   cursor: pointer;
-  padding: 0;
-  
+  background-color: transparent; /* Убираем фон внутри кнопки */
+  transition: transform 0.3s ease;
 }
 
-.back-button-mini svg {
-  width: 24px;
-  height: 24px;
-  stroke: #000; /* Цвет стрелки */
-  transition: transform 0.2s;
+.back-button-mini:hover {
+  transform: scale(1);
 }
 
-.back-button-mini:hover svg {
-  transform: scale(1.1); /* Легкий эффект увеличения при наведении */
+/* Эффект сдвига стрелки */
+.back-button-mini svg path {
+  stroke: rgba(255, 255, 255, 0.8); /* Белый цвет стрелки */
+  transition: transform 0.5s ease;
+}
+
+.back-button-mini:hover svg path {
+  transform: translateX(-6px); /* Сдвиг стрелки влево */
 }
 
 
@@ -519,3 +624,89 @@
   }
 }
 
+.gear-container {
+  color: #4a4a4a;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  top:5px;
+  display: inline-flex;
+}
+
+/* Эффект увеличения при наведении */
+.gear-container:hover {
+  transform: scale(1);
+}
+
+/* Большая шестеренка */
+.large-gear {
+  font-size: 16px;
+  color: #4a4a4a;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: center;
+  transition: color 0.5s ease;
+  transform-origin: center;
+  will-change: transform;
+  transform: rotate(0deg); /* Начальное состояние */
+  backface-visibility: hidden; /* Скрытие задней стороны */
+  position: relative; /* Зафиксировать положение шестеренок */
+
+}
+
+/* Маленькая шестеренка, позиционируется справа от большой шестеренки */
+.small-gear {
+  font-size: 13px;
+  color: #4a4a4a;
+  position: absolute;
+  left: -3px;
+  top: -10px;
+  transform-origin: center;
+  transition: color 0.5s ease;
+  transform-origin: center;
+  will-change: transform;
+  transform: rotate(0deg); /* Начальное состояние */
+  backface-visibility: hidden; /* Скрытие задней стороны */
+  position: relative; /* Зафиксировать положение шестеренок */
+
+}
+
+/* Цвет шестеренок при наведении */
+.gear-container:hover .large-gear,
+.gear-container:hover .small-gear {
+  color: #2d7d53;
+}
+
+/* Анимация для вращения маленькой шестеренки */
+@keyframes spin-small {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* Анимация для вращения большой шестеренки */
+@keyframes spin-large {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.active-filter-text {
+  color: #007bff; /* Например, синий цвет */
+  font-weight: bold; /* Жирный шрифт */
+  font-size: 16px; /* Размер шрифта */
+  /* Любые другие стили */
+  margin-left: 10px; /* Укажите необходимое значение */
+
+  
+}

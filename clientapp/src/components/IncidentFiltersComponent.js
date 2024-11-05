@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/incidentList/IncidentFilters.scss';
-
+import "../assets/fontawesome/all.min.css";
 const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators = {}, setFilterOperators, userId }) => {
   const [isSavedFiltersPanelOpen, setIsSavedFiltersPanelOpen] = useState(false); // Управление панелью сохранённых фильтров
   const [isAddFilterPanelOpen, setIsAddFilterPanelOpen] = useState(false);
@@ -106,6 +106,23 @@ useEffect(() => {
   }
 }, [userId]);
 
+function startGears() {
+  const largeGear = document.querySelector('.large-gear');
+  const smallGear = document.querySelector('.small-gear');
+    // Устанавливаем начальное состояние
+    largeGear.style.transform = 'rotate(0deg)';
+    smallGear.style.transform = 'rotate(0deg)';
+
+  // Запускаем вращение для обеих шестеренок
+  smallGear.style.animation = 'spin-small 1s linear 2 forwards';
+  largeGear.style.animation = 'spin-large 1s linear 1 forwards';
+
+  // Сбрасываем анимацию через 1 секунду
+  setTimeout(() => {
+    smallGear.style.animation = 'none';
+    largeGear.style.animation = 'none';
+  }, 400);
+}
 
 
   // Сохранение фильтров в sessionStorage при каждом изменении
@@ -429,7 +446,10 @@ const handleEditFilterClick = async (event, filterId) => {
 
   return (
 
+
     <div className="filter-settings">
+         
+
     <div className="filter-settings-content">
 
       {/* Начало контейнера для объединения add-filter-button и active-filter-button */}
@@ -702,21 +722,11 @@ const handleEditFilterClick = async (event, filterId) => {
             {isEditingSavedFilter && (
           <div className="active-filter-header">
               <span>
-              <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="3"></circle>
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2h-1.68a2 2 0 0 1-2-2v-.17a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2v-1.68a2 2 0 0 1 2-2h.17a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.04a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2h1.68a2 2 0 0 1 2 2v.17a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.04a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2v1.68a2 2 0 0 1-2 2h-.17a1.65 1.65 0 0 0-1.51 1z"></path>
-  </svg>
-    {activeFilter}
+    <div className="gear-container" onClick={startGears}>
+      <i className="fas fa-cog large-gear"></i>
+      <i className="fas fa-cog small-gear"></i>
+    </div>
+    <span className="active-filter-text">{activeFilter}</span>
   </span>
             <button
               className="remove-filter-button"
@@ -754,33 +764,36 @@ const handleEditFilterClick = async (event, filterId) => {
   
           {/* Контент сохранённых фильтров */}
           <div className="saved-filters-content">
-            <button className="back-button-mini" onClick={toggleSavedFiltersPanel}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="12" cy="12" r="10" stroke="black" fill="white" />
-                <path d="M12 8l-4 4 4 4M8 12h8" />
-              </svg>
-            </button>
+          <button className="back-button-mini" onClick={toggleSavedFiltersPanel}>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+    >
+        <path d="M12 8l-4 4 4 4M8 12h8" />
+    </svg>
+</button>
+
             <div className="saved-filter-list custom-scrollbar">
               {savedFiltersData.length > 0 ? (
                 savedFiltersData.map((filter) => (
-                  <div
-                    key={filter.id}
-                    className="saved-filter-row"
-                    onClick={() => applySavedFilter(filter)}
-                    onContextMenu={(e) => handleContextMenu(e, filter.id)}
-                  >
-                    <span className="saved-filter-cell">{filter.filter_name}</span>
-                  </div>
+<div
+  key={filter.id}
+  className={`saved-filter-row ${selectedFilterId === filter.id ? 'selected-filter' : ''}`}
+  onClick={() => applySavedFilter(filter)}
+  onContextMenu={(e) => handleContextMenu(e, filter.id)}
+>
+  <span className="saved-filter-cell">{filter.filter_name}</span>
+  {selectedFilterId === filter.id && (
+    <span className="checkmark">✔</span>
+  )}
+</div>
                 ))
               ) : (
                 <p>Нет сохранённых фильтров</p>
