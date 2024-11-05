@@ -43,16 +43,21 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
     sessionStorage.setItem(`isEditingFilter_${userId}`, JSON.stringify(isEditingFilter));
   }, [isEditingFilter, userId]);
 
-  const handleAddFilterClick = () => {
-    setIsAddFilterPanelOpen((prev) => !prev);  // Переключаем состояние панели фильтрации
-  };
-  
-
 
   
 // Добавляем эффект для закрытия панели при клике вне её области
+// Функция переключения открытия/закрытия панели add-filter-container
+// Функция для переключения состояния панели добавления фильтра
+const handleAddFilterClick = () => {
+  setIsAddFilterPanelOpen((prev) => !prev);
+};
+
+// Эффект для закрытия панели при клике вне её области
 useEffect(() => {
   const handleClickOutside = (event) => {
+    // Если клик произошел внутри gear-container, выходим из обработчика
+    if (event.target.closest('.gear-container') || event.target.closest('.add-filter-button')) return;
+
     // Закрываем панель добавления фильтра, если клик произошел вне её области
     if (filterPanelRef.current && !filterPanelRef.current.contains(event.target)) {
       setIsAddFilterPanelOpen(false);
@@ -71,7 +76,10 @@ useEffect(() => {
     // Удаляем слушатель событий при размонтировании компонента
     document.removeEventListener("mousedown", handleClickOutside);
   };
-}, []); // Убираем все зависимости, чтобы этот эффект выполнялся всегда
+}, []);
+
+
+
 
 const handleRemoveActiveFilter = () => {
   setActiveFilter(null);
@@ -81,6 +89,8 @@ const handleRemoveActiveFilter = () => {
   setFilterOperators({});
   setNegations({});
   setLogicalOperators([]);
+  setSelectedFilterId(null); // Сбрасываем выбранный фильтр
+  
 };
 
 const toggleAddFilterPanel = (event) => {
@@ -106,23 +116,91 @@ useEffect(() => {
   }
 }, [userId]);
 
-function startGears() {
+async function startGears() {
   const largeGear = document.querySelector('.large-gear');
   const smallGear = document.querySelector('.small-gear');
-    // Устанавливаем начальное состояние
-    largeGear.style.transform = 'rotate(0deg)';
-    smallGear.style.transform = 'rotate(0deg)';
 
-  // Запускаем вращение для обеих шестеренок
+  largeGear.style.transform = 'rotate(0deg)';
+  smallGear.style.transform = 'rotate(0deg)';
+
   smallGear.style.animation = 'spin-small 1s linear 2 forwards';
   largeGear.style.animation = 'spin-large 1s linear 1 forwards';
 
-  // Сбрасываем анимацию через 1 секунду
-  setTimeout(() => {
+  setTimeout(async () => {
     smallGear.style.animation = 'none';
     largeGear.style.animation = 'none';
-  }, 400);
+
+    if (isEditingFilter) {
+      // Если режим редактирования уже включен, очищаем атрибуты фильтра, но не сбрасываем activeFilter
+      setSelectedAttributes([]);
+      setFilterValues({});
+      setFilterOperators({});
+      setNegations({});
+      setLogicalOperators([]);
+      setIsEditingSavedFilter(false);
+    } else if (selectedFilterId) {
+      // Если режим редактирования выключен и есть выбранный фильтр, загружаем его атрибуты и значения
+      try {
+        const response = await fetch(`http://localhost:5000/api/filters/${selectedFilterId}`);
+        if (response.ok) {
+          const filter = await response.json();
+
+          const attributes = filter.conditions.map((cond) => cond.attribute);
+          const values = filter.conditions.reduce((acc, cond) => {
+            acc[cond.attribute] = cond.value;
+            return acc;
+          }, {});
+          const operators = filter.conditions.reduce((acc, cond) => {
+            acc[cond.attribute] = cond.operator;
+            return acc;
+          }, {});
+          const negations = filter.conditions.reduce((acc, cond) => {
+            acc[cond.attribute] = cond.negation;
+            return acc;
+          }, {});
+          const logicalOperators = filter.conditions.map((cond) => cond.logical_operator);
+
+          setSelectedAttributes(attributes); // Устанавливаем активные атрибуты
+          setFilterValues(values);
+          setFilterOperators(operators);
+          setNegations(negations);
+          setLogicalOperators(logicalOperators);
+          setIsEditingSavedFilter(true); // Включаем режим редактирования сохраненного фильтра
+        } else {
+          console.error("Ошибка при получении фильтра:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Ошибка при запросе данных фильтра:", error);
+      }
+    }
+
+    // Переключаем режим редактирования
+    setIsEditingFilter((prev) => !prev);
+
+  }, 500);
 }
+
+
+
+
+
+// Разделяем поля на выбранные и невыбранные
+const selectedFields = selectedAttributes.map((attr) => ({
+  field: attr,
+  isSelected: true,
+}));
+const unselectedFields = fields
+  .filter((field) => !selectedAttributes.includes(field))
+  .map((field) => ({
+    field,
+    isSelected: false,
+  }));
+
+// Объединяем выбранные и невыбранные поля, чтобы выбранные отображались первыми
+const combinedFields = isEditingFilter
+  ? [...selectedFields, ...unselectedFields]
+  : [...unselectedFields];
+
 
 
   // Сохранение фильтров в sessionStorage при каждом изменении
@@ -231,6 +309,10 @@ const applySavedFilter = (filter) => {
   // Устанавливаем activeFilter и selectedFilterId для выбранного фильтра
   setActiveFilter(filter.filter_name);
   setSelectedFilterId(filter.id); // добавляем установку selectedFilterId
+    // Выключаем режим редактирования, так как мы только что выбрали фильтр
+    setIsEditingFilter(false);
+    setIsEditingSavedFilter(false); // Для обеспечения согласованного поведения
+    setIsAddFilterPanelOpen(false);
 };
 
 
@@ -245,12 +327,9 @@ const handleEditFilterClick = async (event, filterId) => {
   if (isEditingFilter) {
     // Если уже редактируем, скрываем атрибуты и выключаем режим редактирования
     setSelectedAttributes([]);
-    setIsEditingFilter(false); 
+    setIsEditingFilter(false);
     return;
   } else {
-    // Начинаем редактирование
-    setIsAddFilterPanelOpen(false); 
-
     try {
       const response = await fetch(`http://localhost:5000/api/filters/${filterId}`);
       if (response.ok) {
@@ -278,6 +357,7 @@ const handleEditFilterClick = async (event, filterId) => {
         setNegations(negations);
         setLogicalOperators(logicalOperators);
         setIsEditingSavedFilter(true); // Включаем режим редактирования сохраненного фильтра
+        
 
       } else {
         console.error("Ошибка при получении фильтра:", response.statusText);
@@ -287,6 +367,7 @@ const handleEditFilterClick = async (event, filterId) => {
     }
   }
 };
+
 
 
 
@@ -480,7 +561,8 @@ const handleEditFilterClick = async (event, filterId) => {
             </span>
             <span
               className="remove-filter-button"
-              onClick={() => setActiveFilter(null)}
+              onClick={() => {setActiveFilter(null);
+                             setSelectedFilterId(null)}}
             >
               X
             </span>
@@ -719,42 +801,48 @@ const handleEditFilterClick = async (event, filterId) => {
                 </svg>
               </span>
             </div>
-            {isEditingSavedFilter && (
-          <div className="active-filter-header">
-              <span>
-    <div className="gear-container" onClick={startGears}>
-      <i className="fas fa-cog large-gear"></i>
-      <i className="fas fa-cog small-gear"></i>
-    </div>
-    <span className="active-filter-text">{activeFilter}</span>
-  </span>
-            <button
-              className="remove-filter-button"
-              onClick={handleRemoveActiveFilter}
-            >
-              X
-            </button>
-          </div>
-        )}
+            {activeFilter && (
+  <div className="active-filter-header">
+    <span>
+      <div className="gear-container" onClick={startGears}>
+        <i className="fas fa-cog large-gear"></i>
+        <i className="fas fa-cog small-gear"></i>
+      </div>
+      <span className="active-filter-text">{activeFilter}</span>
+    </span>
+    <button
+      className="remove-filter-button"
+      onClick={handleRemoveActiveFilter}
+    >
+      X
+    </button>
+  </div>
+)}
+
             {/* Поля для фильтрации */}
             <div className="filter-list custom-scrollbar">
-              {filteredFields.map((field) => (
-                <div key={field} className="filter-field">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={selectedAttributes.includes(field)}
-                      onChange={() =>
-                        selectedAttributes.includes(field)
-                          ? handleRemoveAttribute(field)
-                          : handleAddAttribute(field)
-                      }
-                    />
-                    {field}
-                  </label>
-                </div>
-              ))}
-            </div>
+  {combinedFields.map(({ field, isSelected }) => (
+    <div
+      key={field}
+      className={`filter-field ${!isEditingFilter && activeFilter ? 'disabled' : ''}`}
+    >
+      <label>
+        <input
+          type="checkbox"
+          checked={selectedAttributes.includes(field)}
+          disabled={!isEditingFilter && !!activeFilter}
+          onChange={() =>
+            selectedAttributes.includes(field)
+              ? handleRemoveAttribute(field)
+              : handleAddAttribute(field)
+          }
+        />
+        {field}
+      </label>
+    </div>
+  ))}
+</div>
+
             <div className="filter-panel-actions">
               <button onClick={saveFilterToServer}>Сохранить фильтр</button>
               <button onClick={toggleSavedFiltersPanel}>Выбрать фильтры</button>

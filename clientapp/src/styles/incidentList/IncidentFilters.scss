@@ -710,3 +710,31 @@
 
   
 }
+
+/* Обозначаем недоступные фильтры, изменяя цвет текста, делая его более светлым, и меняя курсор */
+.filter-field.disabled {
+  opacity: 0.5; /* Приглушаем цвет */
+  cursor: default; /* Указываем курсор как запрещенный */
+}
+
+.filter-field.disabled label {
+  color: #7a7a7a; /* Цвет текста для неактивных элементов */
+}
+
+.filter-field input[type="checkbox"]:disabled {
+  background-color: #3e3e3e; /* Серый фон для неактивного чекбокса */
+  border-color: #7a7a7a; /* Приглушенный цвет границы */
+  cursor: default; /* Курсор для неактивного чекбокса */
+}
+
+.filter-field input[type="checkbox"]:disabled:checked::before {
+  color: #5a5a5a; /* Серый цвет галочки для неактивного состояния */
+}
+
+.gear-container.rotate .large-gear {
+  animation: spin-large 1s linear forwards;
+}
+
+.gear-container.rotate .small-gear {
+  animation: spin-small 1s linear forwards;
+}
