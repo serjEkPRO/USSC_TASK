@@ -52,7 +52,7 @@
   border: 1px solid #46566c;
   font-size: 12px;
   height: 19px; /* Установите фиксированную высоту, если это необходимо */
-
+  animation: slideIn 0.3s ease-in-out;
 }
 
 .filter-item-group {
@@ -169,7 +169,7 @@
   cursor: pointer;
   border: 1px solid #46566c;
   position: relative;
-  animation: slideIn 0.5s ease-in-out;
+  animation: slideIn 0.3s ease-in-out;
   height: 19px; /* Установите фиксированную высоту, если это необходимо */
 
 }
@@ -246,12 +246,12 @@
   color: white;
   border-radius: 4px;
   font-size: 14px;
-  animation: slideIn 0.5s ease-in-out;
+  animation: slideIn 0.2s ease-in-out;
 }
 
 @keyframes slideIn {
   0% {
-    transform: translateX(50px);
+    transform: translateX(25px);
     opacity: 0;
   }
   100% {
@@ -562,7 +562,8 @@
   position: relative;
   animation: slideIn 0.5s ease-in-out;
   height: 19px; /* Установите фиксированную высоту, если это необходимо */
-
+  min-width: 50px; /* Минимальная ширина */
+  
 }
 
 .remove-filter-button {
@@ -737,4 +738,21 @@
 
 .gear-container.rotate .small-gear {
   animation: spin-small 1s linear forwards;
+}
+
+/* Стрелочка в обычном состоянии */
+.filter-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease; /* Плавный переход для анимации */
+  font-size: 12px; /* Размер стрелочки */
+  color: #333; /* Цвет стрелочки в обычном состоянии */
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* Стрелочка в режиме редактирования */
+.filter-arrow.edit-mode {
+  color: #33ff88; /* Цвет стрелочки при активации режима редактирования */
+  font-size: 12px; /* Увеличенный размер стрелочки при активации */
+  transform: scale(1); /* Легкое увеличение для эффекта */
 }

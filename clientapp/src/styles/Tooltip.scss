@@ -1,0 +1,37 @@
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip-bubble {
+    position: absolute;
+    background-color: rgba(50, 50, 50, 0.947);
+    color: rgb(255, 255, 255);
+    border-color: rgb(250, 247, 247);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 2147483647; /* Максимальный z-index */
+    visibility: hidden;
+  }
+  
+  .tooltip-container:hover .tooltip-bubble {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .tooltip-top {
+    transform: translate(0%, 120%);
+  }
+  
+  .tooltip-bottom {
+    transform: translate(60%, 100px);
+  }
+  
+  .tooltip-left {
+    transform: translate(-100%, -50%);
+  }
+  

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/incidentList/IncidentFilters.scss';
 import "../assets/fontawesome/all.min.css";
+import Tooltipp from './Tooltipp';
 const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators = {}, setFilterOperators, userId }) => {
   const [isSavedFiltersPanelOpen, setIsSavedFiltersPanelOpen] = useState(false); // Управление панелью сохранённых фильтров
   const [isAddFilterPanelOpen, setIsAddFilterPanelOpen] = useState(false);
@@ -13,7 +14,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [isEditingSavedFilter, setIsEditingSavedFilter] = useState(false); // Новый state для отслеживания режима редактирования сохраненного фильтра
 
 
-
+  const filterContainerRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalFilterName, setModalFilterName] = useState("");
   const filterPanelRef = useRef(null);
@@ -323,7 +324,7 @@ const handleEditFilterClick = async (event, filterId) => {
 
   // Переключаем состояние редактирования
   setIsEditingFilter((prev) => !prev);
-
+  toggleEditMode();
   if (isEditingFilter) {
     // Если уже редактируем, скрываем атрибуты и выключаем режим редактирования
     setSelectedAttributes([]);
@@ -475,6 +476,37 @@ const handleEditFilterClick = async (event, filterId) => {
     setIsModalOpen(true); // открытие модального окна
   };
   
+
+
+  const toggleEditMode = () => {
+    const filterContainer = filterContainerRef.current;
+    const arrow = document.querySelector('.filter-arrow');
+
+    if (!filterContainer || !arrow) {
+      console.error("Элементы не найдены: проверьте, что ссылки установлены.");
+      return;
+    }
+
+    if (!filterContainer.classList.contains('expand')) {
+      arrow.classList.add('edit-mode');
+      // Отпрыгивание вправо при входе в режим редактирования
+      arrow.style.transform = 'translateX(5px) scale(1)';
+      setTimeout(() => {
+        filterContainer.classList.add('expand');
+        arrow.style.transform = 'translateX(0)'; // Возврат в исходное положение
+      }, 200);
+    } else {
+      arrow.classList.remove('edit-mode');
+      // Отпрыгивание влево при выходе из режима редактирования
+      arrow.style.transform = 'translateX(-5px) scale(0.9)';
+      setTimeout(() => {
+        filterContainer.classList.remove('expand');
+        arrow.style.transform = 'translateX(0)'; // Возврат в исходное положение
+      }, 200);
+    }
+  };
+
+
   const handleSaveModalFilter = async () => {
     if (!userId) {
       console.error("User ID не найден, фильтр не может быть сохранен.");
@@ -543,7 +575,7 @@ const handleEditFilterClick = async (event, filterId) => {
         </button>
         </div>
         {(selectedAttributes.length > 0 || activeFilter) && (
-                  <div className="filter-container">
+                  <div className="filter-container" ref={filterContainerRef}>
                  <button
     className="close-all-filters-button"
     onClick={handleRemoveActiveFilter}
@@ -553,19 +585,15 @@ const handleEditFilterClick = async (event, filterId) => {
         {activeFilter && (
           <div className="active-filter-button">
             <span >{activeFilter}</span>
+            <Tooltipp text="Перевернуть стрелку">
             <span
-              className="edit-filter-icon"
+              className="filter-arrow"
               onClick={(e) => handleEditFilterClick(e, selectedFilterId)}
             >
-              ✏️ {/* Иконка редактирования */}
+              ➤ {/* Иконка редактирования */}
             </span>
-            <span
-              className="remove-filter-button"
-              onClick={() => {setActiveFilter(null);
-                             setSelectedFilterId(null)}}
-            >
-              X
-            </span>
+            </Tooltipp>
+
           </div>
         )}
 
