@@ -42,17 +42,18 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
+  background: #35353568;
   color: white;
-  padding: 2px 3px;
-  border-radius: 4px;
+  padding: 2px 1px;
+  border-radius: 1px;
   display: flex;
   align-items: center;
   cursor: pointer;
   border: 1px solid #46566c;
-  font-size: 12px;
-  height: 19px; /* Установите фиксированную высоту, если это необходимо */
+  font-size: 10px;
+  height: 16px; /* Установите фиксированную высоту, если это необходимо */
   animation: slideIn 0.3s ease-in-out;
+
 }
 
 .filter-item-group {
@@ -158,28 +159,50 @@
 }
 
 .filter-attribute {
-  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
-  color: white;
-  padding: 2px;
-  border-radius: 4px;
+  background: linear-gradient(184deg, rgb(56, 90, 83) 0%, rgb(42, 55, 62)00%);
+  color: rgb(255, 255, 255);
+  padding: 1px;
+  border-radius: 1px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 2px;
   max-height: 30px;
   cursor: pointer;
-  border: 1px solid #46566c;
+  border: 0.5px solid #434d4acb;
   position: relative;
   animation: slideIn 0.3s ease-in-out;
   height: 19px; /* Установите фиксированную высоту, если это необходимо */
 
 }
 
+.filter-name {
+  font-weight: bold;
+  color: #faf7f7; // Цвет и стиль для названия фильтра
+}
+
+.filter-negation {
+  color: red;
+  font-weight: bold; // Стиль для отрицания
+}
+
+.filter-operator {
+  color: #777;
+  font-style: italic; // Стиль для оператора
+}
+
+.filter-value {
+  color: #007bff;
+  font-weight: normal; // Стиль для значения
+}
+
+
 .filter-attribute .remove-filter-button {
   background: none;
   border: none;
-  color: #fff;
+  color: #807e7e;
   cursor: pointer;
   padding: 0 5px;
+  font-size: 10px;
 }
 
 .saved-filters {
@@ -600,11 +623,13 @@
 
 .filter-container {
   border: 1px dashed pink;
-  padding: 1px;
+  padding: 3px;
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
   align-items: stretch;
+  animation: slideIn 0.3s ease-in-out;
+
 }
 .add-filter-container {
   display: flex;

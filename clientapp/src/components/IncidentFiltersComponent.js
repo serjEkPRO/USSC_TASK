@@ -554,7 +554,13 @@ const handleEditFilterClick = async (event, filterId) => {
   };
   
   
-  
+  const operatorLabels = {
+    eq: 'Равно',
+    contains: 'Содержит',
+    startswith: 'Начинается с',
+    endswith: 'Заканчивается на',
+    isnull: 'Пусто',
+  };
   
 
   return (
@@ -601,12 +607,32 @@ const handleEditFilterClick = async (event, filterId) => {
 
       {/* Отображение выбранных атрибутов */}
       {selectedAttributes.map((attribute, index) => (
-        <div key={attribute} className="filter-attribute-container">
-          <div className="filter-item-group">
-            <button className="filter-attribute" ref={filterButtonRef} onClick={(e) => handleOpenFilterSettings(attribute, e)}>
-              {attribute} {negations[attribute] ? '!' : ''} {filterOperators[attribute]} {filterTexts[attribute] || 'не задано'}
-              <span className="remove-filter-button" onClick={() => handleRemoveAttribute(attribute, index)}>X</span>
-            </button>
+  <div key={attribute} className="filter-attribute-container">
+    <div className="filter-item-group">
+      <button
+        className="filter-attribute"
+        ref={filterButtonRef}
+        onClick={(e) => handleOpenFilterSettings(attribute, e)}
+      >
+        <span className="filter-name">{attribute}</span> {/* Название фильтра */}
+        
+        {negations[attribute] && (
+          <span className="filter-negation">!</span>
+        )}
+        
+        <span className="filter-operator">{filterOperators[attribute]}</span> {/* Оператор */}
+        
+        <span className="filter-value">
+          {filterTexts[attribute] || 'не задано'}
+        </span> {/* Значение */}
+        
+        <span
+          className="remove-filter-button"
+          onClick={() => handleRemoveAttribute(attribute, index)}
+        >
+          X
+        </span>
+      </button>
             {index < selectedAttributes.length - 1 && (
               <select
                 className="logical-operator-select custom-select"
@@ -627,28 +653,31 @@ const handleEditFilterClick = async (event, filterId) => {
                 <div className="filter-operator-options">
   
                   {/* Оператор 'eq' */}
-                  <div style={{ display: 'flex', alignItems: 'left' }}>
-                    <label>
-                      <input
-                        type="radio"
-                        name={`operator-${attribute}`}
-                        value="eq"
-                        checked={filterOperators[attribute] === 'eq'}
-                        onChange={() => handleOperatorChange(attribute, 'eq')}
-                      />
-                      Равно
-                    </label>
-                    {filterOperators[attribute] === 'eq' && (
-                      <label className="negation-checkbox" style={{ marginLeft: '10px' }}>
-                        <input
-                          type="checkbox"
-                          checked={negations[attribute] || false}
-                          onChange={() => handleNegationToggle(attribute)}
-                        />
-                        Отрицание
-                      </label>
-                    )}
-                  </div>
+<div style={{ display: 'flex', alignItems: 'left' }}>
+  <label>
+    <input
+      type="radio"
+      name={`operator-${attribute}`}
+      value="eq"
+      checked={filterOperators[attribute] === 'eq'}
+      onChange={() => handleOperatorChange(attribute, 'eq')}
+    />
+    {operatorLabels['eq']} {/* Используем читаемое название напрямую из operatorLabels */}
+  </label>
+
+  {filterOperators[attribute] === 'eq' && (
+    <label className="negation-checkbox" style={{ marginLeft: '10px' }}>
+      <input
+        type="checkbox"
+        checked={negations[attribute] || false}
+        onChange={() => handleNegationToggle(attribute)}
+      />
+      Отрицание
+    </label>
+  )}
+</div>
+
+
                   <div className={`filter-text-input ${filterOperators[attribute] === 'eq' ? 'visible' : ''}`}>
                     <input
                       type="text"
