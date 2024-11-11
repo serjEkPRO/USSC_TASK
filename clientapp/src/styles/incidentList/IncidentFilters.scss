@@ -516,29 +516,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
- left: -2px;
- top: 0px;
-  border: none; /* Убирает обводку */
-
+  left: -2px;
+  top: 0px;
+  border: none;
   cursor: pointer;
-  background-color: transparent; /* Убираем фон внутри кнопки */
-  transition: transform 0.3s ease;
+  background-color: transparent;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .back-button-mini:hover {
-  transform: scale(1);
+  transform: translateX(-6px); /* Сдвиг всей кнопки влево */
 }
 
-/* Эффект сдвига стрелки */
+/* Стиль стрелки */
 .back-button-mini svg path {
-  stroke: rgba(255, 255, 255, 0.8); /* Белый цвет стрелки */
-  transition: transform 0.5s ease;
+  stroke: rgba(255, 255, 255, 0.8);
+  transition: opacity 0.3s ease;
 }
 
 .back-button-mini:hover svg path {
-  transform: translateX(-6px); /* Сдвиг стрелки влево */
+  opacity: 0.5; /* Изменение прозрачности стрелки при наведении */
 }
 
+/* Стиль текста */
+.back-button-mini .edit-filter-back {
+  color: rgba(255, 255, 255, 0.8);
+  transition: opacity 0.3s ease;
+  margin-left: 2px;
+}
+
+.back-button-mini:hover .edit-filter-back {
+  opacity: 0.5; /* Изменение прозрачности текста при наведении */
+}
 
 .context-menu {
   position: fixed;

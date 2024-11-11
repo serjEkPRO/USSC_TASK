@@ -506,7 +506,22 @@ const handleEditFilterClick = async (event, filterId) => {
     }
   };
 
+// Определение текста для кнопки в зависимости от состояния activeFilter
+const backButtonText = activeFilter ? "Редактировать фильтр" : "Настроить поля для фильтра";
 
+// Определение обработчика для кнопки
+const handleBackButtonClick = (e) => {
+  if (activeFilter) {
+    // Проверяем, включен ли уже режим редактирования
+    if (!isEditingFilter) {
+      handleEditFilterClick(e, selectedFilterId); // Выполняем действие редактирования, если режим еще не включен
+    }
+    toggleSavedFiltersPanel();
+  } else {
+    toggleSavedFiltersPanel();
+    handleRemoveActiveFilter(); // Сбрасываем фильтры
+  }
+};
   const handleSaveModalFilter = async () => {
     if (!userId) {
       console.error("User ID не найден, фильтр не может быть сохранен.");
@@ -620,7 +635,9 @@ const handleEditFilterClick = async (event, filterId) => {
           <span className="filter-negation">!</span>
         )}
         
-        <span className="filter-operator">{filterOperators[attribute]}</span> {/* Оператор */}
+        <span className="filter-operator">
+  {operatorLabels[filterOperators[attribute]] || filterOperators[attribute]}
+</span> {/* Читаемое отображение оператора */}
         
         <span className="filter-value">
           {filterTexts[attribute] || 'не задано'}
@@ -909,21 +926,23 @@ const handleEditFilterClick = async (event, filterId) => {
   
           {/* Контент сохранённых фильтров */}
           <div className="saved-filters-content">
-          <button className="back-button-mini" onClick={toggleSavedFiltersPanel}>
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-    >
-        <path d="M12 8l-4 4 4 4M8 12h8" />
-    </svg>
+          <button className="back-button-mini" onClick={handleBackButtonClick}>
+  <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+  >
+      <path d="M12 8l-4 4 4 4M8 12h8" />
+  </svg>
+  <span className="edit-filter-back">{backButtonText}</span>
 </button>
+
 
             <div className="saved-filter-list custom-scrollbar">
               {savedFiltersData.length > 0 ? (
