@@ -159,7 +159,7 @@
 }
 
 .filter-attribute {
-  background: linear-gradient(184deg, rgb(56, 90, 83) 0%, rgb(42, 55, 62)00%);
+  background: linear-gradient(184deg, rgb(56, 90, 83) 0%, rgb(42, 55, 62) 100%);
   color: rgb(255, 255, 255);
   padding: 1px;
   border-radius: 1px;
@@ -169,10 +169,8 @@
   max-height: 30px;
   cursor: pointer;
   border: 0.5px solid #434d4acb;
-  position: relative;
   animation: slideIn 0.3s ease-in-out;
-  height: 19px; /* Установите фиксированную высоту, если это необходимо */
-
+  height: 19px;
 }
 
 .filter-name {
@@ -631,14 +629,16 @@
 
 
 .filter-container {
+  position: relative; /* Опорная позиция для абсолютного позиционирования кнопки */
   border: 1px dashed pink;
   padding: 3px;
+  padding-right: 35px; /* Оставляем место справа для кнопки */
+  padding-top: 3px;
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
-  align-items: stretch;
+  align-items: center;
   animation: slideIn 0.3s ease-in-out;
-
 }
 .add-filter-container {
   display: flex;
@@ -646,17 +646,16 @@
 }
 
 .close-all-filters-button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
+  position: absolute; /* Абсолютное позиционирование */
+  top: 5px; /* Отступ сверху */
+  right: 5px; /* Отступ справа */
   background: none;
   border: none;
   font-size: 16px;
   cursor: pointer;
   color: #666;
-  &:hover {
-    color: #333;
-  }
+  z-index: 10; /* Высокий z-index для отображения поверх атрибутов */
+  padding: 5px; /* Внутренний отступ у кнопки */
 }
 
 .gear-container {

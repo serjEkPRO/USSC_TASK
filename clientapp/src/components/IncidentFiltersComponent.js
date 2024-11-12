@@ -117,69 +117,7 @@ useEffect(() => {
   }
 }, [userId]);
 
-async function startGears() {
-  const largeGear = document.querySelector('.large-gear');
-  const smallGear = document.querySelector('.small-gear');
 
-  largeGear.style.transform = 'rotate(0deg)';
-  smallGear.style.transform = 'rotate(0deg)';
-
-  smallGear.style.animation = 'spin-small 1s linear 2 forwards';
-  largeGear.style.animation = 'spin-large 1s linear 1 forwards';
-
-  setTimeout(async () => {
-    smallGear.style.animation = 'none';
-    largeGear.style.animation = 'none';
-
-    if (isEditingFilter) {
-      // Если режим редактирования уже включен, очищаем атрибуты фильтра, но не сбрасываем activeFilter
-      setSelectedAttributes([]);
-      setFilterValues({});
-      setFilterOperators({});
-      setNegations({});
-      setLogicalOperators([]);
-      setIsEditingSavedFilter(false);
-    } else if (selectedFilterId) {
-      // Если режим редактирования выключен и есть выбранный фильтр, загружаем его атрибуты и значения
-      try {
-        const response = await fetch(`http://localhost:5000/api/filters/${selectedFilterId}`);
-        if (response.ok) {
-          const filter = await response.json();
-
-          const attributes = filter.conditions.map((cond) => cond.attribute);
-          const values = filter.conditions.reduce((acc, cond) => {
-            acc[cond.attribute] = cond.value;
-            return acc;
-          }, {});
-          const operators = filter.conditions.reduce((acc, cond) => {
-            acc[cond.attribute] = cond.operator;
-            return acc;
-          }, {});
-          const negations = filter.conditions.reduce((acc, cond) => {
-            acc[cond.attribute] = cond.negation;
-            return acc;
-          }, {});
-          const logicalOperators = filter.conditions.map((cond) => cond.logical_operator);
-
-          setSelectedAttributes(attributes); // Устанавливаем активные атрибуты
-          setFilterValues(values);
-          setFilterOperators(operators);
-          setNegations(negations);
-          setLogicalOperators(logicalOperators);
-          setIsEditingSavedFilter(true); // Включаем режим редактирования сохраненного фильтра
-        } else {
-          console.error("Ошибка при получении фильтра:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Ошибка при запросе данных фильтра:", error);
-      }
-    }
-
-    // Переключаем режим редактирования
-    setIsEditingFilter((prev) => !prev);
-
-  }, 500);
-}
 
 
 
@@ -321,15 +259,15 @@ const applySavedFilter = (filter) => {
   
 const handleEditFilterClick = async (event, filterId) => {
   if (event && event.stopPropagation) event.stopPropagation();
-
-  // Переключаем состояние редактирования
-  setIsEditingFilter((prev) => !prev);
   toggleEditMode();
-  if (isEditingFilter) {
+  // Определяем текущее состояние перед изменением
+  const currentEditingState = isEditingFilter;
+
+  if (currentEditingState) {
     // Если уже редактируем, скрываем атрибуты и выключаем режим редактирования
     setSelectedAttributes([]);
-    setIsEditingFilter(false);
-    return;
+    setIsEditingFilter(false);  // Выход из режима редактирования
+    setIsSavedFiltersPanelOpen(true);  // Переход к панели сохранённых фильтров
   } else {
     try {
       const response = await fetch(`http://localhost:5000/api/filters/${filterId}`);
@@ -358,8 +296,10 @@ const handleEditFilterClick = async (event, filterId) => {
         setNegations(negations);
         setLogicalOperators(logicalOperators);
         setIsEditingSavedFilter(true); // Включаем режим редактирования сохраненного фильтра
-        
 
+        // Включаем режим редактирования и скрываем панель сохранённых фильтров
+        setIsEditingFilter(true);
+        setIsSavedFiltersPanelOpen(false);
       } else {
         console.error("Ошибка при получении фильтра:", response.statusText);
       }
@@ -368,7 +308,6 @@ const handleEditFilterClick = async (event, filterId) => {
     }
   }
 };
-
 
 
 
@@ -608,7 +547,7 @@ const handleBackButtonClick = (e) => {
             <span >{activeFilter}</span>
             <Tooltipp text="Перевернуть стрелку">
             <span
-              className="filter-arrow"
+              className={`filter-arrow ${isEditingFilter ? 'edit-mode' : ''}`}
               onClick={(e) => handleEditFilterClick(e, selectedFilterId)}
             >
               ➤ {/* Иконка редактирования */}
@@ -878,7 +817,7 @@ const handleBackButtonClick = (e) => {
             {activeFilter && (
   <div className="active-filter-header">
     <span>
-      <div className="gear-container" onClick={startGears}>
+      <div className="gear-container">
         <i className="fas fa-cog large-gear"></i>
         <i className="fas fa-cog small-gear"></i>
       </div>
