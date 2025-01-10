@@ -38,6 +38,9 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+
+
+
 .logical-operator-select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -67,6 +70,10 @@
   flex-direction: row; /* Изменено с column на row для отображения в строку */
   gap: 5px;
   width: 100%;
+  position: relative; /* Позволяет позиционировать дочерние элементы */
+  transition: height 0.9s ease-in-out; /* Плавное изменение высоты */
+  animation: slideIn 0.3s ease-in-out, fadeIn 0.3s ease-in-out; /* Анимации при появлении */
+
 }
 
 .add-filter-button {
@@ -646,16 +653,16 @@
 }
 
 .close-all-filters-button {
-  position: absolute; /* Абсолютное позиционирование */
-  top: 5px; /* Отступ сверху */
-  right: 5px; /* Отступ справа */
+  position: absolute;
+  top: 2px; /* Смещение относительно верхнего края .filter-container */
+  right: -2px; /* Смещение относительно правого края .filter-container */
+  z-index: 10; /* Поверх других элементов */
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 12px;
   cursor: pointer;
   color: #666;
-  z-index: 10; /* Высокий z-index для отображения поверх атрибутов */
-  padding: 5px; /* Внутренний отступ у кнопки */
+
 }
 
 .gear-container {
@@ -749,10 +756,11 @@
 .filter-field.disabled {
   opacity: 0.5; /* Приглушаем цвет */
   cursor: default; /* Указываем курсор как запрещенный */
+  color: #fc0606; /* Цвет текста для неактивных элементов */
 }
 
 .filter-field.disabled label {
-  color: #7a7a7a; /* Цвет текста для неактивных элементов */
+  color: #fc0606; /* Цвет текста для неактивных элементов */
 }
 
 .filter-field input[type="checkbox"]:disabled {
@@ -788,4 +796,11 @@
   color: #33ff88; /* Цвет стрелочки при активации режима редактирования */
   font-size: 12px; /* Увеличенный размер стрелочки при активации */
   transform: scale(1); /* Легкое увеличение для эффекта */
+}
+
+.filter-field.disabled input[type="checkbox"] {
+  background-color: #3e3e3e; /* Серый фон для чекбокса */
+  border-color: #7a7a7a; /* Приглушённая граница */
+  pointer-events: none; /* Отключаем взаимодействие */
+  cursor: not-allowed; /* Курсор недоступности */
 }

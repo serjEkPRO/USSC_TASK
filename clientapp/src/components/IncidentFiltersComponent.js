@@ -527,21 +527,21 @@ const handleBackButtonClick = (e) => {
 
       {/* Начало контейнера для объединения add-filter-button и active-filter-button */}
       <div className="add-filter-container">
-      
+
         <button className="add-filter-button" onClick={handleAddFilterClick}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-filter">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-filter">
             <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
           </svg>
         </button>
         </div>
         {(selectedAttributes.length > 0 || activeFilter) && (
                   <div className="filter-container" ref={filterContainerRef}>
-                 <button
+     <button
     className="close-all-filters-button"
     onClick={handleRemoveActiveFilter}
   >
     X
-  </button>     
+  </button> 
         {activeFilter && (
           <div className="active-filter-button">
             <span >{activeFilter}</span>
