@@ -83,13 +83,14 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 10px;
   white-space: nowrap;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%; /* Растягиваем кнопку по высоте нового контейнера */
   max-width: 100%;
+  gap: 10px;
 }
 
 .add-filter-button:hover {
@@ -785,17 +786,21 @@
 .filter-arrow {
   display: inline-block;
   transition: transform 0.2s ease, color 0.2s ease; /* Плавный переход для анимации */
-  font-size: 12px; /* Размер стрелочки */
+  font-size: 10px; /* Размер стрелочки */
   color: #333; /* Цвет стрелочки в обычном состоянии */
   cursor: pointer;
-  padding: 5px;
+  gap: 10px;
 }
 
 /* Стрелочка в режиме редактирования */
 .filter-arrow.edit-mode {
-  color: #33ff88; /* Цвет стрелочки при активации режима редактирования */
-  font-size: 12px; /* Увеличенный размер стрелочки при активации */
-  transform: scale(1); /* Легкое увеличение для эффекта */
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease; /* Плавный переход для анимации */
+  font-size: 10px; /* Размер стрелочки */
+  color: #f80505; /* Цвет стрелочки в обычном состоянии */
+  cursor: pointer;
+  gap: 10px;
+
 }
 
 .filter-field.disabled input[type="checkbox"] {

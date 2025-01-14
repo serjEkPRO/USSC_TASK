@@ -12,6 +12,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [logicalOperators, setLogicalOperators] = useState([]);
   const [negations, setNegations] = useState({});
   const [isEditingSavedFilter, setIsEditingSavedFilter] = useState(false); // Новый state для отслеживания режима редактирования сохраненного фильтра
+  const arrow = document.querySelector('.filter-arrow');
 
 
   const filterContainerRef = useRef(null);
@@ -87,6 +88,7 @@ const handleRemoveActiveFilter = () => {
   setIsEditingSavedFilter(false); // Выходим из режима редактирования сохраненного фильтра
   setSelectedAttributes([]);
   setFilterValues({});
+  setIsEditingFilter(false); // Выключаем режим редактирования
   setFilterOperators({});
   setNegations({});
   setLogicalOperators([]);
@@ -259,16 +261,17 @@ const applySavedFilter = (filter) => {
   
 const handleEditFilterClick = async (event, filterId) => {
   if (event && event.stopPropagation) event.stopPropagation();
-  toggleEditMode();
-  // Определяем текущее состояние перед изменением
+
   const currentEditingState = isEditingFilter;
 
   if (currentEditingState) {
-    // Если уже редактируем, скрываем атрибуты и выключаем режим редактирования
+    // Выход из режима редактирования
     setSelectedAttributes([]);
-    setIsEditingFilter(false);  // Выход из режима редактирования
-    setIsSavedFiltersPanelOpen(true);  // Переход к панели сохранённых фильтров
+    setIsEditingFilter(false); // Обновляем состояние
+    setIsSavedFiltersPanelOpen(true); // Переход к панели сохранённых фильтров
+    toggleEditMode(false); // Указываем, что это выход
   } else {
+    toggleEditMode(true); // Указываем, что это вход
     try {
       const response = await fetch(`http://localhost:5000/api/filters/${filterId}`);
       if (response.ok) {
@@ -297,8 +300,7 @@ const handleEditFilterClick = async (event, filterId) => {
         setLogicalOperators(logicalOperators);
         setIsEditingSavedFilter(true); // Включаем режим редактирования сохраненного фильтра
 
-        // Включаем режим редактирования и скрываем панель сохранённых фильтров
-        setIsEditingFilter(true);
+        setIsEditingFilter(true); // Обновляем состояние после успешного запроса
         setIsSavedFiltersPanelOpen(false);
       } else {
         console.error("Ошибка при получении фильтра:", response.statusText);
@@ -308,6 +310,7 @@ const handleEditFilterClick = async (event, filterId) => {
     }
   }
 };
+
 
 
 
@@ -373,25 +376,38 @@ const handleEditFilterClick = async (event, filterId) => {
   field.toLowerCase().includes(searchTerm.toLowerCase())
 );
 
-  const handleRemoveAttribute = (attribute, index) => {
-    setSelectedAttributes((prev) => prev.filter((attr) => attr !== attribute));
-    setFilterOperators((prev) => {
-      const updatedOperators = { ...prev };
-      delete updatedOperators[attribute];
-      return updatedOperators;
-    });
-    setFilterTexts((prev) => {
-      const updatedTexts = { ...prev };
-      delete updatedTexts[attribute];
-      return updatedTexts;
-    });
-    setNegations((prev) => {
-      const updatedNegations = { ...prev };
-      delete updatedNegations[attribute];
-      return updatedNegations;
-    });
-    setLogicalOperators((prev) => prev.filter((_, i) => i !== index));
-  };
+const handleRemoveAttribute = (attribute, index) => {
+  setSelectedAttributes((prev) => {
+    const updatedAttributes = prev.filter((attr) => attr !== attribute);
+
+    if (updatedAttributes.length === 0 && isEditingFilter) {
+      // Если больше нет полей и включён режим редактирования
+      setIsEditingFilter(false);
+    }
+
+    return updatedAttributes;
+  });
+
+  setFilterOperators((prev) => {
+    const updatedOperators = { ...prev };
+    delete updatedOperators[attribute];
+    return updatedOperators;
+  });
+
+  setFilterTexts((prev) => {
+    const updatedTexts = { ...prev };
+    delete updatedTexts[attribute];
+    return updatedTexts;
+  });
+
+  setNegations((prev) => {
+    const updatedNegations = { ...prev };
+    delete updatedNegations[attribute];
+    return updatedNegations;
+  });
+
+  setLogicalOperators((prev) => prev.filter((_, i) => i !== index));
+};
 
   const handleOperatorChange = (attribute, operator) => {
     setFilterOperators((prev) => ({ ...prev, [attribute]: operator }));
@@ -418,32 +434,33 @@ const handleEditFilterClick = async (event, filterId) => {
 
 
   const toggleEditMode = () => {
-    const filterContainer = filterContainerRef.current;
-    const arrow = document.querySelector('.filter-arrow');
+    const arrow = document.querySelector('span.filter-arrow');
 
-    if (!filterContainer || !arrow) {
-      console.error("Элементы не найдены: проверьте, что ссылки установлены.");
-      return;
+    // Проверяем, существует ли элемент стрелки
+    if (!arrow) {
+        console.error("Элемент стрелки не найден.");
+        return;
     }
 
-    if (!filterContainer.classList.contains('expand')) {
-      arrow.classList.add('edit-mode');
-      // Отпрыгивание вправо при входе в режим редактирования
-      arrow.style.transform = 'translateX(5px) scale(1)';
-      setTimeout(() => {
-        filterContainer.classList.add('expand');
-        arrow.style.transform = 'translateX(0)'; // Возврат в исходное положение
-      }, 200);
+    // Определяем текущее состояние через класс edit-mode
+    if (arrow.classList.contains('edit-mode')) {
+        // Выход из режима редактирования
+        arrow.classList.remove('edit-mode'); // Удаляем класс
+        arrow.style.transform = 'translateX(-5px) scale(0.9)'; // Отпрыгивание влево
+        setTimeout(() => {
+            arrow.style.transform = 'translateX(0)'; // Возврат в исходное положение
+        }, 200);
     } else {
-      arrow.classList.remove('edit-mode');
-      // Отпрыгивание влево при выходе из режима редактирования
-      arrow.style.transform = 'translateX(-5px) scale(0.9)';
-      setTimeout(() => {
-        filterContainer.classList.remove('expand');
-        arrow.style.transform = 'translateX(0)'; // Возврат в исходное положение
-      }, 200);
+        // Вход в режим редактирования
+        arrow.classList.add('edit-mode'); // Добавляем класс
+        arrow.style.transform = 'translateX(5px) scale(1)'; // Отпрыгивание вправо
+        setTimeout(() => {
+            arrow.style.transform = 'translateX(0)'; // Возврат в исходное положение
+        }, 200);
     }
-  };
+};
+
+
 
 // Определение текста для кнопки в зависимости от состояния activeFilter
 const backButtonText = activeFilter ? "Редактировать фильтр" : "Настроить поля для фильтра";
@@ -506,6 +523,30 @@ const handleBackButtonClick = (e) => {
     setIsModalOpen(false); // Закрываем модальное окно
     setModalFilterName(""); // Очищаем имя фильтра после сохранения
   };
+
+  const getAddFilterButtonText = () => {
+    if (activeFilter) {
+      return activeFilter; // Отображение имени активного фильтра
+    }
+    if (selectedAttributes.length > 0) {
+      return <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 4h18"></path>
+      <path d="M8 10h8"></path>
+      <path d="M10 16h4"></path>
+    </svg>; // Если выбраны поля, но фильтр не сохранён
+    }
+    return "Нет активного фильтра"; // Если ничего не выбрано
+  };
   
   
   const operatorLabels = {
@@ -528,13 +569,40 @@ const handleBackButtonClick = (e) => {
       {/* Начало контейнера для объединения add-filter-button и active-filter-button */}
       <div className="add-filter-container">
 
-        <button className="add-filter-button" onClick={handleAddFilterClick}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-filter">
-            <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
-          </svg>
-        </button>
+      <div className="tooltip-container">
+  <button className="add-filter-button" onClick={handleAddFilterClick}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1"
+      height="1"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="feather feather-filter"
+    >
+      <polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"></polygon>
+    </svg>
+    <span>{getAddFilterButtonText()}</span>
+    {activeFilter && (
+      <Tooltipp text="Перевернуть стрелку">
+        <span
+          className={`filter-arrow ${isEditingFilter ? 'edit-mode' : ''}`}
+          onClick={(e) => handleEditFilterClick(e, selectedFilterId)}
+        >
+          ➤ {/* Иконка редактирования */}
+        </span>
+      </Tooltipp>
+    )}
+  </button>
+
+</div>
+
+
         </div>
-        {(selectedAttributes.length > 0 || activeFilter) && (
+        {(selectedAttributes.length > 0 || isEditingFilter) && (
                   <div className="filter-container" ref={filterContainerRef}>
      <button
     className="close-all-filters-button"
@@ -542,20 +610,7 @@ const handleBackButtonClick = (e) => {
   >
     X
   </button> 
-        {activeFilter && (
-          <div className="active-filter-button">
-            <span >{activeFilter}</span>
-            <Tooltipp text="Перевернуть стрелку">
-            <span
-              className={`filter-arrow ${isEditingFilter ? 'edit-mode' : ''}`}
-              onClick={(e) => handleEditFilterClick(e, selectedFilterId)}
-            >
-              ➤ {/* Иконка редактирования */}
-            </span>
-            </Tooltipp>
-
-          </div>
-        )}
+        
 
        {/* Закрывающий тег для filter-container */}
 
