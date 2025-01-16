@@ -51,11 +51,13 @@
   border-radius: 1px;
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   border: 1px solid #46566c;
   font-size: 10px;
   height: 16px; /* Установите фиксированную высоту, если это необходимо */
   animation: slideIn 0.3s ease-in-out;
+  text-align-last: center; /* Для текста в опциях */
 
 }
 
@@ -78,9 +80,9 @@
 
 .add-filter-button {
   padding: 2px 8px;
-  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
-  color: white;
-  border: none;
+  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
+  color: #d6d6d6; /* Легкий светлый оттенок для контраста */
+  border: 1px solid #20503e;
   border-radius: 5px;
   cursor: pointer;
   font-size: 10px;
@@ -90,11 +92,13 @@
   align-items: center;
   height: 100%; /* Растягиваем кнопку по высоте нового контейнера */
   max-width: 100%;
-  gap: 10px;
+  font-size: 12px;
+  font-family: 'Tahoma', sans-serif;
+
 }
 
 .add-filter-button:hover {
-  background: linear-gradient(184deg, rgba(18,28,26,1) 0%, rgba(51,63,70,1) 100%);
+  background: linear-gradient(184deg, rgb(24, 37, 34) 0%, rgb(58, 71, 80) 100%);
 }
 
 .filter-panel {
@@ -167,37 +171,41 @@
 }
 
 .filter-attribute {
-  background: linear-gradient(184deg, rgb(56, 90, 83) 0%, rgb(42, 55, 62) 100%);
+  background: linear-gradient(184deg, rgba(18, 28, 26, 0.525) 0%, rgba(51, 63, 70, 0.438) 100%);
   color: rgb(255, 255, 255);
   padding: 1px;
-  border-radius: 1px;
+  border-radius: 2px;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 5px;
   max-height: 30px;
   cursor: pointer;
-  border: 0.5px solid #434d4acb;
+  border: 0.5px solid #20503e;
   animation: slideIn 0.3s ease-in-out;
   height: 19px;
 }
 
 .filter-name {
-  font-weight: bold;
-  color: #faf7f7; // Цвет и стиль для названия фильтра
+  color: #cecccc; // Цвет и стиль для названия фильтра
+  font-family: 'Tahoma', sans-serif;
+
 }
 
 .filter-negation {
   color: red;
   font-weight: bold; // Стиль для отрицания
+  font-family: 'Tahoma', sans-serif;
 }
 
 .filter-operator {
-  color: #777;
+  color: #70ffcb;
   font-style: italic; // Стиль для оператора
+  font-family: 'Tahoma', sans-serif;
 }
 
 .filter-value {
-  color: #007bff;
+  font-family: 'Tahoma', sans-serif;
+  color: #807e7e;
   font-weight: normal; // Стиль для значения
 }
 
@@ -639,9 +647,9 @@
 .filter-container {
   position: relative; /* Опорная позиция для абсолютного позиционирования кнопки */
   border: 1px dashed pink;
-  padding: 3px;
+  padding: 1px;
   padding-right: 35px; /* Оставляем место справа для кнопки */
-  padding-top: 3px;
+  
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
@@ -786,23 +794,27 @@
 .filter-arrow {
   display: inline-block;
   transition: transform 0.2s ease, color 0.2s ease; /* Плавный переход для анимации */
-  font-size: 10px; /* Размер стрелочки */
-  color: #333; /* Цвет стрелочки в обычном состоянии */
+  font-size: 12px; /* Размер стрелочки */
+  color: #a6a4a4; /* Цвет стрелочки в обычном состоянии */
   cursor: pointer;
-  gap: 10px;
+  margin-right: 2px;
+  margin-left: 5px;
 }
 
 /* Стрелочка в режиме редактирования */
 .filter-arrow.edit-mode {
   display: inline-block;
   transition: transform 0.2s ease, color 0.2s ease; /* Плавный переход для анимации */
-  font-size: 10px; /* Размер стрелочки */
-  color: #f80505; /* Цвет стрелочки в обычном состоянии */
+  font-size: 12px; /* Размер стрелочки */
+  color: #70ffcb; /* Цвет стрелочки в обычном состоянии */
   cursor: pointer;
-  gap: 10px;
+  margin-right: 2px;
+  margin-left: 5px;
+}
+.filter-arrow:hover{
+  color: #ced1d07d; /* Цвет стрелочки в обычном состоянии */
 
 }
-
 .filter-field.disabled input[type="checkbox"] {
   background-color: #3e3e3e; /* Серый фон для чекбокса */
   border-color: #7a7a7a; /* Приглушённая граница */
