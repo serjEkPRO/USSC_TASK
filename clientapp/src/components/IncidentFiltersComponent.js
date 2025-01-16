@@ -52,12 +52,10 @@ const handleAddFilterClick = () => {
 };
 
 useEffect(() => {
-  const handleClickOutside = (event) => {
+  const handleClickOutsideAddFilter = (event) => {
     // Если клик произошел внутри gear-container или кнопки добавления фильтра, выходим из обработчика
     if (
-      event.target.closest('.gear-container') ||
-      event.target.closest('.add-filter-button') ||
-      event.target.closest('.filter-attribute') // Проверяем, произошел ли клик внутри filter-attribute
+      event.target.closest('.add-filter-button')
     ) {
       return;
     }
@@ -66,20 +64,35 @@ useEffect(() => {
     if (filterPanelRef.current && !filterPanelRef.current.contains(event.target)) {
       setIsAddFilterPanelOpen(false);
     }
+  };
+
+  // Добавляем слушатель событий для клика
+  document.addEventListener("mousedown", handleClickOutsideAddFilter);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutsideAddFilter);
+  };
+}, []);
+
+useEffect(() => {
+  const handleClickOutsideFilterSettings = (event) => {
+    // Если клик произошел внутри filter-attribute, выходим из обработчика
+    if (
+      event.target.closest('.filter-attribute')
+    ) {
+      return;
+    }
 
     // Закрываем панель настроек фильтра, если клик произошел вне её области
     if (filterOperatorPanelRef.current && !filterOperatorPanelRef.current.contains(event.target)) {
-      console.log("Closing the filter settings panel due to outside click");
       setIsFilterSettingsOpen(false);
       setActiveAttribute(null);
     }
   };
 
-  // Добавляем слушатель событий для любого клика мыши
-  document.addEventListener("mousedown", handleClickOutside);
+  // Добавляем слушатель событий для клика
+  document.addEventListener("mousedown", handleClickOutsideFilterSettings);
   return () => {
-    // Удаляем слушатель событий при размонтировании компонента
-    document.removeEventListener("mousedown", handleClickOutside);
+    document.removeEventListener("mousedown", handleClickOutsideFilterSettings);
   };
 }, []);
 
