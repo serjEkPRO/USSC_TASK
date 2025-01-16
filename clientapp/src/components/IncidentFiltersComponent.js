@@ -12,9 +12,6 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [logicalOperators, setLogicalOperators] = useState([]);
   const [negations, setNegations] = useState({});
   const [isEditingSavedFilter, setIsEditingSavedFilter] = useState(false); // Новый state для отслеживания режима редактирования сохраненного фильтра
-  const arrow = document.querySelector('.filter-arrow');
-
-
   const filterContainerRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalFilterName, setModalFilterName] = useState("");
@@ -54,11 +51,16 @@ const handleAddFilterClick = () => {
   setIsAddFilterPanelOpen((prev) => !prev);
 };
 
-// Эффект для закрытия панели при клике вне её области
 useEffect(() => {
   const handleClickOutside = (event) => {
-    // Если клик произошел внутри gear-container, выходим из обработчика
-    if (event.target.closest('.gear-container') || event.target.closest('.add-filter-button')) return;
+    // Если клик произошел внутри gear-container или кнопки добавления фильтра, выходим из обработчика
+    if (
+      event.target.closest('.gear-container') ||
+      event.target.closest('.add-filter-button') ||
+      event.target.closest('.filter-attribute') // Проверяем, произошел ли клик внутри filter-attribute
+    ) {
+      return;
+    }
 
     // Закрываем панель добавления фильтра, если клик произошел вне её области
     if (filterPanelRef.current && !filterPanelRef.current.contains(event.target)) {
@@ -67,8 +69,9 @@ useEffect(() => {
 
     // Закрываем панель настроек фильтра, если клик произошел вне её области
     if (filterOperatorPanelRef.current && !filterOperatorPanelRef.current.contains(event.target)) {
+      console.log("Closing the filter settings panel due to outside click");
       setIsFilterSettingsOpen(false);
-      setActiveAttribute(null); // Сбрасываем активный атрибут
+      setActiveAttribute(null);
     }
   };
 
@@ -340,29 +343,35 @@ const handleEditFilterClick = async (event, filterId) => {
 
 
   const handleOpenFilterSettings = (attribute, event) => {
+    console.log("Clicked Attribute:", attribute);
+    console.log("Current Active Attribute:", activeAttribute);
+    console.log("Is Filter Settings Open:", isFilterSettingsOpen);
+  
     if (activeAttribute === attribute && isFilterSettingsOpen) {
-      // Закрываем панель, если клик по тому же атрибуту
+      // Если уже открыта панель для текущего атрибута — закрываем её
       setIsFilterSettingsOpen(false);
       setActiveAttribute(null);
+      console.log("Closing the panel for attribute:", attribute);
     } else {
-      // Сбрасываем состояние перед открытием новой панели
-      setIsFilterSettingsOpen(false);
-      setActiveAttribute(null);
-      
-      // Открываем панель для нового атрибута
+      // Рассчитываем положение панели
       const buttonRect = event.target.getBoundingClientRect();
       const panel = document.querySelector('.filter-operator-panel');
-    
       if (panel) {
         panel.style.top = `${buttonRect.bottom}px`;
         panel.style.left = `${buttonRect.left}px`;
       }
   
-      // Устанавливаем новое состояние для активного атрибута
+      // Устанавливаем новое активное состояние
       setActiveAttribute(attribute);
       setIsFilterSettingsOpen(true);
+      console.log("Opening the panel for a new attribute:", attribute);
     }
   };
+  
+  
+  
+  
+  
   
 
   const handleSaveFilter = () => {
