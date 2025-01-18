@@ -133,28 +133,31 @@
 /* Закрепление кнопок управления внизу */
 .filter-panel-actions {
   //margin-top: auto; /* Закрепление внизу контейнера */
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 5px;
   display: flex;
-  gap: 10px;
-  
+  gap: 5px;
 
 }
 
 .filter-panel-actions button {
-  background: linear-gradient(184deg, rgba(73,126,116,1) 0%, rgba(39,78,67,1) 100%);
-  color: white;
-  padding: 4px 4px;
-  margin: 4px;
-
-
-
-  transition: background-color 0.3s ease;
+  padding: 13px 12px;
+  background: linear-gradient(184deg, rgba(24, 37, 34, 0.521) 0%, rgba(58, 71, 80, 0.516) 100%);
+  
+  color: #d5d2d2;
+  border:1.5px solid #20503e;
+  border-radius: 4px;
+  white-space: nowrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-family: "Tahoma", sans-serif;
+  height: 25px;
 }
 
 .filter-panel-actions button:hover {
-  background-color: #3fa764; /* изменение цвета при наведении */
-  color: #ffffff;
+  background: linear-gradient(184deg, rgba(22, 32, 23, 0.493) 0%, rgba(51, 51, 51, 0.452) 100%);
+  color: #efebeb;
 }
 
 
@@ -333,11 +336,11 @@
   width: auto; /* Если нужно ограничить ширину, чтобы не растягивалось */
   display: flex;
   align-items: center;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 1px;
+  border-radius: 2px;
   transition: background-color 0.3s ease;
   text-align: left; /* Выравнивание текста в поле по левому краю */
-  border-bottom: 0.5px solid #28362d; /* Зелёная линия-разделитель */
+  border-bottom: 0.5px solid #20503e7b; /* Зелёная линия-разделитель */
 
 }
 
@@ -346,15 +349,17 @@
 }
 
 .filter-field:hover {
-  background: linear-gradient(184deg, rgb(73, 126, 116) 0%, rgb(39, 78, 67) 100%); /* Цвет при наведении */
+  background: linear-gradient(184deg, rgba(24, 37, 34, 0.468) 0%, rgba(58, 71, 80, 0.459) 100%);
 }
 
 .filter-field label {
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
-  color: #f0f0f0; /* Цвет текста */
+  color: #d6d6d6; /* Цвет текста */
   display: flex;
   align-items: center;
+  font-family: 'Tahoma', sans-serif;
+
 }
 
 /* Стили для неактивного чекбокса */
@@ -412,8 +417,8 @@
   flex-direction: column;
   align-items: flex-start;
   height: 100%;
-  max-height: 350px; /* Ограничение высоты */
-  min-height: 350px; /* Ограничение высоты */
+  max-height: 400px; /* Ограничение высоты */
+  min-height: 400px; /* Ограничение высоты */
   overflow-y: auto; /* Включение вертикальной прокрутки */
 }
 
@@ -421,12 +426,12 @@
   background-color: linear-gradient(184deg, rgba(18, 28, 26, 1) 0%, rgba(51, 63, 70, 1) 100%);
   border: 0.5px solid #272d29; /* зелёная рамка */
   color: #f0f0f0; /* светлый текст */
-  max-height: 235px; /* Ограничьте высоту списка фильтров */
+  max-height: 260px; /* Ограничьте высоту списка фильтров */
   overflow-y: auto; /* Скролл только внутри списка фильтров */
   flex-grow: 1; /* Заполнит оставшееся пространство */
   align-items: flex-start;
   width: 100%; /* Ширина на 100% от контейнера */
-
+  gap: 5px;
   justify-content: flex-start; /* Выравнивание дочерних элементов по левому краю */
 
 }
@@ -454,32 +459,34 @@
 
 
 .search-input-container {
-  margin-bottom: 5px; /* Добавить фиксированный отступ */
+  margin-bottom: 10px; /* Добавить фиксированный отступ */
   min-width: 320px; /* Установка минимальной ширины */
   position: relative;
   display: inline-flex;
   align-items: center;
   width: 100%; /* Ширина контейнера на всю доступную область */
+  top: 5px;
 }
 
 .search-input {
-  background: linear-gradient(184deg, rgb(18, 28, 26) 0%, rgb(51, 63, 70) 100%);
-  color: #a3a3a3;
-  border: 1px solid #037240;
+  background: linear-gradient(184deg, rgba(13, 20, 18, 0.537) 0%, rgb(34, 42, 47) 100%);
+  color: #b0b0b0;
+  border: 0.5px solid #20503e88;
   border-radius: 5px;
   padding: 5px 35px 5px 10px; /* Отступ справа для иконки */
   width: 100%;
-  font-size: 14px;
+  font-size: 12px;
   outline: none;
+  font-family: "Tahoma", sans-serif;
 }
 
 .search-input::placeholder {
-  color: #5a6b8c;
+  color: #9298a3;
 }
 
 .search-input:focus {
-  border-color: #5a6b8c;
-  box-shadow: 0 0 5px rgba(90, 107, 140, 0.5);
+  background: linear-gradient(184deg, rgba(53, 62, 69, 0.765)  0%, rgba(23, 35, 32, 0.454) 100%);
+
 }
 
 .search-icon {
@@ -751,15 +758,50 @@
   }
 }
 
-.active-filter-text {
-  color: #007bff; /* Например, синий цвет */
-  font-weight: bold; /* Жирный шрифт */
-  font-size: 16px; /* Размер шрифта */
-  /* Любые другие стили */
-  margin-left: 10px; /* Укажите необходимое значение */
+.active-filter-header {
+  background: linear-gradient(184deg, rgba(18, 28, 26, 0.514) 0%, rgba(51, 63, 70, 0.477) 100%);
+  display: flex;
+  flex-direction: column; /* Элементы идут вертикально */
+  gap: 4px; /* Расстояние между текстом "Поля фильтра" и строкой фильтра */
+  padding: 4px; /* Внутренние отступы со всех сторон */
 
+}
+
+.active-filter-text {
+  text-align: left;
+  margin-left: 2px;
+  font-size: 12px;
+  font-family: "Tahoma", sans-serif;
+  color: #807e7e;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center; /* Выравнивание по вертикали */
+ margin-top: 2px;
+  gap: 2px; /* Отступ между названием фильтра и кнопкой */
+}
+
+.active-filter {
+  font-size: 14px;
+  margin-left: 3px;
+  color:#70ffcb;
+  font-family: "Tahoma", sans-serif;
+  padding-top: 0px 5px;
+}
+
+.remove-filter-button {
+  background: none;
+  color: red;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  top: 10px;
   
 }
+
+
 
 /* Обозначаем недоступные фильтры, изменяя цвет текста, делая его более светлым, и меняя курсор */
 .filter-field.disabled {

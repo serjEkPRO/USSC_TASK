@@ -51,27 +51,7 @@ const handleAddFilterClick = () => {
   setIsAddFilterPanelOpen((prev) => !prev);
 };
 
-useEffect(() => {
-  const handleClickOutsideAddFilter = (event) => {
-    // Если клик произошел внутри gear-container или кнопки добавления фильтра, выходим из обработчика
-    if (
-      event.target.closest('.add-filter-button')
-    ) {
-      return;
-    }
 
-    // Закрываем панель добавления фильтра, если клик произошел вне её области
-    if (filterPanelRef.current && !filterPanelRef.current.contains(event.target)) {
-      setIsAddFilterPanelOpen(false);
-    }
-  };
-
-  // Добавляем слушатель событий для клика
-  document.addEventListener("mousedown", handleClickOutsideAddFilter);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutsideAddFilter);
-  };
-}, []);
 
 useEffect(() => {
   const handleClickOutsideFilterSettings = (event) => {
@@ -878,26 +858,27 @@ const handleBackButtonClick = (e) => {
                 </svg>
               </span>
             </div>
-            {activeFilter && (
-  <div className="active-filter-header">
-    <span>
-      <div className="gear-container">
-        <i className="fas fa-cog large-gear"></i>
-        <i className="fas fa-cog small-gear"></i>
-      </div>
-      <span className="active-filter-text">{activeFilter}</span>
-    </span>
-    <button
-      className="remove-filter-button"
-      onClick={handleRemoveActiveFilter}
-    >
-      X
-    </button>
-  </div>
-)}
+            
 
             {/* Поля для фильтрации */}
             <div className="filter-list custom-scrollbar">
+            {activeFilter && (
+  <div className="active-filter-header">
+    <span className="active-filter-text">Поля фильтра:</span>
+    <div className="filter-row">
+      <span className="active-filter">{activeFilter}</span>
+      <button
+        className="remove-filter-button"
+        onClick={handleRemoveActiveFilter}
+      >
+        X
+      </button>
+    </div>
+  </div>
+)}
+
+
+
   {combinedFields.map(({ field, isSelected }) => (
     <div
       key={field}
