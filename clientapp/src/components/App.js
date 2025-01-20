@@ -104,6 +104,7 @@ function App() {
               onCreateIncidentClick={openCreateModal}
               isSidebarCollapsed={isSidebarCollapsed}
               userId={userId} // Передаем только userId в IncidentsTable
+              
             />
             {selectedIncidentId && (
               <IncidentDetailModal

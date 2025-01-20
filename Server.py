@@ -566,12 +566,27 @@ def get_all_fields():
     try:
         with get_db_connection() as conn:
             cur = conn.cursor()
-            cur.execute("SELECT DISTINCT name FROM incident_field")
+            # Модифицируем запрос для возврата типа поля
+            cur.execute("""
+                SELECT DISTINCT f.name, f.field_type
+                FROM incident_field f
+            """)
             fields = cur.fetchall()
-        return jsonify([field[0] for field in fields])
+        
+        # Преобразуем результат в нужный формат
+        result = []
+        for field in fields:
+            field_data = {
+                "name": field[0],      # Название поля
+                "field_type": field[1] # Тип поля
+            }
+            result.append(field_data)
+
+        return jsonify(result)
     except pg8000.dbapi.DatabaseError as e:
         logging.error(f"Error fetching fields: {str(e)}")
         return jsonify({"error": str(e), "details": e.args}), 500
+
 
 @app.route('/api/incidents/<int:incident_id>', methods=['GET'])
 def get_incident(incident_id):

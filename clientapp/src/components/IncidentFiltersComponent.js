@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import '../styles/incidentList/IncidentFilters.scss';
 import "../assets/fontawesome/all.min.css";
 import Tooltipp from './Tooltipp';
-const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators = {}, setFilterOperators, userId }) => {
+const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, filterValues, filterOperators = {}, setFilterOperators, userId, typeId}) => {
   const [isSavedFiltersPanelOpen, setIsSavedFiltersPanelOpen] = useState(false); // Управление панелью сохранённых фильтров
   const [isAddFilterPanelOpen, setIsAddFilterPanelOpen] = useState(false);
   const [isFilterSettingsOpen, setIsFilterSettingsOpen] = useState(false);
@@ -26,6 +26,7 @@ const IncidentFiltersComponent = ({ fields, setFilterValues, setSavedFilters, fi
   const [activeAttribute, setActiveAttribute] = useState(null); // Новый state для управления активным атрибутом
   const filterOperatorPanelRef = useRef(null); // Добавьте ref для панели настроек
   const [isEditingFilter, setIsEditingFilter] = useState(false);
+
 
 
 
@@ -121,22 +122,36 @@ useEffect(() => {
 
 
 
+// Приводим данные к единой структуре и фильтруем пустые значения
+// Фильтруем `selectedAttributes` для удаления пустых или некорректных значений
+const sanitizedSelectedAttributes = selectedAttributes.filter(
+  (attr) => attr && typeof attr === "string"
+);
+
+// Фильтруем `fields` для удаления некорректных объектов
+const sanitizedFields = fields.filter(
+  (field) => field && typeof field.name === "string"
+);
+
 // Разделяем поля на выбранные и невыбранные
-const selectedFields = selectedAttributes.map((attr) => ({
-  field: attr,
+const selectedFields = sanitizedSelectedAttributes.map((attr) => ({
+  field: sanitizedFields.find((field) => field.name === attr) || { name: attr }, // Находим объект поля или создаём
   isSelected: true,
 }));
-const unselectedFields = fields
-  .filter((field) => !selectedAttributes.includes(field))
+
+const unselectedFields = sanitizedFields
+  .filter((field) => !sanitizedSelectedAttributes.includes(field.name))
   .map((field) => ({
     field,
     isSelected: false,
   }));
 
-// Объединяем выбранные и невыбранные поля, чтобы выбранные отображались первыми
+// Объединяем выбранные и невыбранные поля
 const combinedFields = isEditingFilter
   ? [...selectedFields, ...unselectedFields]
   : [...unselectedFields];
+
+
 
 
 
@@ -179,6 +194,30 @@ useEffect(() => {
     document.removeEventListener("mousedown", handleClickOutside);
   };
 }, [contextMenuVisible]);
+
+
+useEffect(() => {
+  const handleClickOutsidePanel = (event) => {
+    // Если клик произошел внутри filter-panel или внутри filter-attribute, выходим из обработчика
+    if (
+      filterPanelRef.current && filterPanelRef.current.contains(event.target) ||
+      event.target.closest('.filter-panel')
+    ) {
+      return;
+    }
+
+    // Закрываем панель, если клик был снаружи
+    setIsAddFilterPanelOpen(false);
+  };
+
+  // Добавляем слушатель событий для клика
+  document.addEventListener("mousedown", handleClickOutsidePanel);
+
+  return () => {
+    // Удаляем слушатель при размонтировании компонента
+    document.removeEventListener("mousedown", handleClickOutsidePanel);
+  };
+}, []);
 
 
   // Перенос функции fetchSavedFilters
@@ -375,7 +414,7 @@ const handleEditFilterClick = async (event, filterId) => {
 
 
   const filteredFields = fields.filter((field) =>
-  field.toLowerCase().includes(searchTerm.toLowerCase())
+  field.name.toLowerCase().includes(searchTerm.toLowerCase())
 );
 
 const handleRemoveAttribute = (attribute, index) => {
@@ -879,26 +918,24 @@ const handleBackButtonClick = (e) => {
 
 
 
-  {combinedFields.map(({ field, isSelected }) => (
-    <div
-      key={field}
-      className={`filter-field ${!isEditingFilter && activeFilter ? 'disabled' : ''}`}
-    >
-      <label>
-        <input
-          type="checkbox"
-          checked={selectedAttributes.includes(field)}
-          disabled={!isEditingFilter && !!activeFilter}
-          onChange={() =>
-            selectedAttributes.includes(field)
-              ? handleRemoveAttribute(field)
-              : handleAddAttribute(field)
-          }
-        />
-        {field}
-      </label>
-    </div>
-  ))}
+{combinedFields.map(({ field }) => (
+  <div key={field.name} className="filter-field">
+    <label>
+      <input
+        type="checkbox"
+        checked={selectedAttributes.includes(field.name)}
+        onChange={() =>
+          selectedAttributes.includes(field.name)
+            ? handleRemoveAttribute(field.name)
+            : handleAddAttribute(field.name)
+        }
+      />
+      {field.name}
+    </label>
+  </div>
+))}
+
+
 </div>
 
             <div className="filter-panel-actions">

@@ -10,7 +10,7 @@ if (-not $changes) {
     git add -A
 
     # Создайте коммит с текущей датой и временем
-    $commitMessage = "редактирование сохраненных фильтров 3.5.7  $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    $commitMessage = "редактирование сохраненных фильтров 3.6.0 beta  $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     git commit -m $commitMessage
 
     # Push изменений

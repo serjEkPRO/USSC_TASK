@@ -117,25 +117,37 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
 
   useEffect(() => {
     if (userId) {
-      fetchFields();
-      fetchIncidents();
-      const intervalId = setInterval(() => fetchIncidents(searchQuery), 5000);
-      return () => clearInterval(intervalId);
+      fetchFields(); // Выполняется только при первом монтировании
+      fetchIncidents(); // Выполняется только один раз при загрузке
     }
-  }, [searchQuery, filterValues, userId]);
+  }, [userId]); // Зависимость только от userId
+
+  useEffect(() => {
+    if (userId) {
+      const intervalId = setInterval(() => fetchIncidents(searchQuery), 5000);
+      return () => clearInterval(intervalId); // Очистка интервала при изменении зависимостей
+    }
+  }, [searchQuery, filterValues, userId]); // Оставляем только интервал
+  
 
   const fetchFields = async () => {
     try {
       const response = await fetch('http://127.0.0.1:5000/api/fields');
       const data = await response.json();
       if (fields.length === 0) {
-        setFields(data);
-        setVisibleFields(data);
+        const processedFields = data.map((field, index) => ({
+          name: field.name,
+          field_type: field.field_type, // Если нужно, добавьте дополнительные поля
+        }));
+        setFields(processedFields);
+        setVisibleFields(processedFields);
       }
     } catch (error) {
       console.error('Ошибка при получении полей:', error);
     }
   };
+  
+  
 
   const fetchIncidents = async (query = '') => {
     try {
@@ -195,14 +207,19 @@ const IncidentsTable = ({ onIncidentClick, onCreateIncidentClick, isSidebarColla
     setTargetIndex(hoverIndex);
   }, [fields]);
 
-  const columns = useMemo(() => fields.map((field, index) => ({
-    Header: field,
-    accessor: field,
-    Filter: TextFilter,
-    isTarget: targetIndex === index,
-    filterValue: filterValues[field] || '',
-    setFilter: (value) => setFilterValues((prev) => ({ ...prev, [field]: value })),
-  })), [fields, targetIndex, filterValues]);
+  const columns = useMemo(() => 
+    fields.map((field, index) => ({
+      Header: field.name, // Используем поле name для заголовка
+      accessor: field.name, // Генерируем уникальный accessor для каждой колонки
+      Filter: TextFilter,
+      isTarget: targetIndex === index,
+      filterValue: filterValues[field.name] || '', // Привязываем фильтр к name
+      setFilter: (value) =>
+        setFilterValues((prev) => ({ ...prev, [field.name]: value })),
+    }))
+  , [fields, targetIndex, filterValues]);
+  
+  
 
   const {
     getTableProps,
